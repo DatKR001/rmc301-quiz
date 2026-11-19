@@ -1,20 +1,42 @@
-# 🎯 RMC301 Exam Practice - 380 Câu Trắc Nghiệm Tương Tác
+# 🎯 RMC301 Exam Practice - 380 Câu Trắc Nghiệm & Bộ Thẻ Quizlet
 
-Website ôn luyện trắc nghiệm môn **RMC301** (380 câu hỏi phân tích nội dung, phương pháp nghiên cứu) chạy trực tiếp trên nền tảng GitHub Pages.
-
----
-
-## 🌐 Link Truy Cập Trực Tiếp Website
-👉 **[Bấm vào đây để vào làm bài trắc nghiệm](https://datkr001.github.io/rmc301-quiz/)**  
-*(Đường dẫn: https://datkr001.github.io/rmc301-quiz/)*
+Kho lưu trữ toàn bộ dữ liệu ôn tập môn **RMC301 (Research Methods in Communication)** gồm 380 câu hỏi trắc nghiệm kèm đáp án và giải thích chi tiết, ứng dụng web trắc nghiệm tương tác trực tuyến có đồng bộ Cloud, và các file nạp thẻ Quizlet.
 
 ---
 
-## ✨ Tính Năng Nổi Bật
-- **Làm bài trực quan:** 380 câu hỏi trắc nghiệm với các nút bấm chọn đáp án `A`, `B`, `C`, `D` độc lập.
-- **Phản hồi tức thì:** Bấm chọn là biết ngay Đúng (xanh) / Sai (đỏ), kèm phần giải thích chi tiết bằng tiếng Việt.
-- **Hỗ trợ câu nhiều đáp án:** Tích chọn nhiều phương án rồi bấm kiểm tra.
-- **Đăng nhập 1 chạm:** Tự động nhận diện tài khoản Google (`votrongdat1606@gmail.com`).
-- **Lưu trữ tiến độ tự động:** Lưu lại lịch sử câu đúng, câu sai, câu đã đánh dấu ⭐ vào cơ sở dữ liệu riêng.
-- **Chế độ Luyện câu sai:** Lọc riêng những câu từng làm sai để luyện lại đến khi đạt điểm tối đa.
-- **Sao lưu & Đồng bộ:** Hỗ trợ xuất/nhập file dữ liệu để đồng bộ giữa máy tính và điện thoại.
+## 🌐 1. Link Truy Cập Ứng Dụng Web Trắc Nghiệm Trực Tuyến
+👉 **[https://datkr001.github.io/rmc301-quiz/](https://datkr001.github.io/rmc301-quiz/)**
+
+### ✨ Tính Năng Nổi Bật Của Website:
+- **Làm bài trực quan:** 380 câu trắc nghiệm với các nút chọn `A`, `B`, `C`, `D` độc lập.
+- **Phản hồi tức thì:** Bấm chọn biết ngay Đúng (xanh) / Sai (đỏ), kèm đáp án chuẩn và lời giải thích tiếng Việt.
+- **Đồng bộ đám mây tự động (Realtime Cloud Sync):** Tự động đồng bộ tiến độ 2 chiều giữa **Máy tính** và **Điện thoại** qua Google Firebase. Làm trên PC, mở điện thoại là thấy ngay!
+- **Đăng nhập Google 1 chạm:** Tự động nhận diện tài khoản để lưu trữ tiến độ độc lập.
+- **Chế độ Luyện câu sai & Đánh dấu:** Lọc riêng các câu làm sai để luyện lại đến khi đạt 100%.
+
+---
+
+## 📚 2. Danh Sách File Dữ Liệu Nạp Quizlet (Thành Phẩm)
+
+Trong repo này có đầy đủ các file đã được chuẩn hóa để bạn nạp vào Quizlet:
+
+| Tên File | Mô Tả | Khuyên Dùng |
+| :--- | :--- | :--- |
+| **`quizlet_toan_bo_380_cau_1_lan_nhap.txt`** | Toàn bộ 380 câu nén dạng 1 dòng/câu (Tab & Newline) | ⭐ Nhập 1 lần toàn bộ |
+| **`quizlet_part1_cau_1_den_95.txt`** | 95 câu phần 1 (Định dạng nhiều dòng đẹp mắt) | Chia nhỏ <2000 dòng |
+| **`quizlet_part2_cau_96_den_190.txt`** | 95 câu phần 2 | Chia nhỏ <2000 dòng |
+| **`quizlet_part3_cau_191_den_285.txt`** | 95 câu phần 3 | Chia nhỏ <2000 dòng |
+| **`quizlet_part4_cau_286_den_380.txt`** | 95 câu phần 4 | Chia nhỏ <2000 dòng |
+| **`quizlet_cards.csv`** | Dữ liệu dạng bảng tính Excel / CSV | Mở bằng Excel |
+| **`quizlet_cards.json`** | Dữ liệu JSON nguyên bản có cấu trúc | Lập trình / Tích hợp |
+| **`HUONG_DAN_NHAP_QUIZLET.md`** | Hướng dẫn chi tiết cách cài đặt ký tự phân cách trên Quizlet | Đọc trước khi nhập |
+
+---
+
+## 🛠️ Hướng Dẫn Nạp Thẻ Vào Quizlet
+1. Mở Quizlet $\rightarrow$ Tạo học phần mới $\rightarrow$ Bấm nút **"Nhập" (Import)**.
+2. Mở file `quizlet_toan_bo_380_cau_1_lan_nhap.txt` $\rightarrow$ Nhấn `Ctrl + A` $\rightarrow$ `Ctrl + C` (Copy toàn bộ).
+3. Dán vào khung nhập của Quizlet:
+   - Ký tự phân cách giữa Thuật ngữ và Định nghĩa: Chọn **Tab**.
+   - Ký tự phân cách giữa các thẻ: Chọn **Dòng mới (New line)**.
+4. Bấm **"Nhập"** $\rightarrow$ Tạo học phần thành công!
