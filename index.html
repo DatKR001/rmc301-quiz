@@ -116,7 +116,75 @@
             .question-text { font-size: 1.08rem; }
             .opt-btn { font-size: 0.95rem; padding: 12px 14px; }
         }
+    
+        /* Cloud Sync Button & Pulse */
+        .btn-cloud-sync {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .btn-cloud-sync:hover {
+            border-color: var(--primary);
+            background: #1e293b;
+        }
+        .cloud-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #94a3b8;
+            display: inline-block;
+        }
+        .cloud-dot.connected {
+            background: #22c55e;
+            box-shadow: 0 0 8px #22c55e;
+        }
+        .cloud-dot.syncing {
+            background: #38bdf8;
+            animation: cloudPulse 0.9s infinite alternate;
+        }
+        .cloud-dot.error {
+            background: #ef4444;
+        }
+        @keyframes cloudPulse {
+            from { transform: scale(0.9); opacity: 0.5; }
+            to { transform: scale(1.3); opacity: 1; }
+        }
+        .toast-msg {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1e293b;
+            color: #38bdf8;
+            border: 1px solid var(--primary);
+            padding: 12px 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+        .toast-msg.show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
     </style>
+    <!-- Firebase Realtime Database SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
     <header>
@@ -244,6 +312,49 @@
         </div>
     </div>
 
+    <!-- Cloud Sync Modal -->
+    <div class="modal-overlay" id="cloud-modal">
+        <div class="modal-card" style="max-width: 540px;">
+            <div class="modal-title">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span>☁️ Đồng bộ đám mây (Google Firebase)</span>
+                </div>
+                <button class="btn-modal-close" onclick="closeModal('cloud-modal')">✕</button>
+            </div>
+            <p class="modal-desc" style="margin-bottom: 12px;">
+                Tự động đồng bộ thời gian thực 2 chiều giữa <strong>Máy tính</strong> và <strong>Điện thoại</strong>. Khi bạn làm bài trên PC, điện thoại mở lên sẽ cập nhật ngay lập tức!
+            </p>
+
+            <div id="cloud-status-banner" style="padding: 10px 14px; border-radius: 8px; background: #0f172a; border: 1px solid var(--border); margin-bottom: 14px; font-size: 0.85rem; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <strong>Trạng thái:</strong> <span id="cloud-status-desc" style="color: #94a3b8;">Chưa kết nối Cloud</span>
+                </div>
+                <span id="cloud-badge" style="font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; background: #334155; color: #94a3b8;">Offline</span>
+            </div>
+
+            <div style="background: #0b1120; padding: 12px; border-radius: 8px; border: 1px solid #1e293b; margin-bottom: 14px; font-size: 0.82rem; line-height: 1.5; color: #cbd5e1;">
+                <div style="font-weight: bold; color: var(--primary); margin-bottom: 4px;">📝 Hướng dẫn kích hoạt 1 lần (Hoàn toàn miễn phí):</div>
+                1. Truy cập <a href="https://console.firebase.google.com" target="_blank" style="color: #38bdf8; text-decoration: underline;">console.firebase.google.com</a> bằng Gmail.<br>
+                2. Bấm <strong>Tạo dự án (Add project)</strong> $\rightarrow$ Đặt tên (ví dụ: <code>rmc301-quiz</code>) $\rightarrow$ Tắt Analytics $\rightarrow$ Tạo dự án.<br>
+                3. Vào mục <strong>Build</strong> $\rightarrow$ <strong>Realtime Database</strong> $\rightarrow$ <strong>Tạo cơ sở dữ liệu</strong> (chọn vị trí Singapore) $\rightarrow$ Chọn <em>Bắt đầu ở chế độ thử nghiệm (Test mode)</em> $\rightarrow$ Bật.<br>
+                4. Copy <strong>Database URL</strong> (dạng <code>https://...firebasedatabase.app</code>) hoặc mã cấu hình <strong>firebaseConfig</strong> dán vào ô bên dưới:
+            </div>
+
+            <div class="input-group">
+                <label for="firebase-config-input">Dán Database URL hoặc mã JSON firebaseConfig vào đây:</label>
+                <textarea id="firebase-config-input" class="input-text" rows="3" style="font-family: monospace; font-size: 0.82rem; resize: vertical;" placeholder="https://rmc301-quiz-default-rtdb.asia-southeast1.firebasedatabase.app"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn-modal-submit" style="background: #38bdf8; color: #0b1120; font-weight: bold; flex: 1;" onclick="saveCloudConfig()">🚀 Lưu & Kết nối Cloud ngay</button>
+                <button class="btn-modal-submit" id="btn-disconnect-cloud" style="background: #ef444420; color: #f87171; border: 1px solid #ef4444; display: none;" onclick="disconnectCloud()">Ngắt kết nối</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-msg" class="toast-msg">☁️ Đã đồng bộ Cloud</div>
+
     <!-- Backup & Sync Modal -->
     <div class="modal-overlay" id="backup-modal">
         <div class="modal-card">
@@ -277,6 +388,7 @@
 
         function init() {
             loadUserData();
+            initCloudSync();
             document.getElementById('stat-total').textContent = quizData.length;
             renderPalette();
             renderQuestion(0);
@@ -291,6 +403,232 @@
                 if (['3', 'c', 'C'].includes(e.key)) selectOptionByKey('C');
                 if (['4', 'd', 'D'].includes(e.key)) selectOptionByKey('D');
             });
+        }
+
+        /* Firebase Realtime Database Engine */
+        let firebaseApp = null;
+        let firebaseDb = null;
+        let cloudListenerRef = null;
+        let isSyncingFromCloud = false;
+
+        // Config can be set directly here or read from localStorage
+        const EMBEDDED_FIREBASE_CONFIG = null;
+
+        function openCloudModal() {
+            document.getElementById('cloud-modal').classList.add('active');
+            const stored = localStorage.getItem('rmc301_firebase_config');
+            if (stored) {
+                document.getElementById('firebase-config-input').value = stored;
+            }
+        }
+
+        function initCloudSync() {
+            let cfg = EMBEDDED_FIREBASE_CONFIG;
+            if (!cfg) {
+                const stored = localStorage.getItem('rmc301_firebase_config');
+                if (stored) {
+                    try {
+                        cfg = JSON.parse(stored);
+                    } catch(e) {
+                        if (stored.trim().startsWith('http')) {
+                            cfg = { databaseURL: stored.trim() };
+                        }
+                    }
+                }
+            }
+
+            if (cfg && (cfg.databaseURL || cfg.projectId)) {
+                connectToFirebase(cfg, false);
+            } else {
+                updateCloudStatus('disconnected');
+            }
+        }
+
+        function connectToFirebase(cfg, showAlert = true) {
+            try {
+                if (typeof firebase === 'undefined') {
+                    throw new Error('Thư viện Firebase chưa được tải. Vui lòng kiểm tra kết nối mạng!');
+                }
+                if (!firebase.apps.length) {
+                    firebaseApp = firebase.initializeApp(cfg);
+                } else {
+                    firebaseApp = firebase.app();
+                }
+                firebaseDb = firebase.database();
+                updateCloudStatus('connected');
+                if (showAlert) {
+                    showToast('🚀 Đã kết nối Google Firebase thành công!');
+                    closeModal('cloud-modal');
+                }
+                attachCloudListener();
+            } catch(err) {
+                console.error('Lỗi kết nối Firebase:', err);
+                updateCloudStatus('error', err.message);
+                if (showAlert) alert('Không thể kết nối Firebase: ' + err.message);
+            }
+        }
+
+        function saveCloudConfig() {
+            let input = document.getElementById('firebase-config-input').value.trim();
+            if (!input) {
+                alert('Vui lòng dán Database URL hoặc mã JSON firebaseConfig!');
+                return;
+            }
+            let cfg = null;
+            if (input.startsWith('{')) {
+                try {
+                    cfg = JSON.parse(input);
+                } catch(e) {
+                    try {
+                        const cleaned = input.replace(/([a-zA-Z0-9_]+)\s*:/g, '"$1":').replace(/'/g, '"');
+                        cfg = JSON.parse(cleaned);
+                    } catch(e2) {
+                        alert('Mã JSON không hợp lệ! Vui lòng kiểm tra lại.');
+                        return;
+                    }
+                }
+            } else if (input.startsWith('http')) {
+                cfg = { databaseURL: input };
+            } else {
+                alert('Vui lòng nhập đúng Database URL (bắt đầu bằng https://...) hoặc mã JSON!');
+                return;
+            }
+
+            localStorage.setItem('rmc301_firebase_config', JSON.stringify(cfg));
+            connectToFirebase(cfg, true);
+        }
+
+        function disconnectCloud() {
+            if (confirm('Bạn có chắc chắn muốn ngắt kết nối Cloud? Dữ liệu vẫn được lưu trên máy của bạn.')) {
+                if (cloudListenerRef) {
+                    cloudListenerRef.off();
+                    cloudListenerRef = null;
+                }
+                localStorage.removeItem('rmc301_firebase_config');
+                firebaseDb = null;
+                document.getElementById('firebase-config-input').value = '';
+                updateCloudStatus('disconnected');
+                showToast('⚪ Đã ngắt kết nối Cloud');
+                closeModal('cloud-modal');
+            }
+        }
+
+        function updateCloudStatus(status, detail) {
+            const dot = document.getElementById('cloud-dot');
+            const txt = document.getElementById('cloud-status-text');
+            const desc = document.getElementById('cloud-status-desc');
+            const badge = document.getElementById('cloud-badge');
+            const disBtn = document.getElementById('btn-disconnect-cloud');
+
+            if (!dot || !txt) return;
+
+            dot.className = 'cloud-dot ' + (status === 'connected' ? 'connected' : (status === 'syncing' ? 'syncing' : (status === 'error' ? 'error' : '')));
+
+            if (status === 'connected') {
+                txt.textContent = 'Cloud: Bật (Tức thì)';
+                if (desc) desc.textContent = '🟢 Đã kết nối Firebase (Đồng bộ tức thì)';
+                if (badge) { badge.textContent = 'Online Realtime'; badge.style.background = '#22c55e25'; badge.style.color = '#4ade80'; }
+                if (disBtn) disBtn.style.display = 'inline-block';
+            } else if (status === 'syncing') {
+                txt.textContent = 'Cloud: Đang lưu...';
+                if (desc) desc.textContent = '🔄 Đang đồng bộ lên Firebase...';
+            } else if (status === 'disconnected') {
+                txt.textContent = 'Cloud: Chưa bật';
+                if (desc) desc.textContent = '⚪ Chưa kết nối (Bấm để kích hoạt)';
+                if (badge) { badge.textContent = 'Offline'; badge.style.background = '#334155'; badge.style.color = '#94a3b8'; }
+                if (disBtn) disBtn.style.display = 'none';
+            } else if (status === 'error') {
+                txt.textContent = 'Cloud: Lỗi';
+                if (desc) desc.textContent = '❌ Lỗi: ' + (detail || 'Không kết nối được');
+                if (badge) { badge.textContent = 'Error'; badge.style.background = '#ef444425'; badge.style.color = '#f87171'; }
+            }
+        }
+
+        function attachCloudListener() {
+            if (!firebaseDb || !currentUser) return;
+            if (cloudListenerRef) {
+                cloudListenerRef.off();
+            }
+            const cleanKey = currentUser.email.replace(/[.#$[\]]/g, '_');
+            cloudListenerRef = firebaseDb.ref('quiz_progress/' + cleanKey);
+
+            cloudListenerRef.on('value', (snapshot) => {
+                const cloudVal = snapshot.val();
+                if (!cloudVal) return;
+
+                const localKey = getUserKey();
+                const rawLocal = localStorage.getItem(localKey);
+                let localLastUpdated = 0;
+                if (rawLocal) {
+                    try {
+                        const parsed = JSON.parse(rawLocal);
+                        localLastUpdated = parsed.localTimestamp || 0;
+                    } catch(e) {}
+                }
+
+                const cloudLastUpdated = cloudVal.lastUpdated || 0;
+
+                // If cloud has newer data than local
+                if (cloudLastUpdated > localLastUpdated) {
+                    isSyncingFromCloud = true;
+                    userAnswers = cloudVal.answers || {};
+                    bookmarks = new Set(cloudVal.bookmarks || []);
+                    
+                    const dataToSave = {
+                        answers: userAnswers,
+                        bookmarks: Array.from(bookmarks),
+                        lastUpdated: new Date(cloudLastUpdated).toISOString(),
+                        localTimestamp: cloudLastUpdated
+                    };
+                    localStorage.setItem(localKey, JSON.stringify(dataToSave));
+
+                    updateStats();
+                    renderPalette();
+                    renderQuestion(currentIndex);
+                    isSyncingFromCloud = false;
+                    showToast('☁️ Đã đồng bộ tiến độ mới nhất từ đám mây!');
+                }
+            });
+        }
+
+        function syncToCloud() {
+            if (!firebaseDb || !currentUser || isSyncingFromCloud) return;
+            const cleanKey = currentUser.email.replace(/[.#$[\]]/g, '_');
+            updateCloudStatus('syncing');
+
+            const now = Date.now();
+            const localKey = getUserKey();
+            const rawLocal = localStorage.getItem(localKey);
+            let localData = {};
+            if (rawLocal) {
+                try { localData = JSON.parse(rawLocal); } catch(e) {}
+            }
+            localData.localTimestamp = now;
+            localStorage.setItem(localKey, JSON.stringify(localData));
+
+            firebaseDb.ref('quiz_progress/' + cleanKey).set({
+                answers: userAnswers,
+                bookmarks: Array.from(bookmarks),
+                lastUpdated: now,
+                updatedAt: new Date().toLocaleString(),
+                device: navigator.userAgent.includes('Mobile') ? 'Điện thoại' : 'Máy tính',
+                user: currentUser
+            }).then(() => {
+                updateCloudStatus('connected');
+            }).catch(err => {
+                console.error('Lỗi lưu Firebase:', err);
+                updateCloudStatus('error', err.message);
+            });
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-msg');
+            if (!toast) return;
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
         }
 
         /* User & Progress Management */
@@ -332,10 +670,12 @@
             const dataToSave = {
                 answers: userAnswers,
                 bookmarks: Array.from(bookmarks),
-                lastUpdated: new Date().toISOString()
+                lastUpdated: new Date().toISOString(),
+                localTimestamp: Date.now()
             };
             localStorage.setItem(dataKey, JSON.stringify(dataToSave));
             updateStats();
+            syncToCloud();
         }
 
         function quickLogin(email, name) {
@@ -348,6 +688,7 @@
             updateUserUI(currentUser);
             closeModal('login-modal');
             loadUserData();
+            attachCloudListener();
             renderPalette();
             renderQuestion(currentIndex);
             alert(`Đã đăng nhập thành công: ${name} (${email})!
@@ -379,11 +720,16 @@ Toàn bộ tiến độ làm bài, câu sai và câu đánh dấu sẽ được 
 
         function logout() {
             if (confirm("Bạn có muốn đăng xuất khỏi tài khoản này?")) {
+                if (cloudListenerRef) {
+                    cloudListenerRef.off();
+                    cloudListenerRef = null;
+                }
                 currentUser = null;
                 localStorage.removeItem('rmc301_active_user');
                 updateUserUI(null);
                 loadUserData();
-                renderPalette();
+            attachCloudListener();
+            renderPalette();
                 renderQuestion(currentIndex);
             }
         }
@@ -435,6 +781,10 @@ Toàn bộ tiến độ làm bài, câu sai và câu đánh dấu sẽ được 
                 userAnswers = {};
                 bookmarks = new Set();
                 saveProgress();
+                if (firebaseDb && currentUser) {
+                    const cleanKey = currentUser.email.replace(/[.#$[\]]/g, '_');
+                    firebaseDb.ref('quiz_progress/' + cleanKey).remove();
+                }
                 renderPalette();
                 renderQuestion(currentIndex);
                 closeModal('backup-modal');
