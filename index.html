@@ -138,8 +138,9 @@
 
             <!-- User Auth Area -->
             <div class="auth-container">
-                <button class="btn-auth-action" id="btn-login" onclick="openLoginModal()">
-                    <span>👤 Đăng nhập tài khoản</span>
+                <button class="btn-auth-action" id="btn-login" onclick="openLoginModal()" style="background: #ffffff; color: #1e293b; border: none; font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">
+                    <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+                    <span>Đăng nhập Google (Lưu tiến độ)</span>
                 </button>
                 <div id="user-profile" class="user-pill" style="display: none;">
                     <div id="user-avatar" class="user-avatar">D</div>
@@ -200,34 +201,37 @@
     <div class="modal-overlay" id="login-modal">
         <div class="modal-card">
             <div class="modal-title">
-                <span>Đăng nhập lưu trữ tiến độ</span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <svg width="22" height="22" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+                    <span>Chọn tài khoản Google</span>
+                </div>
                 <button class="btn-modal-close" onclick="closeModal('login-modal')">✕</button>
             </div>
             <p class="modal-desc">
-                Chọn tài khoản hoặc nhập email của bạn để lưu toàn bộ kết quả, những câu làm đúng, câu làm sai và danh sách câu đánh dấu ⭐.
+                Đăng nhập 1 chạm bằng tài khoản Google để hệ thống nhận diện và lưu trữ vĩnh viễn các câu đã làm, câu làm sai và câu đánh dấu ⭐ vào cơ sở dữ liệu của bạn:
             </p>
 
             <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: #94a3b8;">Đăng nhập nhanh 1 chạm:</div>
             <div class="quick-accounts">
-                <button class="quick-acc-btn" onclick="quickLogin('votrongdat1606@gmail.com', 'Võ Trọng Đạt')">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 1.1rem;">👤</span>
+                <button class="quick-acc-btn" onclick="quickLogin('votrongdat1606@gmail.com', 'Võ Trọng Đạt')" style="border-left: 4px solid #4285F4;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #4285F4; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold;">Đ</div>
                         <div>
-                            <div style="font-weight: 600;">Võ Trọng Đạt</div>
-                            <div style="font-size: 0.75rem; color: #94a3b8;">votrongdat1606@gmail.com</div>
+                            <div style="font-weight: 600; color: #fff;">Võ Trọng Đạt</div>
+                            <div style="font-size: 0.78rem; color: #94a3b8;">votrongdat1606@gmail.com</div>
                         </div>
                     </div>
-                    <span style="color: var(--primary); font-size: 0.8rem;">Đăng nhập ➡</span>
+                    <span style="color: #4ade80; font-size: 0.82rem; font-weight: 600;">Vào học ➡</span>
                 </button>
-                <button class="quick-acc-btn" onclick="quickLogin('trucvo391@gmail.com', 'Trúc Võ')">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 1.1rem;">👤</span>
+                <button class="quick-acc-btn" onclick="quickLogin('trucvo391@gmail.com', 'Trúc Võ')" style="border-left: 4px solid #34A853;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #34A853; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold;">T</div>
                         <div>
-                            <div style="font-weight: 600;">Trúc Võ</div>
-                            <div style="font-size: 0.75rem; color: #94a3b8;">trucvo391@gmail.com</div>
+                            <div style="font-weight: 600; color: #fff;">Trúc Võ</div>
+                            <div style="font-size: 0.78rem; color: #94a3b8;">trucvo391@gmail.com</div>
                         </div>
                     </div>
-                    <span style="color: var(--primary); font-size: 0.8rem;">Đăng nhập ➡</span>
+                    <span style="color: #4ade80; font-size: 0.82rem; font-weight: 600;">Vào học ➡</span>
                 </button>
             </div>
 
