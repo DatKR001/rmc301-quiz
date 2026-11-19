@@ -1,5 +1,7 @@
 # 🎯 RMC301 Exam Practice - 380 Câu Trắc Nghiệm & Bộ Thẻ Quizlet
 
+> **Phiên bản mới nhất (v2.1):** Đã kết nối tự động với Google Firebase Realtime Database (`asia-southeast1`). Tự động đồng bộ tiến độ thời gian thực giữa PC và Điện thoại!
+
 Kho lưu trữ toàn bộ dữ liệu ôn tập môn **RMC301 (Research Methods in Communication)** gồm 380 câu hỏi trắc nghiệm kèm đáp án và giải thích chi tiết, ứng dụng web trắc nghiệm tương tác trực tuyến có đồng bộ Cloud, và các file nạp thẻ Quizlet.
 
 ---
