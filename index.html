@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ôn Luyện Trắc Nghiệm RMC301 - 380 Câu</title>
-    <!-- Google Identity Services -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <title>Ôn Luyện Trắc Nghiệm RMC301 - 380 Câu (Có Lưu Tiến Độ)</title>
     <style>
         :root {
             --bg-color: #0b1120;
@@ -19,6 +17,7 @@
             --wrong: #ef4444;
             --wrong-bg: rgba(239, 68, 68, 0.15);
             --border: #334155;
+            --star: #fbbf24;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         body { background: var(--bg-color); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
@@ -28,19 +27,19 @@
         .logo-area { display: flex; align-items: center; gap: 10px; }
         .logo-title { font-size: 1.15rem; font-weight: 700; color: var(--primary); letter-spacing: -0.5px; }
         
-        .header-actions { display: flex; align-items: center; gap: 14px; }
-        .stats-bar { display: flex; gap: 10px; font-size: 0.88rem; align-items: center; }
+        .header-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+        .stats-bar { display: flex; gap: 8px; font-size: 0.85rem; align-items: center; flex-wrap: wrap; }
         .stat-item { background: #0b1120; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); }
         .stat-val { font-weight: bold; }
         
         /* User Profile & Auth */
         .auth-container { display: flex; align-items: center; gap: 10px; }
-        .user-pill { display: flex; align-items: center; gap: 8px; background: #1e293b; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border); font-size: 0.85rem; }
-        .user-avatar { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; }
-        .btn-logout { background: transparent; border: none; color: #f87171; cursor: pointer; font-size: 0.8rem; margin-left: 4px; padding: 2px 4px; }
+        .user-pill { display: flex; align-items: center; gap: 8px; background: #1e293b; padding: 4px 12px; border-radius: 20px; border: 1px solid #38bdf850; font-size: 0.85rem; }
+        .user-avatar { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; background: #38bdf8; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0f172a; }
+        .btn-auth-action { background: #38bdf820; border: 1px solid var(--primary); color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+        .btn-auth-action:hover { background: var(--primary); color: #0b1120; }
+        .btn-logout { background: transparent; border: none; color: #f87171; cursor: pointer; font-size: 0.8rem; margin-left: 6px; padding: 2px 4px; }
         .btn-logout:hover { text-decoration: underline; }
-        .btn-google-login { display: flex; align-items: center; gap: 8px; background: #ffffff; color: #1e293b; border: none; padding: 6px 14px; border-radius: 20px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: background 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .btn-google-login:hover { background: #f1f5f9; }
         
         /* Main Container */
         .main-container { max-width: 900px; margin: 24px auto; padding: 0 16px; flex: 1; width: 100%; }
@@ -80,16 +79,35 @@
         .palette-drawer { background: #131d31; border-top: 1px solid var(--border); padding: 18px 24px; margin-top: 24px; border-radius: 16px 16px 0 0; }
         .palette-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
         .palette-title { font-size: 0.95rem; font-weight: 600; }
-        .palette-filters { display: flex; gap: 8px; }
-        .filter-btn { background: #1e293b; border: 1px solid var(--border); color: var(--text-muted); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; }
+        .palette-filters { display: flex; gap: 8px; flex-wrap: wrap; }
+        .filter-btn { background: #1e293b; border: 1px solid var(--border); color: var(--text-muted); padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; transition: all 0.15s; }
+        .filter-btn:hover { color: #fff; border-color: var(--primary); }
         .filter-btn.active { background: var(--primary); color: #0b1120; font-weight: 600; border-color: var(--primary); }
-        .palette-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); gap: 6px; max-height: 160px; overflow-y: auto; padding-right: 4px; }
-        .p-item { height: 38px; border-radius: 8px; background: #1e293b; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.82rem; font-weight: 600; cursor: pointer; color: var(--text-muted); }
+        .palette-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); gap: 6px; max-height: 180px; overflow-y: auto; padding-right: 4px; }
+        .p-item { height: 38px; border-radius: 8px; background: #1e293b; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.82rem; font-weight: 600; cursor: pointer; color: var(--text-muted); position: relative; }
         .p-item:hover { border-color: var(--primary); color: #fff; }
         .p-item.current { border-color: var(--primary); color: var(--primary); outline: 2px solid #38bdf860; }
         .p-item.done-correct { background: #22c55e25; border-color: var(--correct); color: #4ade80; }
         .p-item.done-wrong { background: #ef444425; border-color: var(--wrong); color: #f87171; }
-        .p-item.bookmarked { border-color: #f59e0b; color: #fbbf24; }
+        .p-item.bookmarked::after { content: '★'; position: absolute; top: 1px; right: 3px; font-size: 8px; color: var(--star); }
+
+        /* Modal Styles */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.2s ease; }
+        .modal-card { background: #1e293b; border: 1px solid var(--border); border-radius: 16px; padding: 26px; max-width: 480px; width: 100%; box-shadow: 0 20px 35px rgba(0,0,0,0.5); }
+        .modal-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 12px; color: #fff; display: flex; justify-content: space-between; align-items: center; }
+        .modal-desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 18px; }
+        .input-group { margin-bottom: 16px; }
+        .input-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: #cbd5e1; }
+        .input-text { width: 100%; background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 10px 14px; border-radius: 8px; font-size: 0.95rem; outline: none; }
+        .input-text:focus { border-color: var(--primary); }
+        .quick-accounts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+        .quick-acc-btn { background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 10px 14px; border-radius: 8px; cursor: pointer; text-align: left; display: flex; align-items: center; justify-content: space-between; font-size: 0.9rem; transition: all 0.2s; }
+        .quick-acc-btn:hover { border-color: var(--primary); background: #131d31; }
+        .btn-modal-submit { width: 100%; background: var(--primary); color: #0b1120; border: none; padding: 11px; border-radius: 8px; font-weight: bold; font-size: 0.95rem; cursor: pointer; margin-top: 6px; }
+        .btn-modal-close { background: transparent; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; }
+        .btn-backup-action { background: #0f172a; border: 1px solid var(--border); color: #cbd5e1; padding: 6px 12px; border-radius: 8px; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; }
+        .btn-backup-action:hover { border-color: var(--primary); color: #fff; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
         @media (max-width: 600px) {
@@ -104,7 +122,10 @@
     <header>
         <div class="logo-area">
             <span style="font-size: 1.5rem;">🎯</span>
-            <div class="logo-title">RMC301 Exam Practice</div>
+            <div>
+                <div class="logo-title">RMC301 Exam Practice</div>
+                <div style="font-size: 0.72rem; color: #4ade80;">● Tự động lưu tiến độ vào tài khoản</div>
+            </div>
         </div>
         
         <div class="header-actions">
@@ -112,19 +133,23 @@
                 <div class="stat-item">Câu: <span id="stat-current" class="stat-val">1</span>/<span id="stat-total" class="stat-val">380</span></div>
                 <div class="stat-item">Đúng: <span id="stat-correct" class="stat-val" style="color: #4ade80;">0</span></div>
                 <div class="stat-item">Sai: <span id="stat-wrong" class="stat-val" style="color: #f87171;">0</span></div>
+                <div class="stat-item">⭐: <span id="stat-bm" class="stat-val" style="color: #fbbf24;">0</span></div>
             </div>
 
-            <!-- Google Authentication Area -->
-            <div class="auth-container" id="auth-container">
-                <button class="btn-google-login" id="btn-login" onclick="handleGoogleLoginPrompt()">
-                    <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-                    <span>Đăng nhập Google</span>
+            <!-- User Auth Area -->
+            <div class="auth-container">
+                <button class="btn-auth-action" id="btn-login" onclick="openLoginModal()">
+                    <span>👤 Đăng nhập tài khoản</span>
                 </button>
                 <div id="user-profile" class="user-pill" style="display: none;">
-                    <img id="user-avatar" class="user-avatar" src="" alt="Avatar">
-                    <span id="user-name">User</span>
-                    <button class="btn-logout" onclick="logoutGoogle()" title="Đăng xuất">✕</button>
+                    <div id="user-avatar" class="user-avatar">D</div>
+                    <div>
+                        <div id="user-name" style="font-weight: 600; font-size: 0.85rem;">User</div>
+                        <div id="user-email" style="font-size: 0.7rem; color: var(--text-muted); max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">email</div>
+                    </div>
+                    <button class="btn-logout" onclick="logout()" title="Đăng xuất">✕</button>
                 </div>
+                <button class="btn-backup-action" onclick="openBackupModal()" title="Sao lưu / Khôi phục tiến độ">💾 Sao lưu</button>
             </div>
         </div>
     </header>
@@ -161,20 +186,80 @@
                     <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted); margin-left: 6px;">(Bấm để nhảy nhanh)</span>
                 </div>
                 <div class="palette-filters">
-                    <button class="filter-btn active" id="f-all" onclick="filterPalette('all')">Tất cả</button>
-                    <button class="filter-btn" id="f-wrong" onclick="filterPalette('wrong')">Sai</button>
-                    <button class="filter-btn" id="f-bookmark" onclick="filterPalette('bookmark')">Đã ⭐</button>
+                    <button class="filter-btn active" id="f-all" onclick="filterPalette('all')">Tất cả (380)</button>
+                    <button class="filter-btn" id="f-todo" onclick="filterPalette('todo')">Chưa làm</button>
+                    <button class="filter-btn" id="f-wrong" onclick="filterPalette('wrong')" style="color: #f87171;">Làm sai (<span id="cnt-wrong">0</span>)</button>
+                    <button class="filter-btn" id="f-bookmark" onclick="filterPalette('bookmark')" style="color: #fbbf24;">Đã ⭐ (<span id="cnt-bm">0</span>)</button>
                 </div>
             </div>
             <div class="palette-grid" id="palette-grid"></div>
         </div>
     </div>
 
-    <!-- Hidden Google Sign-In helper div -->
-    <div id="g_id_onload"
-         data-client_id="1071006060591-tmhssin2h21lcre235vtolojh4g403ep.apps.googleusercontent.com"
-         data-callback="handleGoogleCredentialResponse"
-         data-auto_prompt="false">
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="login-modal">
+        <div class="modal-card">
+            <div class="modal-title">
+                <span>Đăng nhập lưu trữ tiến độ</span>
+                <button class="btn-modal-close" onclick="closeModal('login-modal')">✕</button>
+            </div>
+            <p class="modal-desc">
+                Chọn tài khoản hoặc nhập email của bạn để lưu toàn bộ kết quả, những câu làm đúng, câu làm sai và danh sách câu đánh dấu ⭐.
+            </p>
+
+            <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: #94a3b8;">Đăng nhập nhanh 1 chạm:</div>
+            <div class="quick-accounts">
+                <button class="quick-acc-btn" onclick="quickLogin('votrongdat1606@gmail.com', 'Võ Trọng Đạt')">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 1.1rem;">👤</span>
+                        <div>
+                            <div style="font-weight: 600;">Võ Trọng Đạt</div>
+                            <div style="font-size: 0.75rem; color: #94a3b8;">votrongdat1606@gmail.com</div>
+                        </div>
+                    </div>
+                    <span style="color: var(--primary); font-size: 0.8rem;">Đăng nhập ➡</span>
+                </button>
+                <button class="quick-acc-btn" onclick="quickLogin('trucvo391@gmail.com', 'Trúc Võ')">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 1.1rem;">👤</span>
+                        <div>
+                            <div style="font-weight: 600;">Trúc Võ</div>
+                            <div style="font-size: 0.75rem; color: #94a3b8;">trucvo391@gmail.com</div>
+                        </div>
+                    </div>
+                    <span style="color: var(--primary); font-size: 0.8rem;">Đăng nhập ➡</span>
+                </button>
+            </div>
+
+            <div class="input-group">
+                <label for="custom-email">Hoặc nhập Email Google / Biệt danh khác:</label>
+                <input type="text" id="custom-email" class="input-text" placeholder="vidu@gmail.com hoặc Tên bạn">
+            </div>
+
+            <button class="btn-modal-submit" onclick="submitCustomLogin()">Vào làm bài & Lưu tiến độ</button>
+        </div>
+    </div>
+
+    <!-- Backup & Sync Modal -->
+    <div class="modal-overlay" id="backup-modal">
+        <div class="modal-card">
+            <div class="modal-title">
+                <span>Sao lưu & Đồng bộ tiến độ</span>
+                <button class="btn-modal-close" onclick="closeModal('backup-modal')">✕</button>
+            </div>
+            <p class="modal-desc">
+                Bạn có thể tải toàn bộ dữ liệu (câu đã làm, câu sai, câu đánh dấu) về máy dưới dạng file JSON để chuyển sang điện thoại hoặc thiết bị khác bất cứ lúc nào!
+            </p>
+            
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
+                <button class="btn-modal-submit" style="background: #22c55e; color: #fff;" onclick="exportProgressFile()">📥 Tải về file Sao Lưu (Export JSON)</button>
+                <label class="btn-modal-submit" style="background: #334155; color: #fff; text-align: center; cursor: pointer; margin: 0;">
+                    📤 Nhập file Sao Lưu (Import JSON)
+                    <input type="file" id="file-import" accept=".json" style="display:none;" onchange="importProgressFile(event)">
+                </label>
+                <button class="btn-modal-submit" style="background: #ef444420; color: #f87171; border: 1px solid #ef4444;" onclick="resetAllProgress()">🗑️ Xóa toàn bộ tiến độ làm lại từ đầu</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -204,100 +289,152 @@
             });
         }
 
-        /* Authentication Logic */
+        /* User & Progress Management */
+        function getUserKey() {
+            return currentUser ? ('rmc301_data_' + currentUser.email) : 'rmc301_data_guest';
+        }
+
         function loadUserData() {
-            const savedUser = localStorage.getItem('rmc301_google_user');
+            const savedUser = localStorage.getItem('rmc301_active_user');
             if (savedUser) {
                 try {
                     currentUser = JSON.parse(savedUser);
                     updateUserUI(currentUser);
                 } catch(e) {}
+            } else {
+                updateUserUI(null);
             }
-            const savedAnswers = localStorage.getItem('rmc301_answers_' + (currentUser ? currentUser.email : 'guest'));
-            if (savedAnswers) {
-                try { userAnswers = JSON.parse(savedAnswers); } catch(e) {}
-            }
-            const savedBm = localStorage.getItem('rmc301_bm_' + (currentUser ? currentUser.email : 'guest'));
-            if (savedBm) {
-                try { bookmarks = new Set(JSON.parse(savedBm)); } catch(e) {}
+
+            const dataKey = getUserKey();
+            const rawData = localStorage.getItem(dataKey);
+            if (rawData) {
+                try {
+                    const parsed = JSON.parse(rawData);
+                    userAnswers = parsed.answers || {};
+                    bookmarks = new Set(parsed.bookmarks || []);
+                } catch(e) {
+                    userAnswers = {};
+                    bookmarks = new Set();
+                }
+            } else {
+                userAnswers = {};
+                bookmarks = new Set();
             }
             updateStats();
         }
 
         function saveProgress() {
-            const key = currentUser ? currentUser.email : 'guest';
-            localStorage.setItem('rmc301_answers_' + key, JSON.stringify(userAnswers));
-            localStorage.setItem('rmc301_bm_' + key, JSON.stringify(Array.from(bookmarks)));
+            const dataKey = getUserKey();
+            const dataToSave = {
+                answers: userAnswers,
+                bookmarks: Array.from(bookmarks),
+                lastUpdated: new Date().toISOString()
+            };
+            localStorage.setItem(dataKey, JSON.stringify(dataToSave));
+            updateStats();
         }
 
-        function handleGoogleCredentialResponse(response) {
-            try {
-                // Decode JWT
-                const base64Url = response.credential.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join(''));
-                const payload = JSON.parse(jsonPayload);
-                
-                currentUser = {
-                    name: payload.name,
-                    email: payload.email,
-                    picture: payload.picture
-                };
-                localStorage.setItem('rmc301_google_user', JSON.stringify(currentUser));
-                updateUserUI(currentUser);
-                loadUserData();
-                renderPalette();
-                renderQuestion(currentIndex);
-            } catch (err) {
-                console.error("Lỗi xác thực Google:", err);
-            }
+        function quickLogin(email, name) {
+            currentUser = {
+                email: email,
+                name: name,
+                initial: name.charAt(0).toUpperCase()
+            };
+            localStorage.setItem('rmc301_active_user', JSON.stringify(currentUser));
+            updateUserUI(currentUser);
+            closeModal('login-modal');
+            loadUserData();
+            renderPalette();
+            renderQuestion(currentIndex);
+            alert(`Đã đăng nhập thành công: ${name} (${email})!
+Toàn bộ tiến độ làm bài, câu sai và câu đánh dấu sẽ được tự động lưu.`);
         }
 
-        function handleGoogleLoginPrompt() {
-            if (window.google && google.accounts && google.accounts.id) {
-                google.accounts.id.prompt();
-            } else {
-                // Mock prompt for local/preview
-                const email = prompt("Đăng nhập tài khoản Google (Nhập email của bạn):", "student@fpt.edu.vn");
-                if (email) {
-                    currentUser = {
-                        name: email.split('@')[0],
-                        email: email,
-                        picture: "https://www.gstatic.com/images/branding/productlogos/googleg/v6/24px.svg"
-                    };
-                    localStorage.setItem('rmc301_google_user', JSON.stringify(currentUser));
-                    updateUserUI(currentUser);
-                    loadUserData();
-                    renderPalette();
-                    renderQuestion(currentIndex);
-                }
+        function submitCustomLogin() {
+            const val = document.getElementById('custom-email').value.trim();
+            if (!val) {
+                alert('Vui lòng nhập Email hoặc Tên của bạn!');
+                return;
             }
+            const name = val.includes('@') ? val.split('@')[0] : val;
+            quickLogin(val, name);
         }
 
         function updateUserUI(user) {
             if (user) {
                 document.getElementById('btn-login').style.display = 'none';
                 document.getElementById('user-profile').style.display = 'flex';
-                document.getElementById('user-avatar').src = user.picture;
+                document.getElementById('user-avatar').textContent = user.name.charAt(0).toUpperCase();
                 document.getElementById('user-name').textContent = user.name;
+                document.getElementById('user-email').textContent = user.email;
             } else {
                 document.getElementById('btn-login').style.display = 'flex';
                 document.getElementById('user-profile').style.display = 'none';
             }
         }
 
-        function logoutGoogle() {
-            if (confirm("Bạn có muốn đăng xuất khỏi tài khoản Google?")) {
+        function logout() {
+            if (confirm("Bạn có muốn đăng xuất khỏi tài khoản này?")) {
                 currentUser = null;
-                localStorage.removeItem('rmc301_google_user');
+                localStorage.removeItem('rmc301_active_user');
                 updateUserUI(null);
-                userAnswers = {};
-                bookmarks = new Set();
-                updateStats();
+                loadUserData();
                 renderPalette();
                 renderQuestion(currentIndex);
+            }
+        }
+
+        function openLoginModal() { document.getElementById('login-modal').classList.add('active'); }
+        function openBackupModal() { document.getElementById('backup-modal').classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        function exportProgressFile() {
+            const dataKey = getUserKey();
+            const data = {
+                user: currentUser,
+                answers: userAnswers,
+                bookmarks: Array.from(bookmarks),
+                exportDate: new Date().toLocaleString()
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `rmc301_backup_${currentUser ? currentUser.name : 'guest'}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importProgressFile(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const imported = JSON.parse(event.target.result);
+                    if (imported.answers) userAnswers = imported.answers;
+                    if (imported.bookmarks) bookmarks = new Set(imported.bookmarks);
+                    saveProgress();
+                    renderPalette();
+                    renderQuestion(currentIndex);
+                    closeModal('backup-modal');
+                    alert('Đã khôi phục thành công tiến độ từ file sao lưu!');
+                } catch(err) {
+                    alert('Lỗi: File JSON sao lưu không hợp lệ!');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function resetAllProgress() {
+            if (confirm("CẢNH BÁO: Thao tác này sẽ xóa toàn bộ lịch sử làm bài, số câu đúng/sai và câu đã đánh dấu của tài khoản hiện tại để làm lại từ đầu. Bạn có chắc chắn không?")) {
+                userAnswers = {};
+                bookmarks = new Set();
+                saveProgress();
+                renderPalette();
+                renderQuestion(currentIndex);
+                closeModal('backup-modal');
+                alert('Đã làm mới dữ liệu thành công!');
             }
         }
 
@@ -404,7 +541,6 @@ ${q.explanation}`;
             };
 
             saveProgress();
-            updateStats();
             renderQuestion(currentIndex);
             updatePaletteItem(currentIndex);
         }
@@ -424,6 +560,9 @@ ${q.explanation}`;
             }
             document.getElementById('stat-correct').textContent = correct;
             document.getElementById('stat-wrong').textContent = wrong;
+            document.getElementById('stat-bm').textContent = bookmarks.size;
+            document.getElementById('cnt-wrong').textContent = wrong;
+            document.getElementById('cnt-bm').textContent = bookmarks.size;
         }
 
         function toggleBookmark() {
@@ -463,6 +602,7 @@ ${q.explanation}`;
                 const ans = userAnswers[i];
                 const isBm = bookmarks.has(i);
 
+                if (currentFilter === 'todo' && ans) continue;
                 if (currentFilter === 'wrong' && (!ans || ans.isCorrect)) continue;
                 if (currentFilter === 'bookmark' && !isBm) continue;
 
