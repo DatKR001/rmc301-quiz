@@ -412,7 +412,9 @@
         let isSyncingFromCloud = false;
 
         // Config can be set directly here or read from localStorage
-        const EMBEDDED_FIREBASE_CONFIG = null;
+        const EMBEDDED_FIREBASE_CONFIG = {
+            databaseURL: "https://rmc301-quiz-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
 
         function openCloudModal() {
             document.getElementById('cloud-modal').classList.add('active');
