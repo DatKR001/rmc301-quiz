@@ -90,7 +90,8 @@
         .header-btn-group { display: flex; gap: 8px; align-items: center; }
         .btn-bookmark { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 6px 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 0.85rem; display: flex; align-items: center; gap: 4px; }
         .btn-bookmark.active { background: #f59e0b25; border-color: #f59e0b; color: #fbbf24; font-weight: 600; }
-        .btn-toggle-sidebar { background: #a855f715; border: 1px solid #a855f750; color: #c084fc; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; display: none; align-items: center; gap: 4px; }
+        .btn-toggle-sidebar { background: #38bdf818; border: 1px solid #38bdf860; color: #38bdf8; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; display: inline-flex !important; align-items: center; gap: 6px; transition: all 0.2s; }
+        .btn-toggle-sidebar:hover { background: #38bdf830; border-color: var(--primary); }
         
         .question-text { font-size: 1.15rem; line-height: 1.6; margin-bottom: 22px; font-weight: 600; color: #fff; }
         
@@ -139,8 +140,8 @@
         /* Responsive Breakpoint for Sidebar */
         @media (max-width: 1024px) {
             .workspace-grid { flex-direction: column; }
+            .comments-sidebar { width: 100%; position: static; max-height: none; }
             .notes-sidebar { width: 100%; position: static; }
-            .btn-toggle-sidebar { display: inline-flex; }
         }
 
         /* ================= PALETTE DRAWER & SEARCH ================= */
