@@ -420,6 +420,42 @@
             background: #991b1b;
             color: #ffffff;
         }
+    
+        /* Exam History Modal & Cards */
+        .btn-header.history-btn { background: #38bdf815; border-color: #38bdf860; color: #38bdf8; }
+        .btn-header.history-btn:hover { background: #38bdf830; border-color: #38bdf8; color: #fff; }
+        
+        .exam-hist-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+        .exam-hist-stat-box { background: #0f172a; border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+        .exam-hist-stat-val { font-size: 1.3rem; font-weight: 800; }
+        .exam-hist-stat-lbl { font-size: 0.74rem; color: var(--text-muted); margin-top: 2px; }
+        
+        .exam-card { background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; transition: all 0.2s ease; }
+        .exam-card:hover { border-color: #38bdf880; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3); }
+        .exam-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
+        .exam-card-title { font-weight: 700; font-size: 0.95rem; color: #fff; display: flex; align-items: center; gap: 8px; }
+        .exam-card-score { font-size: 1.25rem; font-weight: 800; padding: 2px 10px; border-radius: 8px; }
+        .exam-card-score.pass { background: #14532d50; color: #4ade80; border: 1px solid #22c55e; }
+        .exam-card-score.fail { background: #7f1d1d50; color: #f87171; border: 1px solid #ef4444; }
+        .exam-card-meta { font-size: 0.8rem; color: #94a3b8; display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+        
+        .exam-card-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .btn-exam-action { padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border); transition: all 0.15s; display: inline-flex; align-items: center; gap: 4px; }
+        .btn-exam-action.wrong-review { background: #ef444420; border-color: #ef4444; color: #fca5a5; }
+        .btn-exam-action.wrong-review:hover { background: #ef4444; color: #fff; }
+        .btn-exam-action.full-review { background: #38bdf820; border-color: #38bdf8; color: #38bdf8; }
+        .btn-exam-action.full-review:hover { background: var(--primary); color: #0b1120; }
+        .btn-exam-action.toggle-detail { background: #1e293b; color: #94a3b8; }
+        .btn-exam-action.toggle-detail:hover { color: #fff; border-color: #94a3b8; }
+        .btn-exam-action.delete-btn { background: transparent; border-color: transparent; color: #64748b; margin-left: auto; }
+        .btn-exam-action.delete-btn:hover { color: #f87171; }
+        
+        .exam-wrong-preview-list { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border); max-height: 240px; overflow-y: auto; }
+        .exam-wrong-item { background: #1e293b; border: 1px solid #ef444440; border-radius: 6px; padding: 8px 12px; margin-bottom: 6px; font-size: 0.82rem; cursor: pointer; transition: all 0.15s; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+        .exam-wrong-item:hover { background: #ef444415; border-color: #ef4444; }
+        .ew-title { font-weight: 600; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 420px; }
+        .ew-tags { display: flex; gap: 6px; font-size: 0.74rem; font-weight: 700; flex-shrink: 0; }
+    
     </style>
 </head>
 <body>
@@ -443,6 +479,7 @@
         <div class="header-actions">
             <!-- Mode Switchers -->
             <button class="btn-header exam-btn" id="btn-mock-exam" onclick="openExamModal()">⏱️ Thi Thử</button>
+            <button class="btn-header history-btn" id="btn-exam-history" onclick="openExamHistoryModal()" title="Tra cứu lịch sử các bài thi thử đã làm">📜 Lịch sử thi (<span id="exam-hist-count">0</span>)</button>
             <button class="btn-header analytics-btn" onclick="openAnalyticsModal()">📊 Thống kê</button>
 
             <!-- Stats Bar -->
@@ -649,6 +686,7 @@
             </div>
 
             <button class="btn-modal-submit" style="background: #f97316; color: #fff; margin-top: 10px;" onclick="startExamSession()">🚀 Bắt đầu làm bài thi</button>
+            <button class="btn-modal-submit" style="background: #1e293b; color: #38bdf8; border: 1px solid #38bdf860; margin-top: 8px;" onclick="closeModal('exam-modal'); openExamHistoryModal();">📜 Tra cứu lịch sử & xem lại câu sai các bài thi trước (<span id="exam-hist-badge-cnt">0</span>)</button>
         </div>
     </div>
 
@@ -666,6 +704,48 @@
             <div style="display: flex; gap: 10px;">
                 <button class="btn-modal-submit" style="background: #38bdf8; color: #0b1120; font-weight: bold; flex: 1;" onclick="reviewExamAnswers()">Xem lại chi tiết bài làm</button>
                 <button class="btn-modal-submit" style="background: #334155; color: #fff; flex: 1;" onclick="closeModal('exam-result-modal'); exitExamMode();">Quay lại ôn tập</button>
+            </div>
+            <div style="margin-top: 10px;">
+                <button class="btn-modal-submit" style="background: #1e293b; color: #38bdf8; border: 1px solid #38bdf860; width: 100%;" onclick="closeModal('exam-result-modal'); openExamHistoryModal();">📜 Mở danh sách toàn bộ bài thi đã làm</button>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Exam History Modal -->
+    <div class="modal-overlay" id="exam-history-modal">
+        <div class="modal-card" style="max-width: 680px; max-height: 85vh; display: flex; flex-direction: column;">
+            <div class="modal-title">
+                <span>📜 Tra Cứu Lịch Sử Bài Thi Thử</span>
+                <button class="btn-modal-close" onclick="closeModal('exam-history-modal')">✕</button>
+            </div>
+            
+            <p class="modal-desc" style="margin-bottom: 12px;">
+                Xem lại điểm số, thời gian làm bài và bấm vào từng bài để xem lại chi tiết <strong>các câu trả lời sai</strong>.
+            </p>
+
+            <div class="exam-hist-stats" id="exam-hist-summary-bar">
+                <div class="exam-hist-stat-box">
+                    <div class="exam-hist-stat-val" id="eh-total-tests" style="color: #38bdf8;">0</div>
+                    <div class="exam-hist-stat-lbl">Số bài đã thi</div>
+                </div>
+                <div class="exam-hist-stat-box">
+                    <div class="exam-hist-stat-val" id="eh-avg-score" style="color: #4ade80;">0.0</div>
+                    <div class="exam-hist-stat-lbl">Điểm trung bình</div>
+                </div>
+                <div class="exam-hist-stat-box">
+                    <div class="exam-hist-stat-val" id="eh-high-score" style="color: #fbbf24;">0.0</div>
+                    <div class="exam-hist-stat-lbl">Điểm cao nhất</div>
+                </div>
+            </div>
+
+            <div style="overflow-y: auto; flex: 1; padding-right: 4px;" id="exam-history-list">
+                <!-- Dynamically rendered exam cards -->
+            </div>
+
+            <div style="margin-top: 14px; display: flex; justify-content: space-between; align-items: center; pt-2; border-top: 1px solid var(--border);">
+                <button class="btn-exam-action delete-btn" onclick="clearAllExamHistory()" style="color: #ef4444;">🗑️ Xóa toàn bộ lịch sử thi</button>
+                <button class="btn-modal-submit" style="background: #334155; color: #fff; width: auto; padding: 7px 18px;" onclick="closeModal('exam-history-modal')">Đóng</button>
             </div>
         </div>
     </div>
@@ -1844,16 +1924,24 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
             const durMin = Math.floor(durationSec / 60);
             const durSec = durationSec % 60;
 
-            // Save to examHistory
-            examHistory.push({
-                date: new Date().toLocaleString(),
-                mode: total === 30 ? 'Test 30 câu' : 'Thi thật 50 câu',
+            // Save to examHistory with full question/answer payload
+            const examRecord = {
+                id: 'exam_' + Date.now(),
+                timestamp: Date.now(),
+                date: new Date().toLocaleString('vi-VN'),
+                mode: total === 30 ? 'Test Nhanh 30 câu' : 'Chuẩn Đề 50 câu',
+                total: total,
                 score: score10,
                 correctCount: correctCount,
-                total: total,
-                duration: `${durMin}m ${durSec}s`
-            });
+                wrongCount: total - correctCount,
+                duration: `${durMin}m ${durSec}s`,
+                questions: [...examQuestions],
+                answers: JSON.parse(JSON.stringify(examAnswers)),
+                flagged: Array.from(examFlagged)
+            };
+            examHistory.unshift(examRecord);
             saveProgress();
+            updateExamHistoryBadge();
 
             document.getElementById('res-score-text').textContent = `${score10} / 10`;
             document.getElementById('res-score-text').style.color = isPass ? '#4ade80' : '#f87171';
@@ -1944,6 +2032,246 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
             }
         }
 
+        
+        /* ================= EXAM HISTORY MODULE ================= */
+        function updateExamHistoryBadge() {
+            const count = examHistory.length;
+            const b1 = document.getElementById('exam-hist-count');
+            if (b1) b1.textContent = count;
+            const b2 = document.getElementById('exam-hist-badge-cnt');
+            if (b2) b2.textContent = count;
+        }
+
+        function openExamHistoryModal() {
+            renderExamHistoryList();
+            document.getElementById('exam-history-modal').classList.add('active');
+        }
+
+        function renderExamHistoryList() {
+            const list = document.getElementById('exam-history-list');
+            list.innerHTML = '';
+
+            const totalTests = examHistory.length;
+            document.getElementById('eh-total-tests').textContent = totalTests;
+
+            if (totalTests === 0) {
+                document.getElementById('eh-avg-score').textContent = '0.0';
+                document.getElementById('eh-high-score').textContent = '0.0';
+                list.innerHTML = `
+                    <div style="text-align: center; padding: 36px 16px; color: var(--text-muted);">
+                        <span style="font-size: 2.5rem; display: block; margin-bottom: 8px;">📜</span>
+                        <div style="font-weight: 600; color: #fff; font-size: 1rem; margin-bottom: 4px;">Chưa có lịch sử thi thử</div>
+                        <div style="font-size: 0.82rem;">Hãy bấm vào <strong>⏱️ Thi Thử</strong> để làm bài thi kiểm tra kiến thức nhé!</div>
+                    </div>
+                `;
+                return;
+            }
+
+            let sumScore = 0;
+            let maxScore = 0;
+
+            examHistory.forEach(item => {
+                const s = parseFloat(item.score) || 0;
+                sumScore += s;
+                if (s > maxScore) maxScore = s;
+            });
+
+            document.getElementById('eh-avg-score').textContent = (sumScore / totalTests).toFixed(1);
+            document.getElementById('eh-high-score').textContent = maxScore.toFixed(1);
+
+            examHistory.forEach((item, index) => {
+                const isPass = parseFloat(item.score) >= 5.0;
+                const total = item.total || 30;
+                const correct = item.correctCount || 0;
+                const wrong = item.wrongCount !== undefined ? item.wrongCount : (total - correct);
+                const hasDetailedQuestions = Array.isArray(item.questions) && item.questions.length > 0;
+
+                const card = document.createElement('div');
+                card.className = 'exam-card';
+                card.id = `exam-card-${index}`;
+
+                card.innerHTML = `
+                    <div class="exam-card-head">
+                        <div class="exam-card-title">
+                            <span>📝 ${item.mode || 'Bài thi thử'}</span>
+                            <span style="font-size: 0.74rem; color: #94a3b8; font-weight: normal;">${item.date || ''}</span>
+                        </div>
+                        <div class="exam-card-score ${isPass ? 'pass' : 'fail'}">
+                            ${item.score} / 10 <span style="font-size: 0.72rem; font-weight: normal;">(${isPass ? 'ĐẠT' : 'CHƯA ĐẠT'})</span>
+                        </div>
+                    </div>
+                    <div class="exam-card-meta">
+                        <span>✅ Đúng: <strong style="color: #4ade80;">${correct}</strong>/${total}</span>
+                        <span>❌ Sai/Trống: <strong style="color: #f87171;">${wrong}</strong></span>
+                        <span>⏱️ Thời gian: <strong>${item.duration || '--'}</strong></span>
+                    </div>
+                    <div class="exam-card-actions">
+                        ${hasDetailedQuestions ? `
+                            <button class="btn-exam-action wrong-review" onclick="reviewPastExam(${index}, 'wrong')">
+                                🔴 Xem ${wrong} câu sai
+                            </button>
+                            <button class="btn-exam-action full-review" onclick="reviewPastExam(${index}, 'all')">
+                                🔍 Xem toàn bộ bài
+                            </button>
+                            ${wrong > 0 ? `
+                                <button class="btn-exam-action toggle-detail" id="btn-toggle-wrong-${index}" onclick="toggleExamCardWrongList(${index})">
+                                    📋 Danh sách câu sai ▼
+                                </button>
+                            ` : ''}
+                        ` : `
+                            <span style="font-size: 0.75rem; color: #64748b; font-style: italic;">(Bản thi cũ không lưu chi tiết câu)</span>
+                        `}
+                        <button class="btn-exam-action delete-btn" onclick="deleteExamHistoryItem(${index})" title="Xóa kết quả này">🗑️ Xóa</button>
+                    </div>
+                    <div class="exam-wrong-preview-list" id="wrong-preview-${index}" style="display: none;"></div>
+                `;
+
+                list.appendChild(card);
+            });
+        }
+
+        function toggleExamCardWrongList(index) {
+            const wrap = document.getElementById(`wrong-preview-${index}`);
+            const btn = document.getElementById(`btn-toggle-wrong-${index}`);
+            if (!wrap) return;
+
+            if (wrap.style.display === 'block') {
+                wrap.style.display = 'none';
+                if (btn) btn.textContent = '📋 Danh sách câu sai ▼';
+            } else {
+                wrap.style.display = 'block';
+                if (btn) btn.textContent = '📋 Thu gọn danh sách ▲';
+                renderWrongQuestionsInCard(index);
+            }
+        }
+
+        function renderWrongQuestionsInCard(index) {
+            const wrap = document.getElementById(`wrong-preview-${index}`);
+            const exam = examHistory[index];
+            if (!wrap || !exam || !exam.questions) return;
+
+            wrap.innerHTML = '';
+            let wrongCount = 0;
+
+            for (let i = 0; i < exam.questions.length; i++) {
+                const qIdx = exam.questions[i];
+                const q = quizData[qIdx];
+                const selected = (exam.answers && exam.answers[i]) || [];
+                const userKeys = selected.sort().join('');
+                const correctKeys = q.answer.split('').sort().join('');
+
+                if (userKeys !== correctKeys) {
+                    wrongCount++;
+                    const item = document.createElement('div');
+                    item.className = 'exam-wrong-item';
+                    item.onclick = () => {
+                        reviewPastExam(index, 'all');
+                        renderExamQuestion(i);
+                    };
+
+                    item.innerHTML = `
+                        <div style="flex: 1; min-width: 0;">
+                            <div class="ew-title">Câu ${i + 1} (Gốc Slide ${q.slide_num}): ${q.question}</div>
+                            <div style="font-size: 0.74rem; color: #94a3b8; margin-top: 2px;">
+                                Bạn chọn: <strong style="color: #f87171;">${selected.join(', ') || 'Bỏ trống'}</strong> • Đáp án đúng: <strong style="color: #4ade80;">${q.answer}</strong>
+                            </div>
+                        </div>
+                        <div class="ew-tags">
+                            <span style="color: #38bdf8; text-decoration: underline;">Xem giải thích ➔</span>
+                        </div>
+                    `;
+                    wrap.appendChild(item);
+                }
+            }
+
+            if (wrongCount === 0) {
+                wrap.innerHTML = '<div style="color: #4ade80; font-size: 0.8rem; padding: 6px;">🎉 Bạn không làm sai câu nào trong bài thi này!</div>';
+            }
+        }
+
+        function reviewPastExam(examIndex, filterMode) {
+            const exam = examHistory[examIndex];
+            if (!exam || !exam.questions || exam.questions.length === 0) {
+                showToast('Bài thi này không lưu chi tiết câu hỏi');
+                return;
+            }
+
+            closeModal('exam-history-modal');
+            isExamMode = true;
+            examInReview = true;
+            examQuestions = [...exam.questions];
+            examAnswers = JSON.parse(JSON.stringify(exam.answers || {}));
+            examFlagged = new Set(exam.flagged || []);
+            examReviewFilter = filterMode;
+
+            const banner = document.getElementById('exam-banner');
+            banner.classList.add('show', 'review-mode');
+            const icon = document.getElementById('exam-banner-icon');
+            if (icon) icon.textContent = '📋';
+
+            const isPass = parseFloat(exam.score) >= 5.0;
+            const total = exam.total || examQuestions.length;
+            const correct = exam.correctCount || 0;
+            const wrong = exam.wrongCount !== undefined ? exam.wrongCount : (total - correct);
+
+            document.getElementById('exam-mode-title').textContent = 
+                `📋 Đang Xem Lại: ${exam.mode || 'Bài thi thử'} (${exam.date || ''})`;
+            document.getElementById('exam-banner-subtitle').innerHTML = 
+                `Điểm: <strong style="color: #38bdf8; font-size: 1.05rem;">${exam.score}/10</strong> (${isPass ? 'ĐẠT' : 'CHƯA ĐẠT'}) • Đúng: <strong style="color: #4ade80;">${correct}/${total}</strong> • Sai/Trống: <strong style="color: #f87171;">${wrong}</strong> • ⏱️ ${exam.duration || ''}`;
+
+            const prog = document.getElementById('exam-banner-progress');
+            if (prog) prog.style.display = 'none';
+            const timer = document.getElementById('exam-timer-display');
+            if (timer) timer.style.display = 'none';
+            const subBtn = document.getElementById('btn-submit-exam');
+            if (subBtn) subBtn.style.display = 'none';
+            const exitBtn = document.getElementById('btn-exit-exam');
+            if (exitBtn) exitBtn.textContent = 'Thoát xem lại (Về ôn tập)';
+
+            document.getElementById('btn-mock-exam').textContent = '📋 Đang xem lại';
+            document.getElementById('btn-mock-exam').classList.add('exam-active');
+
+            renderPalette();
+
+            // Find first question to show
+            let targetIdx = 0;
+            if (filterMode === 'wrong') {
+                for (let i = 0; i < examQuestions.length; i++) {
+                    const q = quizData[examQuestions[i]];
+                    const userKeys = (examAnswers[i] || []).sort().join('');
+                    const correctKeys = q.answer.split('').sort().join('');
+                    if (userKeys !== correctKeys) {
+                        targetIdx = i;
+                        break;
+                    }
+                }
+            }
+
+            renderExamQuestion(targetIdx);
+            showToast(filterMode === 'wrong' ? `Đang lọc ${wrong} câu sai của bài thi ngày ${exam.date}` : `Đang xem lại bài thi ngày ${exam.date}`);
+        }
+
+        function deleteExamHistoryItem(index) {
+            if (confirm("Bạn có chắc chắn muốn xóa bài thi này khỏi lịch sử?")) {
+                examHistory.splice(index, 1);
+                saveProgress();
+                updateExamHistoryBadge();
+                renderExamHistoryList();
+                showToast('Đã xóa bài thi khỏi lịch sử');
+            }
+        }
+
+        function clearAllExamHistory() {
+            if (examHistory.length === 0) return;
+            if (confirm("CẢNH BÁO: Bạn có chắc chắn muốn xóa TOÀN BỘ lịch sử bài thi thử không?")) {
+                examHistory = [];
+                saveProgress();
+                updateExamHistoryBadge();
+                renderExamHistoryList();
+                showToast('Đã xóa toàn bộ lịch sử thi');
+            }
+        }
+    
         /* ================= ANALYTICS ================= */
         function openAnalyticsModal() {
             let correct = 0, wrong = 0;
