@@ -172,7 +172,7 @@
         .p-item.done-correct { background: #22c55e25; border-color: var(--correct); color: #4ade80; }
         .p-item.done-wrong { background: #ef444425; border-color: var(--wrong); color: #f87171; }
         .p-item.bookmarked::after { content: '★'; position: absolute; top: 1px; right: 2px; font-size: 8px; color: var(--star); }
-        .p-item.has-note::before { content: '📝'; position: absolute; top: 1px; left: 2px; font-size: 8px; }
+        .p-item.has-note::before { content: '💬'; position: absolute; top: 1px; left: 2px; font-size: 8.5px; line-height: 1; pointer-events: none; }
         
         .p-item.exam-answered { background: #38bdf825; border-color: var(--primary); color: #38bdf8; }
         .p-item.exam-flagged::after { content: '🚩'; position: absolute; top: 1px; right: 1px; font-size: 8px; }
@@ -789,14 +789,7 @@
         }
 
         /* Discussion indicator on palette item */
-        .palette-item.has-note::after {
-            content: '💬';
-            position: absolute;
-            top: -4px;
-            left: -3px;
-            font-size: 0.65rem;
-            line-height: 1;
-        }
+        /* Cleaned up */
 
 
         /* Google Account Selection Pills */
@@ -1540,6 +1533,35 @@ function saveProgress() {
             syncToCloud();
         }
 
+                let communityCommentsMap = {}; // { [qIdx]: count }
+        let communityCommentsGlobalRef = null;
+
+        function listenToCommunityComments() {
+            if (!firebaseDb) return;
+            if (communityCommentsGlobalRef) communityCommentsGlobalRef.off();
+            const subId = currentSubjectId || 'rmc301';
+            communityCommentsGlobalRef = firebaseDb.ref(`quiz_comments/${subId}`);
+            communityCommentsGlobalRef.on('value', snapshot => {
+                communityCommentsMap = {};
+                const val = snapshot.val() || {};
+                Object.entries(val).forEach(([key, qComments]) => {
+                    if (key.startsWith('q_')) {
+                        const qIdx = parseInt(key.replace('q_', ''), 10);
+                        const count = Object.keys(qComments || {}).length;
+                        if (count > 0) communityCommentsMap[qIdx] = count;
+                    }
+                });
+                updateStats();
+                if (!isExamMode) renderPalette();
+            });
+        }
+
+        function hasDiscussion(i) {
+            const hasLocalNote = !!(userNotes && userNotes[i] && String(userNotes[i]).trim());
+            const hasCommunity = !!(communityCommentsMap && communityCommentsMap[i] && communityCommentsMap[i] > 0);
+            return hasLocalNote || hasCommunity;
+        }
+
         function initCloudSync() {
             try {
                 if (typeof firebase === 'undefined') return;
@@ -1549,6 +1571,7 @@ function saveProgress() {
                     firebaseApp = firebase.app();
                 }
                 firebaseDb = firebase.database();
+                listenToCommunityComments();
                 updateCloudStatus('connected');
                 attachCloudListener();
                 initPresence();
@@ -1843,7 +1866,6 @@ function saveProgress() {
                     if (cnt) cnt.textContent = `${this.value.length} ký tự`;
                 });
             }
-    
 
             const q = quizData[qIdx];
             const qTitle = document.getElementById('comments-q-title');
@@ -1860,7 +1882,8 @@ function saveProgress() {
                 currentCommentsRef.off();
             }
 
-            currentCommentsRef = firebaseDb.ref(`quiz_comments/rmc301/q_${qIdx}`);
+            const subId = currentSubjectId || 'rmc301';
+            currentCommentsRef = firebaseDb.ref(`quiz_comments/${subId}/q_${qIdx}`);
             currentCommentsRef.on('value', snapshot => {
                 const data = snapshot.val() || {};
                 const list = Object.entries(data).map(([id, val]) => ({ id, ...val }));
@@ -1871,56 +1894,71 @@ function saveProgress() {
         function renderCommentsList(comments, qIdx) {
             const container = document.getElementById('comments-list');
             const badge = document.getElementById('q-comments-badge');
-            const warnIndicator = document.getElementById('comments-warning-indicator');
-            const warnCountNum = document.getElementById('warn-count-num');
-            const warnBanner = document.getElementById('comments-warning-banner');
             
-            if (badge) badge.textContent = comments.length;
-
-            let warnCount = 0;
-            comments.forEach(c => { if (c.isWarning) warnCount++; });
-
-            if (warnIndicator && warnCountNum) {
-                if (warnCount > 0) {
-                    warnIndicator.style.display = 'inline-flex';
-                    warnCountNum.textContent = warnCount;
+            // Build the unified list of discussions: Firebase comments + local legacy notes
+            let allDiscussions = Array.isArray(comments) ? [...comments] : [];
+            
+            // Check if there is an existing legacy note in userNotes for this question
+            if (window.userNotes && userNotes[qIdx] !== undefined) {
+                const noteContent = String(userNotes[qIdx]).trim();
+                if (noteContent) {
+                    const isAlreadyInFirebase = allDiscussions.some(c => (c.content || '').trim() === noteContent);
+                    if (!isAlreadyInFirebase) {
+                        const noteAuthor = (currentUser && currentUser.name) ? currentUser.name : 'Ghi chú cá nhân';
+                        const noteEmail = (currentUser && currentUser.email) ? currentUser.email : 'local';
+                        allDiscussions.unshift({
+                            id: 'legacy_note_' + qIdx,
+                            author: noteAuthor,
+                            email: noteEmail,
+                            formattedDate: 'Ghi chú đã lưu',
+                            content: noteContent,
+                            timestamp: 0,
+                            likes: 0,
+                            isLegacyNote: true
+                        });
+                    }
                 } else {
-                    warnIndicator.style.display = 'none';
+                    delete userNotes[qIdx];
+                    saveProgress();
+                    updatePaletteItem(qIdx);
+                    updateStats();
                 }
             }
 
-            if (warnBanner) {
-                warnBanner.style.display = warnCount > 0 ? 'block' : 'none';
-            }
-
-            updateQuestionWarningBanner();
+            if (badge) badge.textContent = allDiscussions.length;
 
             if (!container) return;
             container.innerHTML = '';
 
-            if (comments.length === 0) {
+            if (allDiscussions.length === 0) {
                 container.innerHTML = `
                     <div class="comments-empty">
-                        <span>💬 Chưa có thảo luận nào cho câu này. Hãy là người đầu tiên để lại mẹo nhớ hoặc cảnh báo!</span>
+                        <span>💬 Chưa có thảo luận nào cho câu này. Hãy là người đầu tiên để lại mẹo nhớ hoặc trao đổi!</span>
                     </div>
                 `;
                 return;
             }
 
-            // Sort: Warnings first, then newest first
-            comments.sort((a, b) => {
-                if (a.isWarning && !b.isWarning) return -1;
-                if (!a.isWarning && b.isWarning) return 1;
+            // Sort: legacy notes first, then newest comments
+            allDiscussions.sort((a, b) => {
+                if (a.isLegacyNote && !b.isLegacyNote) return -1;
+                if (!a.isLegacyNote && b.isLegacyNote) return 1;
                 return (b.timestamp || 0) - (a.timestamp || 0);
             });
 
-            comments.forEach(c => {
+            allDiscussions.forEach(c => {
                 const card = document.createElement('div');
-                card.className = `comment-card ${c.isWarning ? 'is-warning' : ''}`;
+                card.className = 'comment-card';
                 card.id = `comment-${c.id}`;
 
                 const initial = (c.author || 'U').charAt(0).toUpperCase();
-                const isMyComment = currentUser && currentUser.email === c.email;
+                const isMyComment = currentUser && (
+                    (currentUser.email && c.email && currentUser.email.toLowerCase() === c.email.toLowerCase()) ||
+                    (currentUser.name && c.author && currentUser.name.toLowerCase() === c.author.toLowerCase()) ||
+                    (c.isLegacyNote && currentUser)
+                );
+                const isAdm = isAdmin();
+                const canDelete = isMyComment || isAdm;
                 const likes = c.likes || 0;
                 const likedByMe = currentUser && c.likedBy && c.likedBy[currentUser.email.replace(/[.#$[\]]/g, '_')];
 
@@ -1929,25 +1967,76 @@ function saveProgress() {
                         <div class="comment-author">
                             <div class="author-avatar">${initial}</div>
                             <div>
-                                <div class="author-name">${c.author || 'Thành viên'}</div>
+                                <div class="author-name">
+                                    ${escapeHtml(c.author || 'Thành viên')}
+                                    ${c.isLegacyNote ? '<span style="font-size:0.68rem; color:#38bdf8; font-weight:normal; margin-left: 4px;">(Ghi chú cá nhân)</span>' : ''}
+                                </div>
                                 <div class="comment-date">${c.formattedDate || ''}</div>
                             </div>
                         </div>
-                        ${c.isWarning ? '<span class="badge-warning-flag">⚠️ Cảnh báo sai</span>' : ''}
                     </div>
                     <div class="comment-body">${escapeHtml(c.content || '')}</div>
                     <div class="comment-foot">
+                        ${!c.isLegacyNote ? `
                         <button class="btn-like-comment ${likedByMe ? 'liked' : ''}" onclick="toggleLikeComment(${qIdx}, '${c.id}')">
                             ${likedByMe ? '❤️' : '🤍'} ${likes > 0 ? likes : 'Thích'}
                         </button>
-                        ${isMyComment ? `
-                            <button class="btn-del-comment" onclick="deleteCommunityComment(${qIdx}, '${c.id}')" title="Xóa bình luận của bạn">🗑️ Xóa</button>
+                        ` : '<div></div>'}
+                        ${canDelete ? `
+                            <button class="btn-del-comment" onclick="deleteDiscussionComment(${qIdx}, '${c.id}', ${!!c.isLegacyNote})" title="${isAdm && !isMyComment ? 'Xóa thảo luận với quyền Admin (Võ Trọng Đạt)' : 'Xóa thảo luận'}">
+                                🗑️ Xóa ${isAdm && !isMyComment ? '(Admin)' : ''}
+                            </button>
                         ` : ''}
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
+
+        function deleteDiscussionComment(qIdx, commentId, isLegacyNote) {
+            const isAdm = isAdmin();
+            const msg = isAdm 
+                ? "Bạn có chắc chắn muốn xóa thảo luận này với quyền Admin (Võ Trọng Đạt) không?" 
+                : "Bạn có chắc chắn muốn xóa thảo luận này không?";
+            if (!confirm(msg)) return;
+
+            if (isLegacyNote) {
+                delete userNotes[qIdx];
+                saveProgress();
+                updatePaletteItem(qIdx);
+                updateStats();
+                loadCommentsForQuestion(qIdx);
+                showToast("Đã xóa thảo luận!");
+                return;
+            }
+
+            if (!firebaseDb) {
+                if (userNotes && userNotes[qIdx]) {
+                    delete userNotes[qIdx];
+                    saveProgress();
+                    updatePaletteItem(qIdx);
+                    updateStats();
+                }
+                loadCommentsForQuestion(qIdx);
+                showToast("Đã xóa thảo luận!");
+                return;
+            }
+
+            const subId = currentSubjectId || 'rmc301';
+            firebaseDb.ref(`quiz_comments/${subId}/q_${qIdx}/${commentId}`).remove().then(() => {
+                if (userNotes && userNotes[qIdx]) {
+                    delete userNotes[qIdx];
+                    saveProgress();
+                    updatePaletteItem(qIdx);
+                    updateStats();
+                }
+                showToast("Đã xóa thảo luận thành công!");
+            }).catch(err => {
+                console.error("Lỗi khi xóa thảo luận:", err);
+                showToast("Lỗi khi xóa: " + err.message);
+            });
+        }
+        window.deleteCommunityComment = deleteDiscussionComment;
 
         function escapeHtml(text) {
             const div = document.createElement('div');
@@ -1956,23 +2045,9 @@ function saveProgress() {
         }
 
         function updateQuestionWarningBanner() {
+            // Disabled: all notes converted cleanly to discussion
             const bar = document.getElementById('q-community-warn-bar');
-            if (!bar) return;
-
-            if (questionsWithWarnings.has(currentIndex) && !isExamMode) {
-                bar.style.display = 'flex';
-                bar.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 1.1rem;">⚠️</span>
-                        <div>
-                            <strong>Cảnh báo từ cộng đồng:</strong> Câu hỏi này có phản ánh đáp án bị lỗi hoặc dễ bẫy!
-                        </div>
-                    </div>
-                    <span style="color: #38bdf8; font-size: 0.78rem; text-decoration: underline; white-space: nowrap;">Mở thảo luận ➔</span>
-                `;
-            } else {
-                bar.style.display = 'none';
-            }
+            if (bar) bar.style.display = 'none';
         }
 
         function updateCommentAuthUI() {
@@ -1994,7 +2069,7 @@ function saveProgress() {
             }
         }
 
-                function submitCommunityComment() {
+        function submitCommunityComment() {
             const textarea = document.getElementById('comment-textarea');
             const content = (textarea.value || '').trim();
 
@@ -2018,14 +2093,15 @@ function saveProgress() {
                 likes: 0
             };
 
-            // Save to local userNotes to ensure 100% backward compatibility
+            // Mirror to userNotes for local persistence
             userNotes[qIdx] = content;
             saveProgress();
             updatePaletteItem(qIdx);
             updateStats();
 
             if (firebaseDb) {
-                const qRef = firebaseDb.ref(`quiz_comments/${currentSubjectId}/q_${qIdx}`);
+                const subId = currentSubjectId || 'rmc301';
+                const qRef = firebaseDb.ref(`quiz_comments/${subId}/q_${qIdx}`);
                 qRef.push(newComment).then(() => {
                     textarea.value = '';
                     const charCnt = document.getElementById('comment-char-cnt');
@@ -2049,7 +2125,8 @@ function saveProgress() {
             }
 
             const userKey = currentUser.email.replace(/[.#$[\]]/g, '_');
-            const commentRef = firebaseDb.ref(`quiz_comments/rmc301/q_${qIdx}/${commentId}`);
+            const subId = currentSubjectId || 'rmc301';
+            const commentRef = firebaseDb.ref(`quiz_comments/${subId}/q_${qIdx}/${commentId}`);
 
             commentRef.transaction(comment => {
                 if (comment) {
@@ -2065,15 +2142,6 @@ function saveProgress() {
                     }
                 }
                 return comment;
-            });
-        }
-
-        function deleteCommunityComment(qIdx, commentId) {
-            if (!firebaseDb) return;
-            if (!confirm("Bạn có chắc chắn muốn xóa bình luận này không?")) return;
-
-            firebaseDb.ref(`quiz_comments/rmc301/q_${qIdx}/${commentId}`).remove().then(() => {
-                showToast("Đã xóa bình luận!");
             });
         }
     
@@ -2502,12 +2570,12 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
                 const q = quizData[i];
                 const ans = userAnswers[i];
                 const isBm = bookmarks.has(i);
-                const hasNote = !!userNotes[i];
+                const hasDisc = hasDiscussion(i);
 
                 if (currentFilter === 'todo' && ans) continue;
                 if (currentFilter === 'wrong' && (!ans || ans.isCorrect)) continue;
                 if (currentFilter === 'bookmark' && !isBm) continue;
-                if (currentFilter === 'notes' && !hasNote) continue;
+                if (currentFilter === 'notes' && !hasDisc) continue;
 
                 if (searchQuery) {
                     const fullText = (q.question + ' ' + Object.values(q.options).join(' ')).toLowerCase();
@@ -2526,7 +2594,7 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
                     else item.classList.add('done-wrong');
                 }
                 if (isBm) item.classList.add('bookmarked');
-                if (hasNote) item.classList.add('has-note');
+                if (hasDisc) item.classList.add('has-note');
 
                 item.onclick = () => renderQuestion(i);
                 grid.appendChild(item);
@@ -2555,7 +2623,7 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
                 else el.classList.add('done-wrong');
             }
             if (bookmarks.has(index)) el.classList.add('bookmarked');
-            if (userNotes[index]) el.classList.add('has-note');
+            if (hasDiscussion(index)) el.classList.add('has-note');
         }
 
         function updateStats() {
@@ -2564,7 +2632,10 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
                 if (val.isCorrect) correct++;
                 else wrong++;
             }
-            const noteCount = Object.keys(userNotes).length;
+            let discussionCount = 0;
+            for (let i = 0; i < quizData.length; i++) {
+                if (hasDiscussion(i)) discussionCount++;
+            }
             const bmCount = bookmarks.size;
             const answeredTotal = correct + wrong;
             const todoCount = quizData.length - answeredTotal;
@@ -2572,12 +2643,12 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
             document.getElementById('stat-correct').textContent = correct;
             document.getElementById('stat-wrong').textContent = wrong;
             document.getElementById('stat-bm').textContent = bmCount;
-            document.getElementById('stat-notes').textContent = noteCount;
+            document.getElementById('stat-notes').textContent = discussionCount;
 
             document.getElementById('cnt-todo').textContent = todoCount;
             document.getElementById('cnt-wrong').textContent = wrong;
             document.getElementById('cnt-bm').textContent = bmCount;
-            document.getElementById('cnt-notes-filter').textContent = noteCount;
+            document.getElementById('cnt-notes-filter').textContent = discussionCount;
         }
 
         /* ================= MOCK EXAM MODE ================= */
