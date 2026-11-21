@@ -767,6 +767,37 @@
         }
         .btn-authorize-google:hover { background: var(--primary); color: #0b1120; }
 
+
+        /* Direct Reset Progress button */
+        .btn-reset-action {
+            background: #ef444415;
+            border: 1px solid #ef444460;
+            color: #f87171;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-reset-action:hover {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        /* Discussion indicator on palette item */
+        .palette-item.has-note::after {
+            content: '💬';
+            position: absolute;
+            top: -4px;
+            left: -3px;
+            font-size: 0.65rem;
+            line-height: 1;
+        }
+
     </style>
 </head>
 <body>
@@ -795,7 +826,7 @@
                             <div class="subject-menu-list" id="subject-menu-list"></div>
                             <div class="subject-menu-footer">
                                 <button class="btn-menu-action" onclick="openSubjectCatalogModal()">🏛️ Xem tất cả</button>
-                                <button class="btn-menu-action primary" onclick="openImportQuizModal()">➕ Nạp đề mới</button>
+                                
                             </div>
                         </div>
                     </div>
@@ -813,7 +844,7 @@
 
             <!-- Mode Switchers -->
             <button class="btn-header" onclick="openSubjectCatalogModal()" title="Xem danh mục tất cả môn học">🏛️ Môn học</button>
-            <button class="btn-header" onclick="openImportQuizModal()" style="border-color: #38bdf880; color: #38bdf8;" title="Nạp đề mới từ Google Slides hoặc Link">📥 Nạp đề</button>
+            
             <button class="btn-header exam-btn" id="btn-mock-exam" onclick="openExamModal()">⏱️ Thi Thử</button>
 
             <button class="btn-header history-btn" id="btn-exam-history" onclick="openExamHistoryModal()" title="Tra cứu lịch sử các bài thi thử đã làm">📜 Lịch sử thi (<span id="exam-hist-count">0</span>)</button>
@@ -825,7 +856,7 @@
                 <div class="stat-item">Đúng: <span id="stat-correct" class="stat-val" style="color: #4ade80;">0</span></div>
                 <div class="stat-item">Sai: <span id="stat-wrong" class="stat-val" style="color: #f87171;">0</span></div>
                 <div class="stat-item">⭐: <span id="stat-bm" class="stat-val" style="color: #fbbf24;">0</span></div>
-                <div class="stat-item">📝: <span id="stat-notes" class="stat-val" style="color: #c084fc;">0</span></div>
+                <div class="stat-item" title="Số câu có thảo luận">💬: <span id="stat-notes" class="stat-val" style="color: #38bdf8;">0</span></div>
             </div>
 
             <!-- Cloud Sync Indicator -->
@@ -847,7 +878,7 @@
                     </div>
                     <button class="btn-logout" onclick="logout()" title="Đăng xuất">✕</button>
                 </div>
-                <button class="btn-backup-action" onclick="openBackupModal()" title="Sao lưu / Khôi phục file JSON">💾 Sao lưu</button>
+                <button class="btn-reset-action" onclick="resetAllProgress()" title="Xóa toàn bộ tiến độ để làm lại từ đầu">🗑️ Reset tiến độ</button>
             </div>
         </div>
     </header>
@@ -919,7 +950,7 @@
             <div class="comments-sidebar" id="comments-sidebar">
                 <div class="comments-header">
                     <div class="comments-title">
-                        <span>💬 Thảo Luận & Cảnh Báo</span>
+                        <span>💬 Thảo luận</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <button class="btn-toggle-panel" id="btn-toggle-comments-panel" onclick="toggleCommentsSidebar()" title="Ẩn/Hiện khung thảo luận">
@@ -1011,7 +1042,7 @@
             <button class="filter-btn" id="f-todo" onclick="filterPalette('todo')">Chưa làm (<span id="cnt-todo">380</span>)</button>
             <button class="filter-btn" id="f-wrong" onclick="filterPalette('wrong')">Làm sai (<span id="cnt-wrong">0</span>)</button>
             <button class="filter-btn" id="f-bookmark" onclick="filterPalette('bookmark')">⭐ Đánh dấu (<span id="cnt-bm">0</span>)</button>
-            <button class="filter-btn f-note" id="f-notes" onclick="filterPalette('notes')">📝 Có ghi chú (<span id="cnt-notes-filter">0</span>)</button>
+            <button class="filter-btn f-note" id="f-notes" onclick="filterPalette('notes')">💬 Có thảo luận (<span id="cnt-notes-filter">0</span>)</button>
         </div>
 
         <!-- Exam Mode Palette Bar (During Test) -->
@@ -1224,39 +1255,6 @@
         </div>
     </div>
 
-    <!-- Backup Modal -->
-    <div class="modal-overlay" id="backup-modal">
-        <div class="modal-card">
-            <div class="modal-title">
-                <span>Sao lưu & Khôi phục file</span>
-                <button class="btn-modal-close" onclick="closeModal('backup-modal')">✕</button>
-            </div>
-            <p class="modal-desc">Xuất file dự phòng đầy đủ chứa cả đáp án, bookmark và toàn bộ Note cá nhân của bạn:</p>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-                <button class="btn-modal-submit" style="background: #22c55e; color: #fff;" onclick="exportProgressFile()">📥 Tải về file Sao Lưu (Export JSON)</button>
-                <label class="btn-modal-submit" style="background: #334155; color: #fff; text-align: center; cursor: pointer; margin: 0;">
-                    📤 Nhập file Sao Lưu (Import JSON)
-                    <input type="file" id="file-import" accept=".json" style="display:none;" onchange="importProgressFile(event)">
-                </label>
-                <button class="btn-modal-submit" style="background: #ef444420; color: #f87171; border: 1px solid #ef4444;" onclick="resetAllProgress()">🗑️ Xóa toàn bộ tiến độ làm lại từ đầu</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Cloud Sync Modal -->
-    <div class="modal-overlay" id="cloud-modal">
-        <div class="modal-card">
-            <div class="modal-title">
-                <span>☁️ Cấu hình Cloud (Firebase)</span>
-                <button class="btn-modal-close" onclick="closeModal('cloud-modal')">✕</button>
-            </div>
-            <p class="modal-desc">Dự án đã được kết nối sẵn với Firebase Database của bạn:</p>
-            <input type="text" class="input-text" id="firebase-config-input" value="https://rmc301-quiz-default-rtdb.asia-southeast1.firebasedatabase.app" readonly style="margin-bottom: 12px; font-family: monospace; font-size: 0.8rem;">
-            <div style="color: #4ade80; font-size: 0.85rem; font-weight: 600;">🟢 Trạng thái: Đang đồng bộ tự động 2 chiều</div>
-        </div>
-    </div>
-
-
     <!-- Subject Catalog Modal (Trang Chủ Danh Mục Các Môn) -->
     <div class="modal-overlay" id="subject-catalog-modal">
         <div class="modal-card modal-large">
@@ -1268,79 +1266,7 @@
             
             <div class="subject-grid" id="subject-catalog-grid"></div>
 
-            <div style="margin-top: 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <span style="font-size: 0.8rem; color: #94a3b8;">💡 Bạn có thể nạp thêm môn học mới từ link Google Slides cá nhân hoặc file text bất kỳ.</span>
-                <button class="btn-modal-submit" style="background: #38bdf820; border: 1px solid var(--primary); color: var(--primary);" onclick="closeModal('subject-catalog-modal'); openImportQuizModal();">
-                    ➕ Nạp Đề Môn Học Mới
-                </button>
             </div>
-        </div>
-    </div>
-
-    <!-- Import Quiz Modal (Nạp Đề Linh Hoạt) -->
-    <div class="modal-overlay" id="import-quiz-modal">
-        <div class="modal-card modal-large">
-            <div class="modal-title">
-                <span>📥 Nạp Đề Môn Học Mới</span>
-                <button class="btn-modal-close" onclick="closeModal('import-quiz-modal')">✕</button>
-            </div>
-            <p class="modal-desc">Thêm môn học mới từ liên kết Google Slides cá nhân hoặc dán trực tiếp câu hỏi trắc nghiệm:</p>
-            
-            <div class="import-tabs">
-                <button class="import-tab active" id="tab-btn-slides" onclick="switchImportTab('slides')">📑 Link Google Slides</button>
-                <button class="import-tab" id="tab-btn-text" onclick="switchImportTab('text')">📝 Dán Text / Quizlet</button>
-            </div>
-
-            <!-- Tab 1: Google Slides -->
-            <div id="import-pane-slides" class="import-pane">
-                <label class="input-label">Đường dẫn Google Slides cá nhân:</label>
-                <input type="text" class="input-text" id="gslides-url-input" placeholder="https://docs.google.com/presentation/d/1abc.../edit">
-                
-                <div style="background: #0f172a; border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 0.82rem; color: #94a3b8; display: flex; align-items: center; justify-content: space-between;">
-                    <div>
-                        <span id="gslides-auth-icon">🔒</span>
-                        <span id="gslides-auth-text">Đăng nhập Google và cấp quyền để AI đọc trực tiếp Slide & Speaker Notes.</span>
-                    </div>
-                    <button class="btn-authorize-google" style="margin: 0;" onclick="authorizeGoogleAccess()">Authorize 🔑</button>
-                </div>
-
-                <div style="display: flex; gap: 10px; margin-top: 6px;">
-                    <input type="text" class="input-text" id="gslides-sub-code" placeholder="Mã môn (VD: CCO201)" style="flex: 1;">
-                    <input type="text" class="input-text" id="gslides-sub-name" placeholder="Tên môn học (VD: Quan Hệ Công Chúng)" style="flex: 2;">
-                </div>
-
-                <button class="btn-modal-submit" style="margin-top: 10px; background: #38bdf8; color: #0b1120; font-weight: 700;" onclick="importFromGoogleSlides()">
-                    ⚡ AI Phân Tích & Nạp Đề Từ Google Slides
-                </button>
-            </div>
-
-            <!-- Tab 2: Text / Quizlet / Markdown -->
-            <div id="import-pane-text" class="import-pane" style="display: none;">
-                <label class="input-label">Dán văn bản câu hỏi (hỗ trợ nhiều dòng, Quizlet, Google Docs, Speaker Notes):</label>
-                <textarea class="import-textarea" id="import-raw-text" placeholder="Ví dụ:
-Câu 1: Mục đích chính của Quan hệ Công chúng (PR) là gì?
-A. Tăng doanh số bán hàng trực tiếp tức thì
-B. Xây dựng và duy trì hình ảnh, sự thấu hiểu tích cực với công chúng
-C. Giảm chi phí sản xuất
-D. Quảng cáo trên truyền hình
-ĐÁP ÁN: B
-GIẢI THÍCH: PR tập trung vào việc quản lý thông tin và xây dựng uy tín lâu dài..." oninput="onImportTextInput(this.value)"></textarea>
-
-                <div class="parse-status-bar" id="parse-status-bar">
-                    <span id="parse-status-text">Trạng thái: Dán nội dung để AI nhận diện câu hỏi</span>
-                    <span id="parse-count-badge" style="font-weight: bold; color: var(--primary);">0 câu</span>
-                </div>
-
-                <div style="display: flex; gap: 10px; margin-top: 6px;">
-                    <input type="text" class="input-text" id="text-sub-code" placeholder="Mã môn (VD: CCO201)" style="flex: 1;">
-                    <input type="text" class="input-text" id="text-sub-name" placeholder="Tên môn học (VD: Giao Tiếp & Quan Hệ Công Chúng)" style="flex: 2;">
-                </div>
-
-                <button class="btn-modal-submit" id="btn-submit-text-import" style="margin-top: 10px; background: #22c55e; color: #fff; font-weight: 700;" onclick="submitTextImport()" disabled>
-                    🚀 Tạo Môn Học Mới & Bắt Đầu Ôn Luyện
-                </button>
-            </div>
-        </div>
     </div>
 
     <!-- Toast Notification -->
@@ -3216,20 +3142,19 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
         }
 
         function resetAllProgress() {
-            if (confirm("CẢNH BÁO: Thao tác này sẽ xóa toàn bộ lịch sử làm bài, số câu đúng/sai, câu đánh dấu và ghi chú cá nhân của tài khoản này. Bạn có chắc chắn không?")) {
+            if (confirm("CẢNH BÁO: Thao tác này sẽ xóa toàn bộ lịch sử làm bài, số câu đúng/sai và câu đã đánh dấu ⭐ của tài khoản này để làm lại từ đầu. Bạn có chắc chắn không?")) {
                 userAnswers = {};
                 bookmarks = new Set();
-                userNotes = {};
                 examHistory = [];
                 saveProgress();
-                if (firebaseDb && currentUser) {
+                if (firebaseDb && currentUser && currentUser.email !== 'guest') {
                     const cleanKey = currentUser.email.replace(/[.#$[\]]/g, '_');
-                    firebaseDb.ref('quiz_progress/' + cleanKey).remove();
+                    firebaseDb.ref(`quiz_progress/${cleanKey}/${currentSubjectId}`).remove();
                 }
                 renderPalette();
                 renderQuestion(currentIndex);
-                closeModal('backup-modal');
-                alert('Đã làm mới dữ liệu thành công!');
+                updateStats();
+                showToast('Đã làm mới dữ liệu thành công!');
             }
         }
 
