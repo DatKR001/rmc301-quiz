@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Ôn Luyện & Thi Thử RMC301 - 380 Câu (v1.3 Official)</title>
+    <title>Ôn Luyện & Thi Thử RMC301 - 380 Câu (v1.4)</title>
     <!-- Firebase Realtime Database SDK (Compat) -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -208,6 +208,18 @@
         .toast-msg.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+    
+        /* Online Learners Pill */
+        .online-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(34, 197, 94, 0.12); border: 1px solid rgba(34, 197, 94, 0.35); color: #4ade80; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; vertical-align: middle; }
+        .online-indicator-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px #22c55e; animation: pulseOnline 1.5s infinite; }
+        @keyframes pulseOnline { 0% { transform: scale(0.95); opacity: 0.6; } 50% { transform: scale(1.25); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.6; } }
+
+        /* Retry Question Button */
+        .btn-retry { background: #38bdf815; border: 1px solid #38bdf850; color: #38bdf8; padding: 6px 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 0.85rem; display: none; align-items: center; gap: 5px; font-weight: 600; }
+        .btn-retry:hover { background: #38bdf8; color: #0b1120; }
+        .btn-retry.show { display: inline-flex; }
+        .btn-retry-in-box { background: #38bdf820; border: 1px solid var(--primary); color: var(--primary); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; margin-top: 10px; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-retry-in-box:hover { background: var(--primary); color: #0b1120; }
     </style>
 </head>
 <body>
@@ -218,8 +230,11 @@
             <div>
                 <div class="logo-title">
                     <span>RMC301 Exam Practice</span>
-                    <span class="version-badge">v1.3 (Notes & Exam)</span>
-                    
+                    <span class="version-badge">v1.4</span>
+                    <div class="online-pill" id="online-learners-badge" title="Số người đang cùng truy cập ôn luyện trực tuyến">
+                        <span class="online-indicator-dot"></span>
+                        <span><strong id="online-learners-count">1</strong> người đang học</span>
+                    </div>
                 </div>
                 <div style="font-size: 0.72rem; color: #4ade80;">● Đồng bộ thời gian thực 2 chiều với Firebase</div>
             </div>
@@ -643,6 +658,7 @@
                 firebaseDb = firebase.database();
                 updateCloudStatus('connected');
                 attachCloudListener();
+                initPresence();
             } catch(err) {
                 console.error('Firebase error:', err);
                 updateCloudStatus('error', err.message);
@@ -997,6 +1013,89 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
                 if (examCurrentIdx > 0) renderExamQuestion(examCurrentIdx - 1);
             } else {
                 if (currentIndex > 0) renderQuestion(currentIndex - 1);
+            }
+        }
+
+
+        /* ================= RETRY QUESTION LOGIC ================= */
+        function retryCurrentQuestion() {
+            if (isExamMode) return;
+            const qIdx = currentIndex;
+            if (userAnswers[qIdx]) {
+                delete userAnswers[qIdx];
+                saveProgress();
+                renderQuestion(qIdx);
+                updatePaletteItem(qIdx);
+                showToast(`Đã làm mới Câu ${qIdx + 1}! Bạn có thể chọn lại đáp án.`);
+            }
+        }
+
+        function resetAllWrongAnswers() {
+            let count = 0;
+            for (const [key, val] of Object.entries(userAnswers)) {
+                if (val && !val.isCorrect) {
+                    delete userAnswers[key];
+                    count++;
+                }
+            }
+            if (count > 0) {
+                saveProgress();
+                renderPalette();
+                renderQuestion(currentIndex);
+                showToast(`Đã làm mới ${count} câu làm sai để luyện lại từ đầu!`);
+            } else {
+                alert("Hiện không có câu làm sai nào!");
+            }
+        }
+
+        /* ================= ONLINE LEARNERS PRESENCE ================= */
+        function initPresence() {
+            if (!firebaseDb) return;
+            try {
+                const connectedRef = firebaseDb.ref('.info/connected');
+                let sessionId = sessionStorage.getItem('rmc301_session_id');
+                if (!sessionId) {
+                    sessionId = 'user_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now();
+                    sessionStorage.setItem('rmc301_session_id', sessionId);
+                }
+
+                connectedRef.on('value', (snap) => {
+                    if (snap.val() === true) {
+                        const myPresenceRef = firebaseDb.ref('presence/' + sessionId);
+                        myPresenceRef.onDisconnect().remove();
+                        myPresenceRef.set({
+                            name: currentUser ? currentUser.name : 'Khách',
+                            device: navigator.userAgent.includes('Mobile') ? 'Mobile' : 'PC',
+                            joinedAt: Date.now(),
+                            lastSeen: Date.now()
+                        });
+                    }
+                });
+
+                // Listen to online count
+                firebaseDb.ref('presence').on('value', (snap) => {
+                    const data = snap.val() || {};
+                    const now = Date.now();
+                    let count = 0;
+                    for (const [id, val] of Object.entries(data)) {
+                        if (val && (!val.lastSeen || (now - val.lastSeen < 300000))) {
+                            count++;
+                        }
+                    }
+                    count = Math.max(1, count);
+                    const el = document.getElementById('online-learners-count');
+                    if (el) el.textContent = count;
+                });
+
+                // Keepalive heartbeat
+                setInterval(() => {
+                    const sId = sessionStorage.getItem('rmc301_session_id');
+                    if (sId && firebaseDb) {
+                        firebaseDb.ref('presence/' + sId + '/lastSeen').set(Date.now());
+                    }
+                }, 45000);
+            } catch(e) {
+                console.warn('Presence tracking error:', e);
             }
         }
 
@@ -1450,7 +1549,7 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `rmc301_v1.3_backup_${currentUser ? currentUser.name : 'user'}.json`;
+            a.download = `rmc301_v1.4_backup_${currentUser ? currentUser.name : 'user'}.json`;
             a.click();
             URL.revokeObjectURL(url);
         }
