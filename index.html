@@ -215,9 +215,11 @@
         @keyframes pulseOnline { 0% { transform: scale(0.95); opacity: 0.6; } 50% { transform: scale(1.25); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.6; } }
 
         /* Retry Question Button */
-        .btn-retry { background: #38bdf815; border: 1px solid #38bdf850; color: #38bdf8; padding: 6px 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 0.85rem; display: none; align-items: center; gap: 5px; font-weight: 600; }
-        .btn-retry:hover { background: #38bdf8; color: #0b1120; }
-        .btn-retry.show { display: inline-flex; }
+        .btn-retry { background: #38bdf820; border: 1px solid var(--primary); color: var(--primary); padding: 6px 14px; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+        .btn-retry:hover:not(:disabled) { background: var(--primary); color: #0b1120; }
+        .btn-retry:disabled { opacity: 0.35; cursor: not-allowed; border-color: var(--border); color: var(--text-muted); }
+        .btn-retry-in-box { background: #38bdf820; border: 1px solid var(--primary); color: var(--primary); padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 0.88rem; font-weight: 600; margin-top: 12px; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-retry-in-box:hover { background: var(--primary); color: #0b1120; }
         .btn-retry-in-box { background: #38bdf820; border: 1px solid var(--primary); color: var(--primary); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; margin-top: 10px; display: inline-flex; align-items: center; gap: 6px; }
         .btn-retry-in-box:hover { background: var(--primary); color: #0b1120; }
     </style>
