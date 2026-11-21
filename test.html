@@ -3092,54 +3092,10 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
             showToast('Đang lọc các câu làm sai để luyện lại');
         }
 
-        /* ================= BACKUP & RESTORE ================= */
-        function openBackupModal() { document.getElementById('backup-modal').classList.add('active'); }
+        /* ================= MODAL CONTROLS ================= */
         function openLoginModal() { document.getElementById('login-modal').classList.add('active'); }
         function openCloudModal() { document.getElementById('cloud-modal').classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-
-        function exportProgressFile() {
-            const data = {
-                user: currentUser,
-                answers: userAnswers,
-                bookmarks: Array.from(bookmarks),
-                notes: userNotes,
-                examHistory: examHistory,
-                version: "1.3",
-                exportDate: new Date().toLocaleString()
-            };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `rmc301_v1.4_backup_${currentUser ? currentUser.name : 'user'}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        function importProgressFile(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                try {
-                    const imported = JSON.parse(event.target.result);
-                    if (imported.answers) userAnswers = imported.answers;
-                    if (imported.bookmarks) bookmarks = new Set(imported.bookmarks);
-                    if (imported.notes) userNotes = imported.notes;
-                    if (imported.examHistory) examHistory = imported.examHistory;
-
-                    saveProgress();
-                    renderPalette();
-                    renderQuestion(currentIndex);
-                    closeModal('backup-modal');
-                    alert('Đã khôi phục thành công toàn bộ tiến độ, câu đánh dấu và ghi chú!');
-                } catch(err) {
-                    alert('Lỗi: File JSON sao lưu không hợp lệ!');
-                }
-            };
-            reader.readAsText(file);
-        }
 
         function resetAllProgress() {
             if (confirm("CẢNH BÁO: Thao tác này sẽ xóa toàn bộ lịch sử làm bài, số câu đúng/sai và câu đã đánh dấu ⭐ của tài khoản này để làm lại từ đầu. Bạn có chắc chắn không?")) {
