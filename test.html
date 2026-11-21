@@ -232,7 +232,7 @@
             <div>
                 <div class="logo-title">
                     <span>RMC301 Exam Practice</span>
-                    <span class="version-badge">v1.4</span>
+                    <span class="version-badge">v1.5</span>
                     <div class="online-pill" id="online-learners-badge" title="Số người đang cùng truy cập ôn luyện trực tuyến">
                         <span class="online-indicator-dot"></span>
                         <span><strong id="online-learners-count">1</strong> người đang học</span>
@@ -283,16 +283,19 @@
     <!-- Exam Mode Banner (Active only during mock test) -->
     <div class="exam-banner" id="exam-banner">
         <div style="display: flex; align-items: center; gap: 12px;">
-            <span style="font-size: 1.2rem;">⏱️</span>
+            <span style="font-size: 1.2rem;" id="exam-banner-icon">⏱️</span>
             <div>
                 <div style="font-size: 0.95rem; font-weight: bold;" id="exam-mode-title">Chế độ Thi Thử: Test Nhanh (30 câu)</div>
-                <div style="font-size: 0.75rem; color: #fed7aa;">Chỉ hiển thị điểm & giải thích sau khi nộp bài!</div>
+                <div style="font-size: 0.75rem; color: #fed7aa;" id="exam-banner-subtitle">Chỉ hiển thị điểm & giải thích sau khi nộp bài!</div>
             </div>
         </div>
         <div style="display: flex; align-items: center; gap: 14px;">
+            <div class="exam-banner-progress" id="exam-banner-progress" style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 0.82rem; color: #fed7aa;">Đã làm: <strong id="exam-banner-done-cnt" style="color: #38bdf8;">0</strong>/<span id="exam-banner-total-cnt">30</span></span>
+            </div>
             <div class="exam-timer" id="exam-timer-display">40:00</div>
-            <button class="btn-submit-exam" onclick="confirmSubmitExam()">Nộp bài thi</button>
-            <button class="btn-exit-exam" onclick="exitExamMode()">Thoát thi</button>
+            <button class="btn-submit-exam" id="btn-submit-exam" onclick="confirmSubmitExam()">Nộp bài thi</button>
+            <button class="btn-exit-exam" id="btn-exit-exam" onclick="exitExamMode()">Thoát thi</button>
         </div>
     </div>
 
@@ -315,6 +318,7 @@
                     </div>
                 </div>
                 
+                <div id="exam-q-status" class="exam-q-status" style="display: none;"></div>
                 <div class="question-text" id="question-text">Đang tải câu hỏi...</div>
                 <div class="options-list" id="options-list"></div>
 
@@ -385,6 +389,35 @@
             <button class="filter-btn" id="f-wrong" onclick="filterPalette('wrong')">Làm sai (<span id="cnt-wrong">0</span>)</button>
             <button class="filter-btn" id="f-bookmark" onclick="filterPalette('bookmark')">⭐ Đánh dấu (<span id="cnt-bm">0</span>)</button>
             <button class="filter-btn f-note" id="f-notes" onclick="filterPalette('notes')">📝 Có ghi chú (<span id="cnt-notes-filter">0</span>)</button>
+        </div>
+
+        <!-- Exam Mode Palette Bar (During Test) -->
+        <div class="exam-palette-bar" id="exam-palette-bar" style="display: none;">
+            <div class="exam-palette-stats">
+                <div class="ep-stat ep-answered">
+                    <span class="ep-dot bg-sky"></span>
+                    <span>Đã làm: <strong id="ep-cnt-answered" style="color: #38bdf8;">0</strong>/<span id="ep-cnt-total">30</span> câu</span>
+                </div>
+                <div class="ep-stat ep-todo">
+                    <span class="ep-dot bg-gray"></span>
+                    <span>Chưa làm: <strong id="ep-cnt-todo" style="color: #cbd5e1;">30</strong></span>
+                </div>
+                <div class="ep-stat ep-flagged">
+                    <span class="ep-dot bg-amber"></span>
+                    <span>Gắn cờ: <strong id="ep-cnt-flagged" style="color: #fbbf24;">0</strong> 🚩</span>
+                </div>
+            </div>
+            <div class="exam-progress-track">
+                <div class="exam-progress-fill" id="exam-progress-fill" style="width: 0%;"></div>
+            </div>
+        </div>
+
+        <!-- Exam Mode Review Filters Bar (After Submission) -->
+        <div class="exam-review-filters" id="exam-review-filters" style="display: none;">
+            <button class="filter-btn active" id="erf-all" onclick="filterExamReview('all')">Tất cả (<span id="erf-cnt-all">30</span>)</button>
+            <button class="filter-btn erf-wrong" id="erf-wrong" onclick="filterExamReview('wrong')">🔴 Làm sai / Bỏ qua (<span id="erf-cnt-wrong">0</span>)</button>
+            <button class="filter-btn erf-correct" id="erf-correct" onclick="filterExamReview('correct')">🟢 Làm đúng (<span id="erf-cnt-correct">0</span>)</button>
+            <button class="filter-btn erf-flag" id="erf-flagged" onclick="filterExamReview('flagged')">🚩 Gắn cờ (<span id="erf-cnt-flagged">0</span>)</button>
         </div>
 
         <div class="palette-grid" id="palette-grid"></div>
@@ -564,6 +597,7 @@
         let examAnswers = {};         // { [exam_idx]: [selectedKeys] }
         let examFlagged = new Set();  // Set of exam_idx
         let examCurrentIdx = 0;
+        let examReviewFilter = 'all';
         let examTimerInterval = null;
         let examTimeRemaining = 0;
         let examStartTime = 0;
@@ -1118,6 +1152,205 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
             }
         }
 
+        
+        /* Exam Enhancements v1.5 */
+        .p-item.exam-answered { 
+            background: #0284c7 !important; 
+            border-color: #38bdf8 !important; 
+            color: #ffffff !important; 
+            font-weight: 700 !important; 
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.4); 
+        }
+        .p-item.exam-answered::after { 
+            content: '✓'; 
+            position: absolute; 
+            top: 1px; 
+            right: 3px; 
+            font-size: 8px; 
+            font-weight: bold; 
+            color: #bae6fd; 
+        }
+        .p-item.exam-todo {
+            background: #1e293b;
+            border-color: var(--border);
+            color: var(--text-muted);
+        }
+        .p-item.exam-review-correct { 
+            background: #15803d !important; 
+            border-color: #22c55e !important; 
+            color: #ffffff !important; 
+            font-weight: 700 !important; 
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.35); 
+        }
+        .p-item.exam-review-correct::after { 
+            content: '✓'; 
+            position: absolute; 
+            top: 1px; 
+            right: 3px; 
+            font-size: 9px; 
+            font-weight: bold; 
+            color: #86efac; 
+        }
+        .p-item.exam-review-wrong { 
+            background: #991b1b !important; 
+            border-color: #ef4444 !important; 
+            color: #ffffff !important; 
+            font-weight: 700 !important; 
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.35); 
+        }
+        .p-item.exam-review-wrong::after { 
+            content: '✗'; 
+            position: absolute; 
+            top: 1px; 
+            right: 3px; 
+            font-size: 9px; 
+            font-weight: bold; 
+            color: #fca5a5; 
+        }
+        .p-item.exam-review-unanswered { 
+            background: #334155 !important; 
+            border: 1.5px dashed #f59e0b !important; 
+            color: #fef08a !important; 
+            font-weight: 600 !important; 
+        }
+        .p-item.exam-review-unanswered::after { 
+            content: '—'; 
+            position: absolute; 
+            top: 1px; 
+            right: 3px; 
+            font-size: 9px; 
+            color: #fef08a; 
+        }
+
+        .exam-palette-bar {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 16px;
+            margin-bottom: 12px;
+        }
+        .exam-palette-stats {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            flex-wrap: wrap;
+        }
+        .ep-stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ep-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .bg-sky { background: #38bdf8; box-shadow: 0 0 6px #38bdf8; }
+        .bg-gray { background: #64748b; }
+        .bg-amber { background: #f59e0b; }
+        .exam-progress-track {
+            width: 100%;
+            height: 6px;
+            background: #1e293b;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .exam-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0284c7, #38bdf8);
+            transition: width 0.3s ease;
+        }
+
+        .exam-review-filters {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .filter-btn.erf-wrong.active {
+            background: #ef4444;
+            color: #fff;
+            border-color: #ef4444;
+        }
+        .filter-btn.erf-correct.active {
+            background: #22c55e;
+            color: #022c22;
+            border-color: #22c55e;
+        }
+        .filter-btn.erf-flag.active {
+            background: #f59e0b;
+            color: #451a03;
+            border-color: #f59e0b;
+        }
+
+        .exam-banner.review-mode {
+            background: linear-gradient(90deg, #0f172a, #1e293b);
+            border-bottom: 2px solid #38bdf8;
+        }
+        .exam-q-status {
+            padding: 11px 15px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            margin-bottom: 14px;
+            line-height: 1.45;
+        }
+        .exam-q-status.correct {
+            background: #14532d50;
+            border: 1px solid #22c55e;
+            color: #86efac;
+        }
+        .exam-q-status.wrong {
+            background: #7f1d1d50;
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+        }
+        .exam-q-status.unanswered {
+            background: #78350f50;
+            border: 1px solid #f59e0b;
+            color: #fde68a;
+        }
+        .tag-opt {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 4px;
+            background: #1e293b;
+            font-weight: 700;
+        }
+        .tag-opt.correct {
+            background: #15803d;
+            color: #ffffff;
+        }
+        .tag-opt.wrong {
+            background: #b91c1c;
+            color: #ffffff;
+        }
+        .review-tag {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-left: 8px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .tag-correct-choice {
+            background: #15803d;
+            color: #ffffff;
+        }
+        .tag-correct-missed {
+            background: #1e3a8a;
+            color: #93c5fd;
+            border: 1px solid #3b82f6;
+        }
+        .tag-wrong-choice {
+            background: #991b1b;
+            color: #ffffff;
+        }
+
         /* ================= PALETTE & SEARCH ================= */
         function onSearchQuestions(val) {
             searchQuery = val.trim().toLowerCase();
@@ -1132,31 +1365,157 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
             renderPalette();
         }
 
+        function filterExamReview(filter) {
+            examReviewFilter = filter;
+            renderPalette();
+        }
+
         function renderPalette() {
             const grid = document.getElementById('palette-grid');
             grid.innerHTML = '';
 
+            const searchWrap = document.querySelector('.search-box-wrap');
+
             if (isExamMode) {
                 // Exam Mode Palette
-                document.getElementById('palette-count-label').textContent = `(${examQuestions.length} câu thi thử)`;
+                if (searchWrap) searchWrap.style.display = 'none';
                 document.getElementById('palette-filters').style.display = 'none';
 
+                let answeredCount = 0;
+                let correctCount = 0;
+                let wrongCount = 0;
+                let flaggedCount = examFlagged.size;
+
                 for (let i = 0; i < examQuestions.length; i++) {
-                    const qIdx = examQuestions[i];
-                    const item = document.createElement('div');
-                    item.className = 'p-item';
-                    item.id = `palette-item-${qIdx}`;
-                    item.textContent = i + 1;
+                    const q = quizData[examQuestions[i]];
+                    const userKeys = (examAnswers[i] || []).sort().join('');
+                    const correctKeys = q.answer.split('').sort().join('');
+                    const isAnswered = !!(examAnswers[i] && examAnswers[i].length > 0);
+                    if (isAnswered) answeredCount++;
+                    if (isAnswered && userKeys === correctKeys) {
+                        correctCount++;
+                    } else if (isAnswered) {
+                        wrongCount++;
+                    }
+                }
+                const unansweredCount = examQuestions.length - answeredCount;
+                const totalWrongOrSkipped = examQuestions.length - correctCount;
 
-                    if (i === examCurrentIdx) item.classList.add('current');
-                    if (examAnswers[i]) item.classList.add('exam-answered');
-                    if (examFlagged.has(i)) item.classList.add('exam-flagged');
+                if (examInReview) {
+                    // Review Mode
+                    const epBar = document.getElementById('exam-palette-bar');
+                    const erfBar = document.getElementById('exam-review-filters');
+                    if (epBar) epBar.style.display = 'none';
+                    if (erfBar) erfBar.style.display = 'flex';
 
-                    item.onclick = () => renderExamQuestion(i);
-                    grid.appendChild(item);
+                    document.getElementById('palette-count-label').textContent = 
+                        `(${examQuestions.length} câu: ${correctCount} Đúng, ${totalWrongOrSkipped} Sai/Trống)`;
+
+                    document.getElementById('erf-cnt-all').textContent = examQuestions.length;
+                    document.getElementById('erf-cnt-wrong').textContent = totalWrongOrSkipped;
+                    document.getElementById('erf-cnt-correct').textContent = correctCount;
+                    document.getElementById('erf-cnt-flagged').textContent = flaggedCount;
+
+                    ['all', 'wrong', 'correct', 'flagged'].forEach(f => {
+                        const btn = document.getElementById('erf-' + f);
+                        if (btn) btn.classList.toggle('active', examReviewFilter === f);
+                    });
+
+                    for (let i = 0; i < examQuestions.length; i++) {
+                        const qIdx = examQuestions[i];
+                        const q = quizData[qIdx];
+                        const userKeys = (examAnswers[i] || []).sort().join('');
+                        const correctKeys = q.answer.split('').sort().join('');
+                        const isAnswered = !!(examAnswers[i] && examAnswers[i].length > 0);
+                        const isCorrect = isAnswered && (userKeys === correctKeys);
+                        const isFlagged = examFlagged.has(i);
+
+                        if (examReviewFilter === 'wrong' && isCorrect) continue;
+                        if (examReviewFilter === 'correct' && !isCorrect) continue;
+                        if (examReviewFilter === 'flagged' && !isFlagged) continue;
+
+                        const item = document.createElement('div');
+                        item.className = 'p-item';
+                        item.id = `palette-item-${qIdx}`;
+                        item.textContent = i + 1;
+
+                        if (i === examCurrentIdx) item.classList.add('current');
+
+                        if (isCorrect) {
+                            item.classList.add('exam-review-correct');
+                            item.title = `Câu ${i + 1}: Đúng (+1đ)`;
+                        } else if (isAnswered) {
+                            item.classList.add('exam-review-wrong');
+                            item.title = `Câu ${i + 1}: Sai (Bạn chọn: ${userKeys || 'Trống'}, Đúng: ${correctKeys})`;
+                        } else {
+                            item.classList.add('exam-review-unanswered');
+                            item.title = `Câu ${i + 1}: Chưa làm (Bỏ trống)`;
+                        }
+
+                        if (isFlagged) item.classList.add('exam-flagged');
+
+                        item.onclick = () => renderExamQuestion(i);
+                        grid.appendChild(item);
+                    }
+                } else {
+                    // Taking Exam Mode
+                    const epBar = document.getElementById('exam-palette-bar');
+                    const erfBar = document.getElementById('exam-review-filters');
+                    if (epBar) epBar.style.display = 'block';
+                    if (erfBar) erfBar.style.display = 'none';
+
+                    document.getElementById('palette-count-label').textContent = `(${examQuestions.length} câu thi thử)`;
+                    document.getElementById('ep-cnt-answered').textContent = answeredCount;
+                    document.getElementById('ep-cnt-total').textContent = examQuestions.length;
+                    document.getElementById('ep-cnt-todo').textContent = unansweredCount;
+                    document.getElementById('ep-cnt-flagged').textContent = flaggedCount;
+
+                    const percent = Math.round((answeredCount / examQuestions.length) * 100);
+                    const epFill = document.getElementById('exam-progress-fill');
+                    if (epFill) epFill.style.width = `${percent}%`;
+
+                    const bannerDone = document.getElementById('exam-banner-done-cnt');
+                    if (bannerDone) {
+                        bannerDone.textContent = answeredCount;
+                        document.getElementById('exam-banner-total-cnt').textContent = examQuestions.length;
+                    }
+
+                    for (let i = 0; i < examQuestions.length; i++) {
+                        const qIdx = examQuestions[i];
+                        const isAnswered = !!(examAnswers[i] && examAnswers[i].length > 0);
+                        const isFlagged = examFlagged.has(i);
+
+                        const item = document.createElement('div');
+                        item.className = 'p-item';
+                        item.id = `palette-item-${qIdx}`;
+                        item.textContent = i + 1;
+
+                        if (i === examCurrentIdx) item.classList.add('current');
+
+                        if (isAnswered) {
+                            item.classList.add('exam-answered');
+                            item.title = `Câu ${i + 1}: Đã làm (Chọn: ${examAnswers[i].join(', ')})`;
+                        } else {
+                            item.classList.add('exam-todo');
+                            item.title = `Câu ${i + 1}: Chưa làm`;
+                        }
+
+                        if (isFlagged) item.classList.add('exam-flagged');
+
+                        item.onclick = () => renderExamQuestion(i);
+                        grid.appendChild(item);
+                    }
                 }
                 return;
             }
+
+            // Normal Study Palette
+            if (searchWrap) searchWrap.style.display = 'flex';
+            document.getElementById('palette-filters').style.display = 'flex';
+            const epBar = document.getElementById('exam-palette-bar');
+            const erfBar = document.getElementById('exam-review-filters');
+            if (epBar) epBar.style.display = 'none';
+            if (erfBar) erfBar.style.display = 'none';
 
             // Normal Study Palette
             document.getElementById('palette-filters').style.display = 'flex';
@@ -1279,9 +1638,25 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
             examTimeRemaining = examConfig.durationMinutes * 60;
             examStartTime = Date.now();
             
-            document.getElementById('exam-banner').classList.add('show');
+            const banner = document.getElementById('exam-banner');
+            banner.classList.add('show');
+            banner.classList.remove('review-mode');
+            const icon = document.getElementById('exam-banner-icon');
+            if (icon) icon.textContent = '⏱️';
+
             document.getElementById('exam-mode-title').textContent = 
                 examConfig.questionsCount === 30 ? "Chế độ Thi Thử: Test Nhanh (30 câu - 40 phút)" : "Chế độ Thi Thật: Chuẩn Đề Thi (50 câu - 60 phút)";
+            document.getElementById('exam-banner-subtitle').textContent = "Chỉ hiển thị điểm & giải thích sau khi nộp bài!";
+
+            const prog = document.getElementById('exam-banner-progress');
+            if (prog) prog.style.display = 'flex';
+            const timer = document.getElementById('exam-timer-display');
+            if (timer) timer.style.display = 'block';
+            const subBtn = document.getElementById('btn-submit-exam');
+            if (subBtn) subBtn.style.display = 'inline-block';
+            const exitBtn = document.getElementById('btn-exit-exam');
+            if (exitBtn) exitBtn.textContent = 'Thoát thi';
+
             document.getElementById('btn-mock-exam').textContent = '⏹️ Đang thi';
             document.getElementById('btn-mock-exam').classList.add('exam-active');
             
@@ -1331,26 +1706,64 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
             }
             bmBtn.onclick = () => toggleExamFlag();
 
+            const retryBtn = document.getElementById('btn-retry');
+            const retryBtnBottom = document.getElementById('btn-retry-bottom');
+            if (retryBtn) retryBtn.disabled = true;
+            if (retryBtnBottom) retryBtnBottom.disabled = true;
+
+            const selected = examAnswers[eIdx] || [];
+            const correctKeys = q.answer.split('');
+            const userKeysStr = [...selected].sort().join('');
+            const correctKeysStr = [...correctKeys].sort().join('');
+            const isAnswered = selected.length > 0;
+            const isCorrect = isAnswered && (userKeysStr === correctKeysStr);
+
+            // Review status banner
+            const statusBox = document.getElementById('exam-q-status');
+            if (statusBox) {
+                if (examInReview) {
+                    statusBox.style.display = 'block';
+                    if (isCorrect) {
+                        statusBox.className = 'exam-q-status correct';
+                        statusBox.innerHTML = `✅ <strong>Chính xác (+1 điểm)!</strong> Bạn đã chọn: <span class="tag-opt correct">${selected.join(', ')}</span> trùng khớp đáp án đúng.`;
+                    } else if (isAnswered) {
+                        statusBox.className = 'exam-q-status wrong';
+                        statusBox.innerHTML = `❌ <strong>Chưa chính xác!</strong> Bạn đã chọn: <span class="tag-opt wrong">${selected.join(', ')}</span> • Đáp án đúng là: <span class="tag-opt correct">${q.answer}</span>`;
+                    } else {
+                        statusBox.className = 'exam-q-status unanswered';
+                        statusBox.innerHTML = `⚠️ <strong>Bạn đã bỏ trống câu này!</strong> Đáp án đúng là: <span class="tag-opt correct">${q.answer}</span>`;
+                    }
+                } else {
+                    statusBox.style.display = 'none';
+                }
+            }
+
             document.getElementById('question-text').textContent = q.question;
             const optsContainer = document.getElementById('options-list');
             optsContainer.innerHTML = '';
-            
-            const selected = examAnswers[eIdx] || [];
-            const correctKeys = q.answer.split('');
 
             for (const [key, text] of Object.entries(q.options)) {
                 const btn = document.createElement('button');
                 btn.className = 'opt-btn';
                 btn.id = `opt-btn-${key}`;
-                btn.innerHTML = `<span class="opt-key">${key}</span><span>${text}</span>`;
 
                 if (examInReview) {
-                    // Review mode after submission
                     btn.classList.add('disabled');
-                    if (correctKeys.includes(key)) btn.classList.add('correct');
-                    else if (selected.includes(key)) btn.classList.add('wrong');
+                    let reviewLabel = '';
+                    if (correctKeys.includes(key) && selected.includes(key)) {
+                        btn.classList.add('correct');
+                        reviewLabel = `<span class="review-tag tag-correct-choice">✓ Bạn chọn đúng</span>`;
+                    } else if (correctKeys.includes(key) && !selected.includes(key)) {
+                        btn.classList.add('correct');
+                        reviewLabel = `<span class="review-tag tag-correct-missed">✓ Đáp án đúng</span>`;
+                    } else if (selected.includes(key)) {
+                        btn.classList.add('wrong');
+                        reviewLabel = `<span class="review-tag tag-wrong-choice">✗ Bạn đã chọn sai</span>`;
+                    }
+                    btn.innerHTML = `<span class="opt-key">${key}</span><span style="flex: 1;">${text}</span>${reviewLabel}`;
                 } else {
                     if (selected.includes(key)) btn.classList.add('exam-selected');
+                    btn.innerHTML = `<span class="opt-key">${key}</span><span>${text}</span>`;
                     btn.onclick = () => onSelectExamOption(key, q.is_multi);
                 }
 
@@ -1367,6 +1780,9 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
             } else {
                 expBox.classList.remove('show');
             }
+
+            renderPalette();
+        }
 
             // Update Retry Buttons State
             const retryBtn = document.getElementById('btn-retry');
@@ -1415,11 +1831,14 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
         }
 
         function confirmSubmitExam() {
-            const answeredCount = Object.keys(examAnswers).length;
+            let answeredCount = 0;
+            for (let i = 0; i < examQuestions.length; i++) {
+                if (examAnswers[i] && examAnswers[i].length > 0) answeredCount++;
+            }
             const remaining = examQuestions.length - answeredCount;
             let msg = "Bạn có chắc chắn muốn nộp bài thi?";
             if (remaining > 0) {
-                msg = `CẢNH BÁO: Bạn còn ${remaining} câu chưa làm. Bạn có chắc chắn muốn nộp bài ngay bây giờ?`;
+                msg = `CẢNH BÁO: Bạn còn ${remaining} câu chưa làm (${answeredCount}/${examQuestions.length} câu đã làm). Bạn có chắc chắn muốn nộp bài ngay bây giờ?`;
             }
             if (confirm(msg)) {
                 submitExam();
@@ -1471,8 +1890,41 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
         function reviewExamAnswers() {
             closeModal('exam-result-modal');
             examInReview = true;
-            document.getElementById('exam-banner').classList.remove('show');
-            document.getElementById('btn-mock-exam').textContent = '⏱️ Xem lại bài thi';
+            examReviewFilter = 'all';
+
+            const banner = document.getElementById('exam-banner');
+            banner.classList.add('show', 'review-mode');
+            const icon = document.getElementById('exam-banner-icon');
+            if (icon) icon.textContent = '📋';
+
+            let correctCount = 0;
+            for (let i = 0; i < examQuestions.length; i++) {
+                const q = quizData[examQuestions[i]];
+                const userKeys = (examAnswers[i] || []).sort().join('');
+                const correctKeys = q.answer.split('').sort().join('');
+                if (userKeys && userKeys === correctKeys) correctCount++;
+            }
+            const total = examQuestions.length;
+            const score10 = ((correctCount / total) * 10).toFixed(1);
+
+            document.getElementById('exam-mode-title').textContent = 
+                `📋 Đang Xem Lại Bài Thi: ${total === 30 ? 'Test Nhanh 30 câu' : 'Chuẩn Đề 50 câu'}`;
+            document.getElementById('exam-banner-subtitle').innerHTML = 
+                `Điểm: <strong style="color: #38bdf8; font-size: 1.05rem;">${score10}/10</strong> • Đúng: <strong style="color: #4ade80;">${correctCount}/${total}</strong> • Sai/Trống: <strong style="color: #f87171;">${total - correctCount}</strong>`;
+
+            const prog = document.getElementById('exam-banner-progress');
+            if (prog) prog.style.display = 'none';
+            const timer = document.getElementById('exam-timer-display');
+            if (timer) timer.style.display = 'none';
+            const subBtn = document.getElementById('btn-submit-exam');
+            if (subBtn) subBtn.style.display = 'none';
+            const exitBtn = document.getElementById('btn-exit-exam');
+            if (exitBtn) exitBtn.textContent = 'Thoát xem lại (Về ôn tập)';
+
+            document.getElementById('btn-mock-exam').textContent = '📋 Đang xem lại';
+            document.getElementById('btn-mock-exam').classList.add('exam-active');
+
+            renderPalette();
             renderExamQuestion(0);
             showToast('Đang ở chế độ xem lại đáp án bài thi');
         }
@@ -1482,7 +1934,22 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
                 if (examTimerInterval) clearInterval(examTimerInterval);
                 isExamMode = false;
                 examInReview = false;
-                document.getElementById('exam-banner').classList.remove('show');
+                examReviewFilter = 'all';
+
+                const banner = document.getElementById('exam-banner');
+                banner.classList.remove('show', 'review-mode');
+                const icon = document.getElementById('exam-banner-icon');
+                if (icon) icon.textContent = '⏱️';
+
+                const prog = document.getElementById('exam-banner-progress');
+                if (prog) prog.style.display = 'flex';
+                const timer = document.getElementById('exam-timer-display');
+                if (timer) timer.style.display = 'block';
+                const subBtn = document.getElementById('btn-submit-exam');
+                if (subBtn) subBtn.style.display = 'inline-block';
+                const exitBtn = document.getElementById('btn-exit-exam');
+                if (exitBtn) exitBtn.textContent = 'Thoát thi';
+
                 document.getElementById('btn-mock-exam').textContent = '⏱️ Thi Thử';
                 document.getElementById('btn-mock-exam').classList.remove('exam-active');
                 
@@ -1490,8 +1957,13 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
                 const bmBtn = document.getElementById('btn-bookmark');
                 bmBtn.onclick = () => toggleBookmark();
                 
+                // Hide exam status box
+                const statusBox = document.getElementById('exam-q-status');
+                if (statusBox) statusBox.style.display = 'none';
+
                 renderPalette();
                 renderQuestion(currentIndex);
+                showToast('Đã quay lại chế độ Ôn Tập');
             }
         }
 
