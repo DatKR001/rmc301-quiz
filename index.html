@@ -521,9 +521,6 @@
 
         .q-community-warn-bar { background: #7f1d1d40; border: 1px solid #ef4444; border-radius: 8px; padding: 8px 12px; margin-bottom: 12px; font-size: 0.83rem; color: #fca5a5; display: flex; align-items: center; justify-content: space-between; gap: 8px; cursor: pointer; }
         .q-community-warn-bar:hover { background: #7f1d1d60; }
-        .p-item.has-community-warning::before { content: '⚠️'; position: absolute; bottom: 0px; left: 1px; font-size: 8px; }
-    
-
         /* ================= V2.0 MULTI-SUBJECT & GOOGLE AUTH CSS ================= */
         /* Subject Dropdown in Header */
         .subject-dropdown-wrap { position: relative; display: inline-flex; align-items: center; }
@@ -1408,6 +1405,25 @@ GIẢI THÍCH: Giải thích chi tiết cho câu hỏi..." oninput="onImportText
         let userAnswers = {};         // { [q_idx]: { selected: [...], isCorrect: bool } }
         let bookmarks = new Set();     // Set of q_idx
         let userNotes = {};           // { [q_idx]: "text..." }
+
+        function normalizeNotes(rawNotes) {
+            if (!rawNotes) return {};
+            const clean = {};
+            if (Array.isArray(rawNotes)) {
+                rawNotes.forEach((val, idx) => {
+                    if (val && String(val).trim()) {
+                        clean[idx] = String(val).trim();
+                    }
+                });
+            } else if (typeof rawNotes === 'object') {
+                Object.entries(rawNotes).forEach(([k, val]) => {
+                    if (val && String(val).trim()) {
+                        clean[k] = String(val).trim();
+                    }
+                });
+            }
+            return clean;
+        }
         let examHistory = [];         // [ { date, mode, score, total, duration } ]
         let currentMultiSelection = new Set();
         let currentUser = null;
@@ -1447,7 +1463,6 @@ GIẢI THÍCH: Giải thích chi tiết cho câu hỏi..." oninput="onImportText
             loadUserData();
             updateAdminUI();
             initCloudSync();
-            initCommunityComments();
             document.getElementById('stat-total').textContent = quizData.length;
             document.getElementById('cnt-all').textContent = quizData.length;
             renderPalette();
@@ -1491,7 +1506,7 @@ GIẢI THÍCH: Giải thích chi tiết cho câu hỏi..." oninput="onImportText
                     const parsed = JSON.parse(saved);
                     userAnswers = parsed.answers || {};
                     bookmarks = new Set(parsed.bookmarks || []);
-                    userNotes = parsed.notes || {};
+                    userNotes = normalizeNotes(parsed.notes);
                     examHistory = parsed.examHistory || [];
                 } catch(e) {
                     userAnswers = {};
@@ -1511,9 +1526,10 @@ GIẢI THÍCH: Giải thích chi tiết cho câu hỏi..." oninput="onImportText
                 const legacyNotes = localStorage.getItem('rmc301_user_notes');
                 if (legacyNotes) {
                     const parsedNotes = JSON.parse(legacyNotes);
-                    userNotes = Object.assign({}, parsedNotes, userNotes);
+                    userNotes = Object.assign({}, normalizeNotes(parsedNotes), userNotes);
                 }
             } catch(e) {}
+            userNotes = normalizeNotes(userNotes);
         }
 
 function saveProgress() {
@@ -1556,7 +1572,7 @@ function saveProgress() {
         }
 
         function hasDiscussion(i) {
-            const hasLocalNote = !!(userNotes && userNotes[i] && String(userNotes[i]).trim());
+            const hasLocalNote = !!(typeof userNotes !== 'undefined' && userNotes && userNotes[i] && String(userNotes[i]).trim());
             const hasCommunity = !!(communityCommentsMap && communityCommentsMap[i] && communityCommentsMap[i] > 0);
             return hasLocalNote || hasCommunity;
         }
@@ -1607,7 +1623,7 @@ function saveProgress() {
                     isSyncingFromCloud = true;
                     if (cloudVal.answers) userAnswers = cloudVal.answers;
                     if (cloudVal.bookmarks) bookmarks = new Set(cloudVal.bookmarks);
-                    if (cloudVal.notes) userNotes = cloudVal.notes;
+                    if (cloudVal.notes) userNotes = normalizeNotes(cloudVal.notes);
                     if (cloudVal.examHistory) examHistory = cloudVal.examHistory;
 
                     const dataToSave = {
@@ -1789,45 +1805,7 @@ function saveProgress() {
         /* ================= COMMUNITY COMMENTS MODULE ================= */
         let currentCommentsRef = null;
         let allWarningsRef = null;
-        let questionsWithWarnings = new Set();
         let showCommentsSidebar = localStorage.getItem('show_comments_sidebar') !== 'false';
-
-        function initCommunityComments() {
-            if (!firebaseDb) return;
-            try {
-                // Listen to all question comments under rmc301 to detect warnings
-                allWarningsRef = firebaseDb.ref('quiz_comments/rmc301');
-                allWarningsRef.on('value', snapshot => {
-                    const data = snapshot.val() || {};
-                    questionsWithWarnings.clear();
-                    
-                    Object.entries(data).forEach(([qKey, commentsMap]) => {
-                        const qIdx = parseInt(qKey.replace('q_', ''));
-                        if (isNaN(qIdx)) return;
-                        
-                        let hasWarn = false;
-                        if (commentsMap && typeof commentsMap === 'object') {
-                            Object.values(commentsMap).forEach(c => {
-                                if (c && c.isWarning) hasWarn = true;
-                            });
-                        }
-                        if (hasWarn) questionsWithWarnings.add(qIdx);
-                    });
-
-                    updateWarningPaletteTiles();
-                    updateQuestionWarningBanner();
-                });
-            } catch(e) {
-                console.warn('Comments init error:', e);
-            }
-        }
-
-        function updateWarningPaletteTiles() {
-            questionsWithWarnings.forEach(idx => {
-                const el = document.getElementById(`palette-item-${idx}`);
-                if (el) el.classList.add('has-community-warning');
-            });
-        }
 
         function toggleCommentsSidebar() {
             showCommentsSidebar = !showCommentsSidebar;
@@ -1898,7 +1876,7 @@ function saveProgress() {
             let allDiscussions = Array.isArray(comments) ? [...comments] : [];
             
             // Check if there is an existing legacy note in userNotes for this question
-            if (window.userNotes && userNotes[qIdx] !== undefined) {
+            if (typeof userNotes !== 'undefined' && userNotes && userNotes[qIdx] !== undefined) {
                 const noteContent = String(userNotes[qIdx]).trim();
                 if (noteContent) {
                     const isAlreadyInFirebase = allDiscussions.some(c => (c.content || '').trim() === noteContent);
@@ -3317,14 +3295,16 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
         function resetAllProgress() {
-            if (confirm("CẢNH BÁO: Thao tác này sẽ xóa toàn bộ lịch sử làm bài, số câu đúng/sai và câu đã đánh dấu ⭐ của tài khoản này để làm lại từ đầu. Bạn có chắc chắn không?")) {
+            if (confirm("CẢNH BÁO: Thao tác này sẽ xóa toàn bộ lịch sử làm bài, số câu đúng/sai, câu đã đánh dấu ⭐ và thảo luận cá nhân của tài khoản này để làm lại từ đầu. Bạn có chắc chắn không?")) {
                 userAnswers = {};
                 bookmarks = new Set();
+                userNotes = {};
                 examHistory = [];
+                try { localStorage.removeItem('rmc301_user_notes'); } catch(e) {}
                 saveProgress();
                 if (firebaseDb && currentUser && currentUser.email !== 'guest') {
                     const cleanKey = currentUser.email.replace(/[.#$[\]]/g, '_');
-                    firebaseDb.ref(`quiz_progress/${cleanKey}/${currentSubjectId}`).remove();
+                    firebaseDb.ref(`quiz_progress/${cleanKey}`).remove();
                 }
                 renderPalette();
                 renderQuestion(currentIndex);
@@ -3493,8 +3473,6 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
             renderQuestion(0);
             
             // Re-attach comments & online learners for this subject
-            initCommunityComments();
-            
             closeModal('subject-catalog-modal');
             showToast(`Đã chuyển sang môn: ${currentSubject.code} (${activeQuizData.length} câu)`);
         }
