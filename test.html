@@ -304,6 +304,7 @@
                 <div class="card-header">
                     <span class="q-badge" id="q-badge">Câu 1 / 380 (Slide 7)</span>
                     <div class="header-btn-group">
+                        <button class="btn-retry" id="btn-retry" onclick="retryCurrentQuestion()" title="Làm lại câu hỏi này (Xóa kết quả đã chọn)"><span>🔄 Làm lại câu này</span></button>
                         <button class="btn-bookmark" id="btn-bookmark" onclick="toggleBookmark()">
                             <span id="bm-icon">☆</span>
                             <span id="bm-text">Đánh dấu</span>
@@ -330,6 +331,7 @@
                 <!-- Navigation Controls -->
                 <div class="nav-controls">
                     <button class="btn-nav" id="btn-prev" onclick="prevQuestion()">⬅ Câu trước</button>
+                    <button class="btn-retry" id="btn-retry-bottom" onclick="retryCurrentQuestion()" style="margin: 0 8px;"><span>🔄 Làm lại</span></button>
                     <button class="btn-nav" id="btn-next" onclick="nextQuestion()">Câu tiếp ➡</button>
                 </div>
             </div>
@@ -925,6 +927,18 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
                 expBox.classList.remove('show');
             }
 
+            // Update Retry Buttons State
+            const retryBtn = document.getElementById('btn-retry');
+            const retryBtnBottom = document.getElementById('btn-retry-bottom');
+            if (retryBtn) {
+                retryBtn.disabled = !answered || isExamMode;
+                retryBtn.title = answered ? 'Làm lại câu hỏi này (Xóa kết quả đã chọn)' : 'Bạn cần chọn đáp án trước mới có thể làm lại';
+            }
+            if (retryBtnBottom) {
+                retryBtnBottom.disabled = !answered || isExamMode;
+                retryBtnBottom.title = answered ? 'Làm lại câu hỏi này (Xóa kết quả đã chọn)' : 'Bạn cần chọn đáp án trước mới có thể làm lại';
+            }
+
             document.getElementById('btn-prev').disabled = (index === 0);
             document.getElementById('btn-next').disabled = (index === quizData.length - 1);
 
@@ -1349,6 +1363,18 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
 ${q.explanation || 'Không có giải thích chi tiết.'}`;
             } else {
                 expBox.classList.remove('show');
+            }
+
+            // Update Retry Buttons State
+            const retryBtn = document.getElementById('btn-retry');
+            const retryBtnBottom = document.getElementById('btn-retry-bottom');
+            if (retryBtn) {
+                retryBtn.disabled = !answered || isExamMode;
+                retryBtn.title = answered ? 'Làm lại câu hỏi này (Xóa kết quả đã chọn)' : 'Bạn cần chọn đáp án trước mới có thể làm lại';
+            }
+            if (retryBtnBottom) {
+                retryBtnBottom.disabled = !answered || isExamMode;
+                retryBtnBottom.title = answered ? 'Làm lại câu hỏi này (Xóa kết quả đã chọn)' : 'Bạn cần chọn đáp án trước mới có thể làm lại';
             }
 
             document.getElementById('btn-submit-multi').style.display = 'none';
