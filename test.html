@@ -33,7 +33,7 @@
             --exam: #f97316;
             --exam-bg: rgba(249, 115, 22, 0.15);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Segoe UI Symbol"; }
         body { background: var(--bg-color); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
         
         /* Top Navigation Header */
@@ -172,7 +172,7 @@
         .p-item.done-correct { background: #22c55e25; border-color: var(--correct); color: #4ade80; }
         .p-item.done-wrong { background: #ef444425; border-color: var(--wrong); color: #f87171; }
         .p-item.bookmarked::after { content: '★'; position: absolute; top: 1px; right: 2px; font-size: 8px; color: var(--star); }
-        .p-item.has-note::before { content: '💬'; position: absolute; top: 1px; left: 2px; font-size: 8.5px; line-height: 1; pointer-events: none; }
+        .p-item.has-note::before { content: '💬'; position: absolute; top: 1px; left: 2px; font-size: 8.5px; line-height: 1; pointer-events: none; font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif; }
         
         .p-item.exam-answered { background: #38bdf825; border-color: var(--primary); color: #38bdf8; }
         .p-item.exam-flagged::after { content: '🚩'; position: absolute; top: 1px; right: 1px; font-size: 8px; }
@@ -1203,7 +1203,7 @@
                 </div>
                 <div class="stat-box">
                     <div class="stat-box-val" id="an-notes-cnt" style="color: #c084fc;">0</div>
-                    <div class="stat-box-lbl">Câu đã ghi chú</div>
+                    <div class="stat-box-lbl">Câu có thảo luận</div>
                 </div>
             </div>
 
@@ -1409,30 +1409,37 @@
                     const parsed = JSON.parse(saved);
                     userAnswers = parsed.answers || {};
                     bookmarks = new Set(parsed.bookmarks || []);
-                    userNotes = normalizeNotes(parsed.notes);
                     examHistory = parsed.examHistory || [];
+                    if (parsed.notes) {
+                        delete parsed.notes;
+                        try { localStorage.setItem(currentKey, JSON.stringify(parsed)); } catch(e) {}
+                    }
                 } catch(e) {
                     userAnswers = {};
                     bookmarks = new Set();
-                    userNotes = {};
                     examHistory = [];
                 }
             } else {
                 userAnswers = {};
                 bookmarks = new Set();
-                userNotes = {};
                 examHistory = [];
             }
 
-            // Also check for any standalone legacy notes in localStorage
+            // Purge any obsolete standalone legacy notes to prevent false discussion marks
             try {
-                const legacyNotes = localStorage.getItem('rmc301_user_notes');
-                if (legacyNotes) {
-                    const parsedNotes = JSON.parse(legacyNotes);
-                    userNotes = Object.assign({}, normalizeNotes(parsedNotes), userNotes);
+                localStorage.removeItem('rmc301_user_notes');
+                const email = currentUser ? currentUser.email : 'guest';
+                const legacyKey = (email === 'guest') ? 'rmc301_data_guest' : 'rmc301_data_' + email;
+                const legacySaved = localStorage.getItem(legacyKey);
+                if (legacySaved) {
+                    const lp = JSON.parse(legacySaved);
+                    if (lp.notes) {
+                        delete lp.notes;
+                        localStorage.setItem(legacyKey, JSON.stringify(lp));
+                    }
                 }
             } catch(e) {}
-            userNotes = normalizeNotes(userNotes);
+            userNotes = {};
         }
 
 function saveProgress() {
@@ -1441,7 +1448,6 @@ function saveProgress() {
             const dataToSave = {
                 answers: userAnswers,
                 bookmarks: Array.from(bookmarks),
-                notes: userNotes,
                 examHistory: examHistory,
                 lastUpdated: new Date(now).toISOString(),
                 localTimestamp: now
@@ -1475,9 +1481,7 @@ function saveProgress() {
         }
 
         function hasDiscussion(i) {
-            const hasLocalNote = !!(typeof userNotes !== 'undefined' && userNotes && userNotes[i] && String(userNotes[i]).trim());
-            const hasCommunity = !!(communityCommentsMap && communityCommentsMap[i] && communityCommentsMap[i] > 0);
-            return hasLocalNote || hasCommunity;
+            return !!(communityCommentsMap && communityCommentsMap[i] && communityCommentsMap[i] > 0);
         }
 
         function initCloudSync() {
@@ -1526,7 +1530,7 @@ function saveProgress() {
                     isSyncingFromCloud = true;
                     if (cloudVal.answers) userAnswers = cloudVal.answers;
                     if (cloudVal.bookmarks) bookmarks = new Set(cloudVal.bookmarks);
-                    if (cloudVal.notes) userNotes = normalizeNotes(cloudVal.notes);
+                    if (cloudVal.notes && firebaseDb && userKey) { firebaseDb.ref(`quiz_progress/${userKey}/notes`).remove().catch(()=>{}); }
                     if (cloudVal.examHistory) examHistory = cloudVal.examHistory;
 
                     const dataToSave = {
@@ -1775,36 +1779,7 @@ function saveProgress() {
             const container = document.getElementById('comments-list');
             const badge = document.getElementById('q-comments-badge');
             
-            // Build the unified list of discussions: Firebase comments + local legacy notes
-            let allDiscussions = Array.isArray(comments) ? [...comments] : [];
-            
-            // Check if there is an existing legacy note in userNotes for this question
-            if (typeof userNotes !== 'undefined' && userNotes && userNotes[qIdx] !== undefined) {
-                const noteContent = String(userNotes[qIdx]).trim();
-                if (noteContent) {
-                    const isAlreadyInFirebase = allDiscussions.some(c => (c.content || '').trim() === noteContent);
-                    if (!isAlreadyInFirebase) {
-                        const noteAuthor = (currentUser && currentUser.name) ? currentUser.name : 'Ghi chú cá nhân';
-                        const noteEmail = (currentUser && currentUser.email) ? currentUser.email : 'local';
-                        allDiscussions.unshift({
-                            id: 'legacy_note_' + qIdx,
-                            author: noteAuthor,
-                            email: noteEmail,
-                            formattedDate: 'Ghi chú đã lưu',
-                            content: noteContent,
-                            timestamp: 0,
-                            likes: 0,
-                            isLegacyNote: true
-                        });
-                    }
-                } else {
-                    delete userNotes[qIdx];
-                    saveProgress();
-                    updatePaletteItem(qIdx);
-                    updateStats();
-                }
-            }
-
+            const allDiscussions = Array.isArray(comments) ? [...comments] : [];
             if (badge) badge.textContent = allDiscussions.length;
 
             if (!container) return;
@@ -1819,12 +1794,8 @@ function saveProgress() {
                 return;
             }
 
-            // Sort: legacy notes first, then newest comments
-            allDiscussions.sort((a, b) => {
-                if (a.isLegacyNote && !b.isLegacyNote) return -1;
-                if (!a.isLegacyNote && b.isLegacyNote) return 1;
-                return (b.timestamp || 0) - (a.timestamp || 0);
-            });
+            // Sort: newest first
+            allDiscussions.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
             allDiscussions.forEach(c => {
                 const card = document.createElement('div');
@@ -1834,8 +1805,7 @@ function saveProgress() {
                 const initial = (c.author || 'U').charAt(0).toUpperCase();
                 const isMyComment = currentUser && (
                     (currentUser.email && c.email && currentUser.email.toLowerCase() === c.email.toLowerCase()) ||
-                    (currentUser.name && c.author && currentUser.name.toLowerCase() === c.author.toLowerCase()) ||
-                    (c.isLegacyNote && currentUser)
+                    (currentUser.name && c.author && currentUser.name.toLowerCase() === c.author.toLowerCase())
                 );
                 const isAdm = isAdmin();
                 const canDelete = isMyComment || isAdm;
@@ -1847,23 +1817,18 @@ function saveProgress() {
                         <div class="comment-author">
                             <div class="author-avatar">${initial}</div>
                             <div>
-                                <div class="author-name">
-                                    ${escapeHtml(c.author || 'Thành viên')}
-                                    ${c.isLegacyNote ? '<span style="font-size:0.68rem; color:#38bdf8; font-weight:normal; margin-left: 4px;">(Ghi chú cá nhân)</span>' : ''}
-                                </div>
+                                <div class="author-name">${escapeHtml(c.author || 'Thành viên')}</div>
                                 <div class="comment-date">${c.formattedDate || ''}</div>
                             </div>
                         </div>
                     </div>
                     <div class="comment-body">${escapeHtml(c.content || '')}</div>
                     <div class="comment-foot">
-                        ${!c.isLegacyNote ? `
                         <button class="btn-like-comment ${likedByMe ? 'liked' : ''}" onclick="toggleLikeComment(${qIdx}, '${c.id}')">
                             ${likedByMe ? '❤️' : '🤍'} ${likes > 0 ? likes : 'Thích'}
                         </button>
-                        ` : '<div></div>'}
                         ${canDelete ? `
-                            <button class="btn-del-comment" onclick="deleteDiscussionComment(${qIdx}, '${c.id}', ${!!c.isLegacyNote})" title="${isAdm && !isMyComment ? 'Xóa thảo luận với quyền Admin (Võ Trọng Đạt)' : 'Xóa thảo luận'}">
+                            <button class="btn-del-comment" onclick="deleteDiscussionComment(${qIdx}, '${c.id}')" title="${isAdm && !isMyComment ? 'Xóa thảo luận với quyền Admin (Võ Trọng Đạt)' : 'Xóa thảo luận của bạn'}">
                                 🗑️ Xóa ${isAdm && !isMyComment ? '(Admin)' : ''}
                             </button>
                         ` : ''}
@@ -1873,43 +1838,20 @@ function saveProgress() {
             });
         }
 
-        function deleteDiscussionComment(qIdx, commentId, isLegacyNote) {
+        function deleteDiscussionComment(qIdx, commentId) {
             const isAdm = isAdmin();
             const msg = isAdm 
                 ? "Bạn có chắc chắn muốn xóa thảo luận này với quyền Admin (Võ Trọng Đạt) không?" 
                 : "Bạn có chắc chắn muốn xóa thảo luận này không?";
             if (!confirm(msg)) return;
 
-            if (isLegacyNote) {
-                delete userNotes[qIdx];
-                saveProgress();
-                updatePaletteItem(qIdx);
-                updateStats();
-                loadCommentsForQuestion(qIdx);
-                showToast("Đã xóa thảo luận!");
-                return;
-            }
-
             if (!firebaseDb) {
-                if (userNotes && userNotes[qIdx]) {
-                    delete userNotes[qIdx];
-                    saveProgress();
-                    updatePaletteItem(qIdx);
-                    updateStats();
-                }
-                loadCommentsForQuestion(qIdx);
-                showToast("Đã xóa thảo luận!");
+                showToast("Không thể kết nối đến cơ sở dữ liệu!");
                 return;
             }
 
             const subId = currentSubjectId || 'rmc301';
             firebaseDb.ref(`quiz_comments/${subId}/q_${qIdx}/${commentId}`).remove().then(() => {
-                if (userNotes && userNotes[qIdx]) {
-                    delete userNotes[qIdx];
-                    saveProgress();
-                    updatePaletteItem(qIdx);
-                    updateStats();
-                }
                 showToast("Đã xóa thảo luận thành công!");
             }).catch(err => {
                 console.error("Lỗi khi xóa thảo luận:", err);
@@ -1973,28 +1915,21 @@ function saveProgress() {
                 likes: 0
             };
 
-            // Mirror to userNotes for local persistence
-            userNotes[qIdx] = content;
-            saveProgress();
-            updatePaletteItem(qIdx);
-            updateStats();
-
             textarea.value = '';
             const charCnt = document.getElementById('comment-char-cnt');
             if (charCnt) charCnt.textContent = '0 ký tự';
-            
-            // Immediately re-render comments list so the user sees their post instantly!
-            loadCommentsForQuestion(qIdx);
-            showToast('💬 Đã lưu thảo luận thành công!');
 
             if (firebaseDb) {
                 const subId = currentSubjectId || 'rmc301';
                 const qRef = firebaseDb.ref(`quiz_comments/${subId}/q_${qIdx}`);
                 qRef.push(newComment).then(() => {
-                    // Firebase realtime listener will keep it in sync
+                    showToast('💬 Đã gửi thảo luận thành công!');
                 }).catch(err => {
-                    console.log('Firebase comment push offline:', err);
+                    console.error('Firebase comment push error:', err);
+                    showToast('⚠️ Lỗi gửi thảo luận!');
                 });
+            } else {
+                showToast('⚠️ Cần kết nối mạng để gửi thảo luận!');
             }
         }
 
@@ -3148,7 +3083,7 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
             document.getElementById('an-answered-num').textContent = answered;
             document.getElementById('an-accuracy').textContent = `${accuracy}%`;
             document.getElementById('an-wrong-cnt').textContent = wrong;
-            document.getElementById('an-notes-cnt').textContent = Object.keys(userNotes).length;
+            document.getElementById('an-notes-cnt').textContent = Object.values(communityCommentsMap || {}).filter(cnt => cnt > 0).length;
 
             const corPct = (correct / total) * 100;
             const wrgPct = (wrong / total) * 100;
