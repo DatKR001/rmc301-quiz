@@ -505,7 +505,6 @@
                 <div class="card-header">
                     <span class="q-badge" id="q-badge">Câu 1 / 380 (Slide 7)</span>
                     <div class="header-btn-group">
-                        <button class="btn-retry" id="btn-retry" onclick="retryCurrentQuestion()" title="Làm lại câu hỏi này (Xóa kết quả đã chọn)"><span>🔄 Làm lại câu này</span></button>
                         <button class="btn-bookmark" id="btn-bookmark" onclick="toggleBookmark()">
                             <span id="bm-icon">☆</span>
                             <span id="bm-text">Đánh dấu</span>
@@ -528,15 +527,14 @@
                 <div class="explanation-box" id="explanation-box">
                     <div class="exp-title">💡 Đáp án & Giải thích chi tiết:</div>
                     <div id="explanation-text"></div>
-                    <div style="margin-top: 14px; text-align: right;">
-                        <button class="btn-retry-in-box" onclick="retryCurrentQuestion()" style="background: #38bdf820; border: 1px solid var(--primary); color: var(--primary); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.88rem; font-weight: 600;">🔄 Làm lại câu này (Chọn lại từ đầu)</button>
+                    <div id="exp-retry-wrap" style="margin-top: 14px; text-align: right;">
+                        <button class="btn-retry-in-box" id="btn-retry-in-box" onclick="retryCurrentQuestion()">🔄 Làm lại câu này (Chọn lại từ đầu)</button>
                     </div>
                 </div>
 
                 <!-- Navigation Controls -->
                 <div class="nav-controls">
                     <button class="btn-nav" id="btn-prev" onclick="prevQuestion()">⬅ Câu trước</button>
-                    <button class="btn-retry" id="btn-retry-bottom" onclick="retryCurrentQuestion()" style="margin: 0 8px;"><span>🔄 Làm lại</span></button>
                     <button class="btn-nav" id="btn-next" onclick="nextQuestion()">Câu tiếp ➡</button>
                 </div>
             </div>
@@ -1162,16 +1160,10 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
                 expBox.classList.remove('show');
             }
 
-            // Update Retry Buttons State
-            const retryBtn = document.getElementById('btn-retry');
-            const retryBtnBottom = document.getElementById('btn-retry-bottom');
-            if (retryBtn) {
-                retryBtn.disabled = !answered || isExamMode;
-                retryBtn.title = answered ? 'Làm lại câu hỏi này (Xóa kết quả đã chọn)' : 'Bạn cần chọn đáp án trước mới có thể làm lại';
-            }
-            if (retryBtnBottom) {
-                retryBtnBottom.disabled = !answered || isExamMode;
-                retryBtnBottom.title = answered ? 'Làm lại câu hỏi này (Xóa kết quả đã chọn)' : 'Bạn cần chọn đáp án trước mới có thể làm lại';
+            // Retry button only in explanation box for study mode
+            const expRetryWrap = document.getElementById('exp-retry-wrap');
+            if (expRetryWrap) {
+                expRetryWrap.style.display = (answered && !isExamMode) ? 'block' : 'none';
             }
 
             document.getElementById('btn-prev').disabled = (index === 0);
@@ -1708,10 +1700,9 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
             }
             bmBtn.onclick = () => toggleExamFlag();
 
-            const retryBtn = document.getElementById('btn-retry');
-            const retryBtnBottom = document.getElementById('btn-retry-bottom');
-            if (retryBtn) retryBtn.disabled = true;
-            if (retryBtnBottom) retryBtnBottom.disabled = true;
+            // Never show retry in exam or exam review mode
+            const expRetryWrap = document.getElementById('exp-retry-wrap');
+            if (expRetryWrap) expRetryWrap.style.display = 'none';
 
             const selected = examAnswers[eIdx] || [];
             const correctKeys = q.answer.split('');
