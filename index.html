@@ -1776,34 +1776,18 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
             if (examInReview) {
                 expBox.classList.add('show');
                 document.getElementById('explanation-text').textContent = 
-                    `ĐÁP ÁN ĐÚNG: ${q.answer}
-
-${q.explanation || 'Không có giải thích chi tiết.'}`;
+                    `ĐÁP ÁN ĐÚNG: ${q.answer}\n\n${q.explanation || 'Không có giải thích chi tiết.'}`;
             } else {
                 expBox.classList.remove('show');
             }
 
-            renderPalette();
-        }
-
-            // Update Retry Buttons State
-            const retryBtn = document.getElementById('btn-retry');
-            const retryBtnBottom = document.getElementById('btn-retry-bottom');
-            if (retryBtn) {
-                retryBtn.disabled = !answered || isExamMode;
-                retryBtn.title = answered ? 'Làm lại câu hỏi này (Xóa kết quả đã chọn)' : 'Bạn cần chọn đáp án trước mới có thể làm lại';
-            }
-            if (retryBtnBottom) {
-                retryBtnBottom.disabled = !answered || isExamMode;
-                retryBtnBottom.title = answered ? 'Làm lại câu hỏi này (Xóa kết quả đã chọn)' : 'Bạn cần chọn đáp án trước mới có thể làm lại';
-            }
-
-            document.getElementById('btn-submit-multi').style.display = 'none';
+            const submitMultiBtn = document.getElementById('btn-submit-multi');
+            if (submitMultiBtn) submitMultiBtn.style.display = 'none';
             document.getElementById('btn-prev').disabled = (eIdx === 0);
             document.getElementById('btn-next').disabled = (eIdx === examQuestions.length - 1);
 
-            updatePaletteCurrent();
             loadCurrentQuestionNote();
+            renderPalette();
         }
 
         function onSelectExamOption(key, isMulti) {
