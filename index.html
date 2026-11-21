@@ -90,7 +90,8 @@
         .header-btn-group { display: flex; gap: 8px; align-items: center; }
         .btn-bookmark { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 6px 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 0.85rem; display: flex; align-items: center; gap: 4px; }
         .btn-bookmark.active { background: #f59e0b25; border-color: #f59e0b; color: #fbbf24; font-weight: 600; }
-        .btn-toggle-sidebar { background: #a855f715; border: 1px solid #a855f750; color: #c084fc; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; display: none; align-items: center; gap: 4px; }
+        .btn-toggle-sidebar { background: #38bdf818; border: 1px solid #38bdf860; color: #38bdf8; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; display: inline-flex !important; align-items: center; gap: 6px; transition: all 0.2s; }
+        .btn-toggle-sidebar:hover { background: #38bdf830; border-color: var(--primary); }
         
         .question-text { font-size: 1.15rem; line-height: 1.6; margin-bottom: 22px; font-weight: 600; color: #fff; }
         
@@ -139,8 +140,8 @@
         /* Responsive Breakpoint for Sidebar */
         @media (max-width: 1024px) {
             .workspace-grid { flex-direction: column; }
+            .comments-sidebar { width: 100%; position: static; max-height: none; }
             .notes-sidebar { width: 100%; position: static; }
-            .btn-toggle-sidebar { display: inline-flex; }
         }
 
         /* ================= PALETTE DRAWER & SEARCH ================= */
@@ -456,6 +457,68 @@
         .ew-title { font-weight: 600; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 420px; }
         .ew-tags { display: flex; gap: 6px; font-size: 0.74rem; font-weight: 700; flex-shrink: 0; }
     
+    
+        /* Community Comments & Warnings */
+        .comments-sidebar { 
+            width: 360px; 
+            background: var(--card-bg); 
+            border-radius: 16px; 
+            border: 1px solid var(--border); 
+            padding: 18px 20px; 
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.4); 
+            position: sticky; 
+            top: 80px; 
+            flex-shrink: 0; 
+            max-height: calc(100vh - 100px);
+            transition: all 0.25s ease;
+        }
+        .comments-sidebar.hidden { display: none !important; }
+        .comments-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .comments-title { font-size: 0.96rem; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 6px; }
+        .btn-toggle-panel { background: #1e293b; border: 1px solid var(--border); color: #94a3b8; border-radius: 6px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s; }
+        .btn-toggle-panel:hover { color: #fff; border-color: var(--primary); }
+
+        .comments-q-indicator { font-size: 0.8rem; color: #94a3b8; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .warning-count-pill { background: #7f1d1d50; color: #fca5a5; border: 1px solid #ef4444; padding: 2px 8px; border-radius: 10px; font-size: 0.72rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
+
+        .comments-warning-banner { background: #7f1d1d35; border: 1px solid #ef4444; border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; }
+
+        .comments-list { overflow-y: auto; flex: 1; min-height: 180px; max-height: 380px; padding-right: 4px; margin-bottom: 12px; }
+        .comments-empty { text-align: center; padding: 30px 12px; color: var(--text-muted); font-size: 0.82rem; }
+
+        .comment-card { background: #0f172a; border: 1px solid var(--border); border-radius: 10px; padding: 11px 13px; margin-bottom: 9px; transition: all 0.2s; position: relative; }
+        .comment-card.is-warning { background: #7f1d1d25; border-color: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); }
+        .comment-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .comment-author { display: flex; align-items: center; gap: 7px; }
+        .author-avatar { width: 24px; height: 24px; border-radius: 50%; background: #38bdf8; color: #0b1120; font-weight: 700; font-size: 0.72rem; display: flex; align-items: center; justify-content: center; }
+        .author-name { font-size: 0.82rem; font-weight: 700; color: #f1f5f9; }
+        .comment-date { font-size: 0.7rem; color: #64748b; }
+        .badge-warning-flag { background: #ef4444; color: #fff; font-size: 0.68rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; display: inline-flex; align-items: center; gap: 3px; }
+        .comment-body { font-size: 0.83rem; color: #cbd5e1; line-height: 1.45; word-break: break-word; white-space: pre-wrap; }
+        .comment-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+        .btn-like-comment { background: transparent; border: 1px solid var(--border); color: #94a3b8; font-size: 0.72rem; border-radius: 12px; padding: 2px 8px; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 4px; }
+        .btn-like-comment:hover { border-color: #f43f5e; color: #f43f5e; }
+        .btn-like-comment.liked { background: #f43f5e20; border-color: #f43f5e; color: #f43f5e; font-weight: 700; }
+        .btn-del-comment { background: transparent; border: none; color: #64748b; font-size: 0.72rem; cursor: pointer; }
+        .btn-del-comment:hover { color: #f87171; }
+
+        .comment-input-box { border-top: 1px solid var(--border); padding-top: 12px; }
+        .comment-guest-prompt { text-align: center; padding: 12px 10px; background: #0f172a; border-radius: 8px; border: 1px dashed var(--border); }
+        .btn-login-comment { background: #38bdf8; color: #0b1120; font-weight: 700; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; margin-top: 4px; }
+        .comment-author-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .comment-textarea { width: 100%; background: #0f172a; border: 1px solid var(--border); border-radius: 8px; color: #fff; padding: 8px 10px; font-size: 0.83rem; resize: vertical; min-height: 55px; font-family: inherit; }
+        .comment-textarea:focus { border-color: #38bdf8; outline: none; }
+        .comment-warn-label { display: flex; align-items: center; gap: 6px; font-size: 0.76rem; color: #fca5a5; cursor: pointer; margin: 8px 0; }
+        .comment-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+        .btn-send-comment { background: #38bdf8; color: #0b1120; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.15s; }
+        .btn-send-comment:hover { background: #7dd3fc; }
+
+        .q-community-warn-bar { background: #7f1d1d40; border: 1px solid #ef4444; border-radius: 8px; padding: 8px 12px; margin-bottom: 12px; font-size: 0.83rem; color: #fca5a5; display: flex; align-items: center; justify-content: space-between; gap: 8px; cursor: pointer; }
+        .q-community-warn-bar:hover { background: #7f1d1d60; }
+        .p-item.has-community-warning::before { content: '⚠️'; position: absolute; bottom: 0px; left: 1px; font-size: 8px; }
+    
     </style>
 </head>
 <body>
@@ -466,7 +529,7 @@
             <div>
                 <div class="logo-title">
                     <span>RMC301 Exam Practice</span>
-                    <span class="version-badge">v1.5</span>
+                    <span class="version-badge">v1.6 (Cộng Đồng)</span>
                     <div class="online-pill" id="online-learners-badge" title="Số người đang cùng truy cập ôn luyện trực tuyến">
                         <span class="online-indicator-dot"></span>
                         <span><strong id="online-learners-count">1</strong> người đang học</span>
@@ -546,12 +609,13 @@
                             <span id="bm-icon">☆</span>
                             <span id="bm-text">Đánh dấu</span>
                         </button>
-                        <button class="btn-toggle-sidebar" onclick="toggleNotesSidebar()">
-                            <span>📝 Ghi chú</span>
+                        <button class="btn-toggle-sidebar" id="btn-toggle-comments" onclick="toggleCommentsSidebar()" title="Bật/Tắt thảo luận & cảnh báo câu hỏi">
+                            <span>💬 Thảo luận (<span id="q-comments-badge">0</span>)</span>
                         </button>
                     </div>
                 </div>
                 
+                <div id="q-community-warn-bar" class="q-community-warn-bar" style="display: none;" onclick="openCommentsSidebar()"></div>
                 <div id="exam-q-status" class="exam-q-status" style="display: none;"></div>
                 <div class="question-text" id="question-text">Đang tải câu hỏi...</div>
                 <div class="options-list" id="options-list"></div>
@@ -577,25 +641,77 @@
             </div>
 
             <!-- Right Column: Personal Notes Sidebar -->
-            <div class="notes-sidebar" id="notes-sidebar">
-                <div class="notes-header">
-                    <div class="notes-title">
-                        <span>📝 Ghi Chú Cá Nhân</span>
+            <!-- Right Column: Community Discussion & Warnings Sidebar -->
+            <div class="comments-sidebar" id="comments-sidebar">
+                <div class="comments-header">
+                    <div class="comments-title">
+                        <span>💬 Thảo Luận & Cảnh Báo</span>
                     </div>
-                    <span class="notes-save-badge saved" id="notes-save-status">Đã lưu 🟢</span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <button class="btn-toggle-panel" id="btn-toggle-comments-panel" onclick="toggleCommentsSidebar()" title="Ẩn/Hiện khung thảo luận">
+                            <span id="comments-toggle-icon">✕</span>
+                        </button>
+                    </div>
                 </div>
-                <div style="font-size: 0.78rem; color: #94a3b8; margin-bottom: 10px;" id="notes-q-indicator">
-                    Ghi chú cho Câu 1:
+
+                <div class="comments-q-indicator" id="comments-q-indicator">
+                    <span id="comments-q-title">Câu 1 (Slide 7):</span>
+                    <span id="comments-warning-indicator" class="warning-count-pill" style="display: none;">⚠️ <strong id="warn-count-num">0</strong> cảnh báo</span>
                 </div>
-                <textarea 
-                    class="notes-textarea" 
-                    id="note-textarea" 
-                    placeholder="Viết ghi chú, mẹo nhớ, định nghĩa hoặc từ khóa cho câu hỏi này... (Tự động lưu lên Cloud sau khi gõ)"
-                    oninput="onNoteInput(this.value)"
-                ></textarea>
-                <div class="notes-actions">
-                    <span id="note-char-count">0 ký tự</span>
-                    <button class="btn-clear-note" onclick="clearCurrentNote()">Xóa ghi chú câu này</button>
+
+                <!-- Warning Alert Box if there are warnings -->
+                <div class="comments-warning-banner" id="comments-warning-banner" style="display: none;">
+                    <div style="font-weight: 700; color: #f87171; display: flex; align-items: center; gap: 6px;">
+                        <span>⚠️ CẢNH BÁO TỪ CỘNG ĐỒNG</span>
+                    </div>
+                    <div style="font-size: 0.78rem; color: #fca5a5; margin-top: 2px;" id="comments-warning-desc">
+                        Có bạn cảnh báo câu này bị sai đáp án trong slide hoặc câu hỏi đánh đố dễ nhầm!
+                    </div>
+                </div>
+
+                <!-- Comments List (Realtime stream) -->
+                <div class="comments-list" id="comments-list">
+                    <div class="comments-empty" id="comments-empty">
+                        <span>💬 Chưa có bình luận nào cho câu này. Hãy là người đầu tiên để lại mẹo nhớ hoặc cảnh báo!</span>
+                    </div>
+                </div>
+
+                <!-- Comment Input Area -->
+                <div class="comment-input-box" id="comment-input-box">
+                    <!-- Guest Login Notice if not logged in -->
+                    <div class="comment-guest-prompt" id="comment-guest-prompt" style="display: none;">
+                        <div style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 8px;">
+                            🔒 Bạn cần đăng nhập tài khoản để gửi bình luận & cảnh báo câu sai.
+                        </div>
+                        <button class="btn-login-comment" onclick="openLoginModal()">👤 Đăng nhập để bình luận</button>
+                    </div>
+
+                    <!-- Input Form for Logged-in Users -->
+                    <div class="comment-form" id="comment-form" style="display: none;">
+                        <div class="comment-author-bar">
+                            <div class="author-avatar" id="comment-author-avatar">V</div>
+                            <span class="author-name" id="comment-author-name">Võ Trọng Đạt</span>
+                        </div>
+
+                        <textarea 
+                            class="comment-textarea" 
+                            id="comment-textarea" 
+                            placeholder="Chia sẻ mẹo nhớ, định nghĩa hoặc cảnh báo nếu đề có đáp án sai..."
+                            rows="2"
+                        ></textarea>
+
+                        <div class="comment-checkbox-wrap">
+                            <label class="comment-warn-label">
+                                <input type="checkbox" id="comment-is-warning" class="comment-warn-checkbox">
+                                <span>⚠️ Đánh dấu: <strong>Cảnh báo đáp án sai / Dễ bẫy</strong></span>
+                            </label>
+                        </div>
+
+                        <div class="comment-actions">
+                            <span style="font-size: 0.72rem; color: var(--text-muted);" id="comment-char-cnt">0 ký tự</span>
+                            <button class="btn-send-comment" id="btn-send-comment" onclick="submitCommunityComment()">Gửi bình luận 🚀</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -892,6 +1008,7 @@
         function init() {
             loadUserData();
             initCloudSync();
+            initCommunityComments();
             document.getElementById('stat-total').textContent = quizData.length;
             document.getElementById('cnt-all').textContent = quizData.length;
             renderPalette();
@@ -1113,9 +1230,10 @@
             }
         }
 
-        /* ================= NOTES LOGIC ================= */
+        /* ================= NOTES LOGIC (SAFE / LEGACY COMPAT) ================= */
         function loadCurrentQuestionNote() {
             const noteEl = document.getElementById('note-textarea');
+            if (!noteEl) return;
             const indicatorEl = document.getElementById('notes-q-indicator');
             const countEl = document.getElementById('note-char-count');
             const statusEl = document.getElementById('notes-save-status');
@@ -1124,19 +1242,23 @@
             const currentNote = userNotes[qIdx] || '';
             
             noteEl.value = currentNote;
-            indicatorEl.textContent = `Ghi chú cho Câu ${qIdx + 1}:`;
-            countEl.textContent = `${currentNote.length} ký tự`;
-            statusEl.textContent = 'Đã lưu 🟢';
-            statusEl.className = 'notes-save-badge saved';
+            if (indicatorEl) indicatorEl.textContent = `Ghi chú cho Câu ${qIdx + 1}:`;
+            if (countEl) countEl.textContent = `${currentNote.length} ký tự`;
+            if (statusEl) {
+                statusEl.textContent = 'Đã lưu 🟢';
+                statusEl.className = 'notes-save-badge saved';
+            }
         }
 
         function onNoteInput(text) {
             const countEl = document.getElementById('note-char-count');
             const statusEl = document.getElementById('notes-save-status');
-            countEl.textContent = `${text.length} ký tự`;
+            if (countEl) countEl.textContent = `${text.length} ký tự`;
             
-            statusEl.textContent = 'Đang lưu... 🔄';
-            statusEl.className = 'notes-save-badge saving';
+            if (statusEl) {
+                statusEl.textContent = 'Đang lưu... 🔄';
+                statusEl.className = 'notes-save-badge saving';
+            }
 
             if (noteSaveTimeout) clearTimeout(noteSaveTimeout);
             noteSaveTimeout = setTimeout(() => {
@@ -1148,8 +1270,10 @@
                     delete userNotes[qIdx];
                 }
                 saveProgress();
-                statusEl.textContent = 'Đã lưu 🟢';
-                statusEl.className = 'notes-save-badge saved';
+                if (statusEl) {
+                    statusEl.textContent = 'Đã lưu 🟢';
+                    statusEl.className = 'notes-save-badge saved';
+                }
                 updatePaletteItem(qIdx);
                 updateStats();
             }, 500);
@@ -1160,8 +1284,10 @@
             if (userNotes[qIdx]) {
                 if (confirm(`Bạn có chắc chắn muốn xóa ghi chú của Câu ${qIdx + 1}?`)) {
                     delete userNotes[qIdx];
-                    document.getElementById('note-textarea').value = '';
-                    document.getElementById('note-char-count').textContent = '0 ký tự';
+                    const noteEl = document.getElementById('note-textarea');
+                    if (noteEl) noteEl.value = '';
+                    const countEl = document.getElementById('note-char-count');
+                    if (countEl) countEl.textContent = '0 ký tự';
                     saveProgress();
                     updatePaletteItem(qIdx);
                     updateStats();
@@ -1175,6 +1301,324 @@
             sidebar.style.display = (sidebar.style.display === 'none' || sidebar.style.display === '') ? 'flex' : 'none';
         }
 
+        
+        /* ================= COMMUNITY COMMENTS MODULE ================= */
+        let currentCommentsRef = null;
+        let allWarningsRef = null;
+        let questionsWithWarnings = new Set();
+        let showCommentsSidebar = localStorage.getItem('show_comments_sidebar') !== 'false';
+
+        function initCommunityComments() {
+            if (!firebaseDb) return;
+            try {
+                // Listen to all question comments under rmc301 to detect warnings
+                allWarningsRef = firebaseDb.ref('quiz_comments/rmc301');
+                allWarningsRef.on('value', snapshot => {
+                    const data = snapshot.val() || {};
+                    questionsWithWarnings.clear();
+                    
+                    Object.entries(data).forEach(([qKey, commentsMap]) => {
+                        const qIdx = parseInt(qKey.replace('q_', ''));
+                        if (isNaN(qIdx)) return;
+                        
+                        let hasWarn = false;
+                        if (commentsMap && typeof commentsMap === 'object') {
+                            Object.values(commentsMap).forEach(c => {
+                                if (c && c.isWarning) hasWarn = true;
+                            });
+                        }
+                        if (hasWarn) questionsWithWarnings.add(qIdx);
+                    });
+
+                    updateWarningPaletteTiles();
+                    updateQuestionWarningBanner();
+                });
+            } catch(e) {
+                console.warn('Comments init error:', e);
+            }
+        }
+
+        function updateWarningPaletteTiles() {
+            questionsWithWarnings.forEach(idx => {
+                const el = document.getElementById(`palette-item-${idx}`);
+                if (el) el.classList.add('has-community-warning');
+            });
+        }
+
+        function toggleCommentsSidebar() {
+            showCommentsSidebar = !showCommentsSidebar;
+            localStorage.setItem('show_comments_sidebar', showCommentsSidebar);
+            applyCommentsSidebarVisibility();
+        }
+
+        function openCommentsSidebar() {
+            showCommentsSidebar = true;
+            localStorage.setItem('show_comments_sidebar', true);
+            applyCommentsSidebarVisibility();
+        }
+
+        function applyCommentsSidebarVisibility() {
+            const sidebar = document.getElementById('comments-sidebar');
+            const icon = document.getElementById('comments-toggle-icon');
+            if (!sidebar) return;
+
+            if (showCommentsSidebar) {
+                sidebar.classList.remove('hidden');
+                if (icon) icon.textContent = '✕';
+            } else {
+                sidebar.classList.add('hidden');
+                if (icon) icon.textContent = '💬';
+            }
+        }
+
+        function loadCommentsForQuestion(qIdx) {
+            applyCommentsSidebarVisibility();
+            updateCommentAuthUI();
+            const cTextarea = document.getElementById('comment-textarea');
+            if (cTextarea) {
+                cTextarea.addEventListener('input', function() {
+                    const cnt = document.getElementById('comment-char-cnt');
+                    if (cnt) cnt.textContent = `${this.value.length} ký tự`;
+                });
+            }
+    
+
+            const q = quizData[qIdx];
+            const qTitle = document.getElementById('comments-q-title');
+            if (qTitle && q) {
+                qTitle.textContent = `Câu ${qIdx + 1} (Slide ${q.slide_num}):`;
+            }
+
+            if (!firebaseDb) {
+                renderCommentsList([], qIdx);
+                return;
+            }
+
+            if (currentCommentsRef) {
+                currentCommentsRef.off();
+            }
+
+            currentCommentsRef = firebaseDb.ref(`quiz_comments/rmc301/q_${qIdx}`);
+            currentCommentsRef.on('value', snapshot => {
+                const data = snapshot.val() || {};
+                const list = Object.entries(data).map(([id, val]) => ({ id, ...val }));
+                renderCommentsList(list, qIdx);
+            });
+        }
+
+        function renderCommentsList(comments, qIdx) {
+            const container = document.getElementById('comments-list');
+            const badge = document.getElementById('q-comments-badge');
+            const warnIndicator = document.getElementById('comments-warning-indicator');
+            const warnCountNum = document.getElementById('warn-count-num');
+            const warnBanner = document.getElementById('comments-warning-banner');
+            
+            if (badge) badge.textContent = comments.length;
+
+            let warnCount = 0;
+            comments.forEach(c => { if (c.isWarning) warnCount++; });
+
+            if (warnIndicator && warnCountNum) {
+                if (warnCount > 0) {
+                    warnIndicator.style.display = 'inline-flex';
+                    warnCountNum.textContent = warnCount;
+                } else {
+                    warnIndicator.style.display = 'none';
+                }
+            }
+
+            if (warnBanner) {
+                warnBanner.style.display = warnCount > 0 ? 'block' : 'none';
+            }
+
+            updateQuestionWarningBanner();
+
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (comments.length === 0) {
+                container.innerHTML = `
+                    <div class="comments-empty">
+                        <span>💬 Chưa có thảo luận nào cho câu này. Hãy là người đầu tiên để lại mẹo nhớ hoặc cảnh báo!</span>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort: Warnings first, then newest first
+            comments.sort((a, b) => {
+                if (a.isWarning && !b.isWarning) return -1;
+                if (!a.isWarning && b.isWarning) return 1;
+                return (b.timestamp || 0) - (a.timestamp || 0);
+            });
+
+            comments.forEach(c => {
+                const card = document.createElement('div');
+                card.className = `comment-card ${c.isWarning ? 'is-warning' : ''}`;
+                card.id = `comment-${c.id}`;
+
+                const initial = (c.author || 'U').charAt(0).toUpperCase();
+                const isMyComment = currentUser && currentUser.email === c.email;
+                const likes = c.likes || 0;
+                const likedByMe = currentUser && c.likedBy && c.likedBy[currentUser.email.replace(/[.#$[\]]/g, '_')];
+
+                card.innerHTML = `
+                    <div class="comment-card-head">
+                        <div class="comment-author">
+                            <div class="author-avatar">${initial}</div>
+                            <div>
+                                <div class="author-name">${c.author || 'Thành viên'}</div>
+                                <div class="comment-date">${c.formattedDate || ''}</div>
+                            </div>
+                        </div>
+                        ${c.isWarning ? '<span class="badge-warning-flag">⚠️ Cảnh báo sai</span>' : ''}
+                    </div>
+                    <div class="comment-body">${escapeHtml(c.content || '')}</div>
+                    <div class="comment-foot">
+                        <button class="btn-like-comment ${likedByMe ? 'liked' : ''}" onclick="toggleLikeComment(${qIdx}, '${c.id}')">
+                            ${likedByMe ? '❤️' : '🤍'} ${likes > 0 ? likes : 'Thích'}
+                        </button>
+                        ${isMyComment ? `
+                            <button class="btn-del-comment" onclick="deleteCommunityComment(${qIdx}, '${c.id}')" title="Xóa bình luận của bạn">🗑️ Xóa</button>
+                        ` : ''}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function updateQuestionWarningBanner() {
+            const bar = document.getElementById('q-community-warn-bar');
+            if (!bar) return;
+
+            if (questionsWithWarnings.has(currentIndex) && !isExamMode) {
+                bar.style.display = 'flex';
+                bar.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 1.1rem;">⚠️</span>
+                        <div>
+                            <strong>Cảnh báo từ cộng đồng:</strong> Câu hỏi này có phản ánh đáp án bị lỗi hoặc dễ bẫy!
+                        </div>
+                    </div>
+                    <span style="color: #38bdf8; font-size: 0.78rem; text-decoration: underline; white-space: nowrap;">Mở thảo luận ➔</span>
+                `;
+            } else {
+                bar.style.display = 'none';
+            }
+        }
+
+        function updateCommentAuthUI() {
+            const guestPrompt = document.getElementById('comment-guest-prompt');
+            const form = document.getElementById('comment-form');
+            const avatar = document.getElementById('comment-author-avatar');
+            const name = document.getElementById('comment-author-name');
+
+            const isLoggedIn = currentUser && currentUser.email !== 'guest';
+
+            if (isLoggedIn) {
+                if (guestPrompt) guestPrompt.style.display = 'none';
+                if (form) form.style.display = 'block';
+                if (avatar) avatar.textContent = (currentUser.initial || currentUser.name.charAt(0)).toUpperCase();
+                if (name) name.textContent = currentUser.name;
+            } else {
+                if (guestPrompt) guestPrompt.style.display = 'block';
+                if (form) form.style.display = 'none';
+            }
+        }
+
+        function submitCommunityComment() {
+            if (!currentUser || currentUser.email === 'guest') {
+                alert("Bạn bắt buộc phải đăng nhập tài khoản để gửi bình luận & cảnh báo.");
+                openLoginModal();
+                return;
+            }
+
+            const textarea = document.getElementById('comment-textarea');
+            const isWarnCheckbox = document.getElementById('comment-is-warning');
+            const content = (textarea.value || '').trim();
+
+            if (!content) {
+                showToast("Vui lòng nhập nội dung bình luận!");
+                textarea.focus();
+                return;
+            }
+
+            if (!firebaseDb) {
+                showToast("Chưa kết nối được Firebase Cloud Database!");
+                return;
+            }
+
+            const isWarning = !!(isWarnCheckbox && isWarnCheckbox.checked);
+            const now = Date.now();
+            const dateStr = new Date(now).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
+
+            const newComment = {
+                author: currentUser.name,
+                email: currentUser.email,
+                avatarInitial: (currentUser.initial || currentUser.name.charAt(0)).toUpperCase(),
+                timestamp: now,
+                formattedDate: dateStr,
+                content: content,
+                isWarning: isWarning,
+                likes: 0,
+                likedBy: {}
+            };
+
+            const qRef = firebaseDb.ref(`quiz_comments/rmc301/q_${currentIndex}`);
+            qRef.push(newComment).then(() => {
+                textarea.value = '';
+                if (isWarnCheckbox) isWarnCheckbox.checked = false;
+                const charCnt = document.getElementById('comment-char-cnt');
+                if (charCnt) charCnt.textContent = '0 ký tự';
+                showToast(isWarning ? '⚠️ Đã gửi cảnh báo câu hỏi lên cộng đồng!' : '💬 Đã gửi bình luận thành công!');
+            }).catch(err => {
+                console.error("Comment submit error:", err);
+                alert("Lỗi khi gửi bình luận: " + err.message);
+            });
+        }
+
+        function toggleLikeComment(qIdx, commentId) {
+            if (!firebaseDb) return;
+            if (!currentUser || currentUser.email === 'guest') {
+                showToast("Đăng nhập để thả tim bình luận!");
+                return;
+            }
+
+            const userKey = currentUser.email.replace(/[.#$[\]]/g, '_');
+            const commentRef = firebaseDb.ref(`quiz_comments/rmc301/q_${qIdx}/${commentId}`);
+
+            commentRef.transaction(comment => {
+                if (comment) {
+                    if (!comment.likedBy) comment.likedBy = {};
+                    if (!comment.likes) comment.likes = 0;
+
+                    if (comment.likedBy[userKey]) {
+                        delete comment.likedBy[userKey];
+                        comment.likes = Math.max(0, comment.likes - 1);
+                    } else {
+                        comment.likedBy[userKey] = true;
+                        comment.likes = (comment.likes || 0) + 1;
+                    }
+                }
+                return comment;
+            });
+        }
+
+        function deleteCommunityComment(qIdx, commentId) {
+            if (!firebaseDb) return;
+            if (!confirm("Bạn có chắc chắn muốn xóa bình luận này không?")) return;
+
+            firebaseDb.ref(`quiz_comments/rmc301/q_${qIdx}/${commentId}`).remove().then(() => {
+                showToast("Đã xóa bình luận!");
+            });
+        }
+    
         /* ================= QUESTION RENDERING ================= */
         function renderQuestion(index) {
             currentIndex = index;
@@ -1250,6 +1694,7 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
             document.getElementById('btn-next').disabled = (index === quizData.length - 1);
 
             updatePaletteCurrent();
+            loadCommentsForQuestion(index);
             loadCurrentQuestionNote();
         }
 
