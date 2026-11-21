@@ -936,13 +936,13 @@
                 <button class="btn-auth-action" id="btn-login" onclick="openLoginModal()" style="display:none;">
                     <span>Đăng nhập</span>
                 </button>
-                <div id="user-profile" class="user-pill">
+                <div id="user-profile" class="user-pill" onclick="openLoginModal()" style="cursor: pointer;" title="Bấm để đổi tài khoản hoặc đăng nhập Google">
                     <div id="user-avatar" class="user-avatar">Đ</div>
                     <div>
                         <div id="user-name" style="font-weight: 600; font-size: 0.82rem; display: flex; align-items: center; gap: 4px;"><span>Võ Trọng Đạt</span><span id="user-admin-badge" class="badge-admin" style="display:none;">👑 Admin</span></div>
                         <div id="user-email" style="font-size: 0.7rem; color: var(--text-muted); max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">votrongdat1606@gmail.com</div>
                     </div>
-                    <button class="btn-logout" onclick="logout()" title="Đăng xuất">✕</button>
+                    <button class="btn-logout" onclick="event.stopPropagation(); logout()" title="Đăng xuất">✕</button>
                 </div>
                 <button class="btn-reset-action" onclick="resetAllProgress()" title="Xóa toàn bộ tiến độ để làm lại từ đầu">🗑️ Reset tiến độ</button>
             </div>
@@ -1440,7 +1440,6 @@ GIẢI THÍCH: Giải thích chi tiết cho câu hỏi..." oninput="onImportText
 
         function init() {
             loadCustomSubjects();
-            updateGoogleAuthStatusUI();
             // Sync active subject code
             document.getElementById('sub-active-icon').textContent = currentSubject.icon;
             document.getElementById('sub-active-code').textContent = currentSubject.code;
@@ -2099,21 +2098,22 @@ function saveProgress() {
             updatePaletteItem(qIdx);
             updateStats();
 
+            textarea.value = '';
+            const charCnt = document.getElementById('comment-char-cnt');
+            if (charCnt) charCnt.textContent = '0 ký tự';
+            
+            // Immediately re-render comments list so the user sees their post instantly!
+            loadCommentsForQuestion(qIdx);
+            showToast('💬 Đã lưu thảo luận thành công!');
+
             if (firebaseDb) {
                 const subId = currentSubjectId || 'rmc301';
                 const qRef = firebaseDb.ref(`quiz_comments/${subId}/q_${qIdx}`);
                 qRef.push(newComment).then(() => {
-                    textarea.value = '';
-                    const charCnt = document.getElementById('comment-char-cnt');
-                    if (charCnt) charCnt.textContent = '0 ký tự';
-                    showToast('💬 Đã lưu thảo luận thành công!');
-                }).catch(() => {
-                    textarea.value = '';
-                    showToast('💬 Đã lưu thảo luận (Ngoại tuyến)!');
+                    // Firebase realtime listener will keep it in sync
+                }).catch(err => {
+                    console.log('Firebase comment push offline:', err);
                 });
-            } else {
-                textarea.value = '';
-                showToast('💬 Đã lưu thảo luận thành công!');
             }
         }
 
@@ -3694,6 +3694,74 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
             document.getElementById('tab-btn-slides').classList.toggle('active', tab === 'slides');
             document.getElementById('import-pane-text').style.display = (tab === 'text' ? 'flex' : 'none');
             document.getElementById('import-pane-slides').style.display = (tab === 'slides' ? 'flex' : 'none');
+        }
+
+                function parseQuestionsFromRawText(rawText) {
+            if (!rawText || !rawText.trim()) return [];
+            const text = rawText.trim();
+            const questions = [];
+            
+            const blocks = text.split(/\n(?=(?:Câu\s*\d+|Q\d+|\d+[\.\)])\s*)/i);
+            if (blocks.length > 1 || /^(?:Câu\s*\d+|\d+[\.\)])/i.test(blocks[0])) {
+                blocks.forEach((blk, idx) => {
+                    const lines = blk.split('\n').map(l => l.trim()).filter(Boolean);
+                    if (lines.length < 2) return;
+                    let qText = lines[0].replace(/^(?:Câu\s*\d+[:.]?|\d+[\.\)]|Q\d+[:.]?)\s*/i, '');
+                    let options = {};
+                    let correct = [];
+                    let explanation = '';
+
+                    for (let i = 1; i < lines.length; i++) {
+                        const line = lines[i];
+                        const optMatch = line.match(/^([A-D])[\.\)]\s*(.*)/i);
+                        const ansMatch = line.match(/^(?:Đáp án|ĐA|Answer|Key)[:\s]+([A-D,\s]+)/i);
+                        const expMatch = line.match(/^(?:Giải thích|Explanation)[:\s]+(.*)/i);
+
+                        if (ansMatch) {
+                            correct = ansMatch[1].toUpperCase().split(/[\s,]+/).filter(x => ['A','B','C','D'].includes(x));
+                        } else if (expMatch) {
+                            explanation = expMatch[1];
+                        } else if (optMatch) {
+                            const ltr = optMatch[1].toUpperCase();
+                            options[ltr] = optMatch[2];
+                        } else {
+                            if (Object.keys(options).length === 0) {
+                                qText += ' ' + line;
+                            }
+                        }
+                    }
+                    if (Object.keys(options).length >= 2) {
+                        if (correct.length === 0) correct = ['A'];
+                        questions.push({
+                            slide_num: idx + 1,
+                            question: qText,
+                            options: options,
+                            correct_answers: correct,
+                            is_multi: correct.length > 1,
+                            explanation: explanation || 'Không có giải thích chi tiết.'
+                        });
+                    }
+                });
+            }
+
+            if (questions.length === 0) {
+                const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+                lines.forEach((line, idx) => {
+                    const parts = line.split('\t');
+                    if (parts.length >= 2) {
+                        questions.push({
+                            slide_num: idx + 1,
+                            question: parts[0].trim(),
+                            options: { "A": parts[1].trim(), "B": "Đáp án khác 1", "C": "Đáp án khác 2", "D": "Đáp án khác 3" },
+                            correct_answers: ["A"],
+                            is_multi: false,
+                            explanation: `Đáp án chính xác: ${parts[1].trim()}`
+                        });
+                    }
+                });
+            }
+
+            return questions;
         }
 
         let parsedImportQuestions = [];
