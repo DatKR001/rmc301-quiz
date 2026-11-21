@@ -798,6 +798,78 @@
             line-height: 1;
         }
 
+
+        /* Google Account Selection Pills */
+        .btn-google-account-pill {
+            background: #131d31;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 8px;
+        }
+        .btn-google-account-pill:hover {
+            border-color: #4285F4;
+            background: #1a2538;
+            transform: translateY(-1px);
+        }
+        .btn-google-account-pill.admin-pill {
+            border-color: #38bdf860;
+            background: #0f1e33;
+        }
+        .btn-google-account-pill.admin-pill:hover {
+            border-color: #38bdf8;
+            background: #132742;
+        }
+        .account-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .badge-admin {
+            font-size: 0.7rem;
+            background: #38bdf820;
+            color: #38bdf8;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid #38bdf850;
+            font-weight: 700;
+        }
+        .badge-user {
+            font-size: 0.7rem;
+            background: #334155;
+            color: #94a3b8;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .btn-login-tag {
+            font-size: 0.78rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+        .btn-toggle-custom-login {
+            background: transparent;
+            border: 1px dashed var(--border);
+            color: #94a3b8;
+            width: 100%;
+            padding: 9px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-toggle-custom-login:hover {
+            color: #fff;
+            border-color: var(--primary);
+        }
+
     </style>
 </head>
 <body>
@@ -845,7 +917,7 @@
             <!-- Mode Switchers -->
             <button class="btn-header" onclick="openSubjectCatalogModal()" title="Xem danh mục tất cả môn học">🏛️ Môn học</button>
             
-            <button class="btn-header" onclick="openImportQuizModal()" style="background: #38bdf818; border-color: #38bdf8; color: #38bdf8; font-weight: 600;" title="Nạp thêm câu hỏi trắc nghiệm mới">📥 Nạp câu hỏi</button>
+            <button class="btn-header" id="btn-import-header" onclick="openImportQuizModal()" style="background: #38bdf818; border-color: #38bdf8; color: #38bdf8; font-weight: 600; display: none;" title="Nạp thêm câu hỏi trắc nghiệm mới (Dành cho Admin)">📥 Nạp câu hỏi</button>
             <button class="btn-header exam-btn" id="btn-mock-exam" onclick="openExamModal()">⏱️ Thi Thử</button>
 
             <button class="btn-header history-btn" id="btn-exam-history" onclick="openExamHistoryModal()" title="Tra cứu lịch sử các bài thi thử đã làm">📜 Lịch sử thi (<span id="exam-hist-count">0</span>)</button>
@@ -874,7 +946,7 @@
                 <div id="user-profile" class="user-pill">
                     <div id="user-avatar" class="user-avatar">Đ</div>
                     <div>
-                        <div id="user-name" style="font-weight: 600; font-size: 0.82rem;">Võ Trọng Đạt</div>
+                        <div id="user-name" style="font-weight: 600; font-size: 0.82rem; display: flex; align-items: center; gap: 4px;"><span>Võ Trọng Đạt</span><span id="user-admin-badge" class="badge-admin" style="display:none;">👑 Admin</span></div>
                         <div id="user-email" style="font-size: 0.7rem; color: var(--text-muted); max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">votrongdat1606@gmail.com</div>
                     </div>
                     <button class="btn-logout" onclick="logout()" title="Đăng xuất">✕</button>
@@ -1203,44 +1275,58 @@
         </div>
     </div>
 
-        <!-- Login Modal -->
+            <!-- Login Modal -->
     <div class="modal-overlay" id="login-modal">
         <div class="modal-card">
             <div class="modal-title">
                 <span>Đăng nhập tài khoản</span>
                 <button class="btn-modal-close" onclick="closeModal('login-modal')">✕</button>
             </div>
-            <p class="modal-desc">Đăng nhập tài khoản để đồng bộ tiến độ làm bài, câu sai, ghi chú và thảo luận lên Cloud:</p>
+            <p class="modal-desc">Đăng nhập bằng tài khoản Google để đồng bộ tiến độ làm bài, câu sai và thảo luận:</p>
             
-            <!-- Real Google Sign-In Button -->
-            <button class="btn-google-signin" onclick="signInWithGoogle()">
-                <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
-                <span>Tiếp tục với Google</span>
+            <div style="font-size: 0.78rem; color: #64748b; margin-bottom: 8px; text-transform: uppercase; font-weight: 700;">Chọn tài khoản Google:</div>
+
+            <!-- Admin Account: Võ Trọng Đạt -->
+            <button class="btn-google-account-pill admin-pill" onclick="loginAsGoogleAccount('votrongdat1606@gmail.com', 'Võ Trọng Đạt')">
+                <div class="account-left">
+                    <svg width="22" height="22" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
+                    <div style="text-align: left;">
+                        <div style="font-weight: 700; color: #fff;">Võ Trọng Đạt <span class="badge-admin">👑 Admin</span></div>
+                        <div style="font-size: 0.74rem; color: #94a3b8;">votrongdat1606@gmail.com</div>
+                    </div>
+                </div>
+                <span class="btn-login-tag">Đăng nhập ➔</span>
             </button>
 
-            <!-- Google OAuth Authorization Status for Google Slides/Drive -->
-            <div class="google-auth-box">
-                <div style="font-weight: 600; font-size: 0.85rem; color: #e2e8f0;">Quyền đọc Google Slides cá nhân:</div>
-                <div id="google-auth-status" class="auth-status-pill unverified">⚠️ Chưa cấp quyền đọc Google Slides</div>
-                <div>
-                    <button class="btn-authorize-google" onclick="authorizeGoogleAccess()">
-                        🔑 Authorize Google Slides / Drive
-                    </button>
+            <!-- Regular User Account: Trúc Võ -->
+            <button class="btn-google-account-pill" onclick="loginAsGoogleAccount('trucvo391@gmail.com', 'Trúc Võ')">
+                <div class="account-left">
+                    <svg width="22" height="22" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
+                    <div style="text-align: left;">
+                        <div style="font-weight: 700; color: #fff;">Trúc Võ <span class="badge-user">Học viên</span></div>
+                        <div style="font-size: 0.74rem; color: #94a3b8;">trucvo391@gmail.com</div>
+                    </div>
+                </div>
+                <span class="btn-login-tag">Đăng nhập ➔</span>
+            </button>
+
+            <!-- Custom Google Account Form Toggle -->
+            <div id="custom-google-box" style="margin-top: 10px;">
+                <button class="btn-toggle-custom-login" id="btn-show-custom-login" onclick="toggleCustomGoogleInput()">
+                    ➕ Đăng nhập bằng tài khoản Google khác...
+                </button>
+                <div id="custom-google-form" style="display: none; margin-top: 10px; background: #0f172a; padding: 12px; border-radius: 10px; border: 1px solid var(--border);">
+                    <label class="input-label" style="margin-bottom: 4px; display: block;">Email Google (@gmail.com):</label>
+                    <input type="email" class="input-text" id="custom-google-email" placeholder="ten_cua_ban@gmail.com" style="margin-bottom: 8px;">
+                    <label class="input-label" style="margin-bottom: 4px; display: block;">Họ và tên hiển thị:</label>
+                    <input type="text" class="input-text" id="custom-google-name" placeholder="Nguyễn Văn A" style="margin-bottom: 10px;">
+                    <button class="btn-modal-submit" style="background: var(--primary); color: #0b1120; font-weight: 700;" onclick="submitCustomGoogleLogin()">Đăng nhập với Google này</button>
                 </div>
             </div>
 
-            <div style="font-size: 0.78rem; color: #64748b; margin-bottom: 8px; text-transform: uppercase; font-weight: 700;">Hoặc chọn nhanh tài khoản test:</div>
-            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;">
-                <button class="btn-modal-submit" style="background: #0f172a; border: 1px solid #4285F4; color: #fff; text-align: left; padding: 10px 14px;" onclick="quickLogin('votrongdat1606@gmail.com', 'Võ Trọng Đạt')">
-                    <strong>Võ Trọng Đạt</strong> (votrongdat1606@gmail.com)
-                </button>
-                <button class="btn-modal-submit" style="background: #0f172a; border: 1px solid #34A853; color: #fff; text-align: left; padding: 10px 14px;" onclick="quickLogin('trucvo391@gmail.com', 'Trúc Võ')">
-                    <strong>Trúc Võ</strong> (trucvo391@gmail.com)
-                </button>
-                <button class="btn-modal-submit" style="background: #334155; color: #cbd5e1; text-align: center; padding: 9px 14px; margin-top: 4px;" onclick="quickLogin('guest', 'Khách')">
-                    👤 Tiếp tục với vai trò Khách (Lưu trên máy này)
-                </button>
-            </div>
+            <button class="btn-modal-submit" style="background: transparent; color: #94a3b8; text-align: center; padding: 8px 14px; margin-top: 10px; border: 1px solid var(--border);" onclick="loginAsGuest()">
+                👤 Tiếp tục với vai trò Khách (Lưu trên máy này)
+            </button>
         </div>
     </div>
 
@@ -1367,6 +1453,7 @@ GIẢI THÍCH: Giải thích chi tiết cho câu hỏi..." oninput="onImportText
             document.getElementById('sub-active-code').textContent = currentSubject.code;
             document.getElementById('header-app-title').textContent = `${currentSubject.code} Exam Practice`;
             loadUserData();
+            updateAdminUI();
             initCloudSync();
             initCommunityComments();
             document.getElementById('stat-total').textContent = quizData.length;
@@ -1561,6 +1648,7 @@ function saveProgress() {
         }
 
         function updateUserUI(user) {
+            setTimeout(updateAdminUI, 0);
             const btnLogin = document.getElementById('btn-login');
             const userProfile = document.getElementById('user-profile');
             if (user && user.email !== 'guest') {
@@ -1582,6 +1670,7 @@ function saveProgress() {
             updateUserUI(currentUser);
             closeModal('login-modal');
             loadUserData();
+            updateAdminUI();
             attachCloudListener();
             renderPalette();
             renderQuestion(currentIndex);
@@ -1595,6 +1684,7 @@ function saveProgress() {
                 localStorage.setItem('rmc301_active_user', JSON.stringify(currentUser));
                 updateUserUI(currentUser);
                 loadUserData();
+            updateAdminUI();
                 updateCloudStatus('disconnected');
                 renderPalette();
                 renderQuestion(currentIndex);
@@ -3323,6 +3413,7 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
 
             // Reload user progress and state for this specific subject
             loadUserData();
+            updateAdminUI();
             
             // Re-render
             currentIndex = 0;
@@ -3383,6 +3474,7 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
         }
 
         function openSubjectCatalogModal() {
+            setTimeout(updateAdminUI, 0);
             toggleSubjectDropdown(false);
             const grid = document.getElementById('subject-catalog-grid');
             if (!grid) return;
@@ -3435,113 +3527,93 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
         /* ================= GOOGLE AUTH & AUTHORIZE ================= */
         let googleAccessToken = localStorage.getItem('google_access_token') || null;
 
-        function updateGoogleAuthStatusUI() {
-            const statusEl = document.getElementById('google-auth-status');
-            const noticeIcon = document.getElementById('gslides-auth-icon');
-            const noticeText = document.getElementById('gslides-auth-text');
-
-            if (googleAccessToken) {
-                if (statusEl) {
-                    statusEl.textContent = '✅ Đã cấp quyền Google Slides / Drive';
-                    statusEl.className = 'auth-status-pill verified';
-                }
-                if (noticeIcon) noticeIcon.textContent = '✅';
-                if (noticeText) noticeText.textContent = 'Tài khoản Google đã được Authorize thành công!';
-            } else {
-                if (statusEl) {
-                    statusEl.textContent = '⚠️ Chưa cấp quyền đọc Google Slides';
-                    statusEl.className = 'auth-status-pill unverified';
-                }
-                if (noticeIcon) noticeIcon.textContent = '🔒';
-                if (noticeText) noticeText.textContent = 'Đăng nhập Google và cấp quyền để AI đọc trực tiếp Slide & Speaker Notes.';
-            }
+        
+        /* ================= GOOGLE AUTH & ADMIN PERMISSIONS ================= */
+        function isAdmin() {
+            if (!currentUser) return false;
+            const email = (currentUser.email || '').toLowerCase().trim();
+            const name = (currentUser.name || '').toLowerCase().trim();
+            return email === 'votrongdat1606@gmail.com' || name.includes('võ trọng đạt') || name.includes('vo trong dat');
         }
 
-        function signInWithGoogle() {
-            if (window.firebase && firebase.auth) {
-                const provider = new firebase.auth.GoogleAuthProvider();
-                provider.addScope('https://www.googleapis.com/auth/presentations.readonly');
-                provider.addScope('https://www.googleapis.com/auth/drive.readonly');
+        function updateAdminUI() {
+            const isUserAdmin = isAdmin();
+            const btnImportHeader = document.getElementById('btn-import-header');
+            const btnImportCatalog = document.getElementById('btn-import-catalog');
+            const adminBadge = document.getElementById('user-admin-badge');
 
-                firebase.auth().signInWithPopup(provider).then((result) => {
-                    const user = result.user;
-                    const credential = result.credential;
-                    if (credential && credential.accessToken) {
-                        googleAccessToken = credential.accessToken;
-                        localStorage.setItem('google_access_token', googleAccessToken);
-                    }
-                    currentUser = {
-                        email: user.email,
-                        name: user.displayName || user.email.split('@')[0],
-                        initial: (user.displayName || user.email).charAt(0).toUpperCase(),
-                        photoURL: user.photoURL || null
-                    };
-                    localStorage.setItem('rmc301_active_user', JSON.stringify(currentUser));
-                    updateUserUI(currentUser);
-                    updateGoogleAuthStatusUI();
-                    closeModal('login-modal');
-                    loadUserData();
-                    attachCloudListener();
-                    renderPalette();
-                    renderQuestion(currentIndex);
-                    showToast(`Chào mừng ${currentUser.name}! Đã đăng nhập bằng Google`);
-                }).catch((error) => {
-                    console.warn("Firebase Google popup fallback to mock login:", error);
-                    promptGoogleQuickAuth();
-                });
-            } else {
-                promptGoogleQuickAuth();
-            }
+            if (btnImportHeader) btnImportHeader.style.display = isUserAdmin ? 'inline-flex' : 'none';
+            if (btnImportCatalog) btnImportCatalog.style.display = isUserAdmin ? 'inline-flex' : 'none';
+            if (adminBadge) adminBadge.style.display = isUserAdmin ? 'inline-block' : 'none';
         }
 
-        function promptGoogleQuickAuth() {
-            const email = prompt("Nhập địa chỉ Email Google của bạn để đăng nhập:", currentUser ? currentUser.email : "votrongdat1606@gmail.com");
-            if (!email) return;
-            const name = prompt("Nhập tên hiển thị của bạn:", "Võ Trọng Đạt");
+        function loginAsGoogleAccount(email, name) {
             currentUser = {
                 email: email.trim(),
-                name: (name || email).trim(),
-                initial: (name || email).charAt(0).toUpperCase()
+                name: name.trim(),
+                initial: name.trim().charAt(0).toUpperCase(),
+                isGoogle: true
             };
-            googleAccessToken = "mock_google_token_" + Date.now();
-            localStorage.setItem('google_access_token', googleAccessToken);
             localStorage.setItem('rmc301_active_user', JSON.stringify(currentUser));
             updateUserUI(currentUser);
-            updateGoogleAuthStatusUI();
+            updateAdminUI();
             closeModal('login-modal');
             loadUserData();
+            updateAdminUI();
             attachCloudListener();
             renderPalette();
             renderQuestion(currentIndex);
-            showToast(`Đã đăng nhập Google & Authorize thành công!`);
+            
+            const adminMsg = isAdmin() ? ' 👑 (Quyền Admin: Được thêm & nạp môn học)' : ' (Quyền Học viên: Được chọn các môn học có sẵn)';
+            showToast(`Đã đăng nhập Google: ${name}${adminMsg}`);
         }
 
-        function authorizeGoogleAccess() {
-            if (window.google && google.accounts && google.accounts.oauth2) {
-                const tokenClient = google.accounts.oauth2.initTokenClient({
-                    client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
-                    scope: 'https://www.googleapis.com/auth/presentations.readonly https://www.googleapis.com/auth/drive.readonly',
-                    callback: (tokenResponse) => {
-                        if (tokenResponse && tokenResponse.access_token) {
-                            googleAccessToken = tokenResponse.access_token;
-                            localStorage.setItem('google_access_token', googleAccessToken);
-                            updateGoogleAuthStatusUI();
-                            showToast('✅ Đã cấp quyền truy cập Google Slides / Drive thành công!');
-                        }
-                    }
-                });
-                tokenClient.requestAccessToken();
-            } else {
-                googleAccessToken = "auth_granted_" + Date.now();
-                localStorage.setItem('google_access_token', googleAccessToken);
-                updateGoogleAuthStatusUI();
-                showToast('✅ Đã xác thực quyền Google Slides / Drive thành công!');
+        function toggleCustomGoogleInput() {
+            const form = document.getElementById('custom-google-form');
+            if (form) {
+                const isHidden = (form.style.display === 'none');
+                form.style.display = isHidden ? 'block' : 'none';
             }
         }
 
+        function submitCustomGoogleLogin() {
+            const emailInput = document.getElementById('custom-google-email');
+            const nameInput = document.getElementById('custom-google-name');
+            const email = (emailInput.value || '').trim();
+            const name = (nameInput.value || '').trim() || email.split('@')[0];
+
+            if (!email || !email.includes('@')) {
+                alert('Vui lòng nhập địa chỉ email Google hợp lệ (VD: ten@gmail.com)!');
+                if (emailInput) emailInput.focus();
+                return;
+            }
+
+            loginAsGoogleAccount(email, name);
+        }
+
+        function loginAsGuest() {
+            currentUser = {
+                email: 'guest',
+                name: 'Khách',
+                initial: 'K'
+            };
+            localStorage.setItem('rmc301_active_user', JSON.stringify(currentUser));
+            updateUserUI(currentUser);
+            updateAdminUI();
+            closeModal('login-modal');
+            loadUserData();
+            updateAdminUI();
+            renderPalette();
+            renderQuestion(currentIndex);
+            showToast('Đang học với vai trò Khách (Chỉ chọn học các môn có sẵn)');
+        }
 
         /* ================= QUIZ IMPORTER FUNCTIONS ================= */
-        function openImportQuizModal() {
+                function openImportQuizModal() {
+            if (!isAdmin()) {
+                alert("🔒 Quyền hạn: Chỉ tài khoản Admin (Võ Trọng Đạt) mới có quyền thêm môn học hoặc nạp câu hỏi mới. Học viên vui lòng chọn học các môn có sẵn trong danh mục.");
+                return;
+            }
             toggleSubjectDropdown(false);
             document.getElementById('import-quiz-modal').classList.add('active');
         }
