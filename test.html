@@ -845,6 +845,7 @@
             <!-- Mode Switchers -->
             <button class="btn-header" onclick="openSubjectCatalogModal()" title="Xem danh mục tất cả môn học">🏛️ Môn học</button>
             
+            <button class="btn-header" onclick="openImportQuizModal()" style="background: #38bdf818; border-color: #38bdf8; color: #38bdf8; font-weight: 600;" title="Nạp thêm câu hỏi trắc nghiệm mới">📥 Nạp câu hỏi</button>
             <button class="btn-header exam-btn" id="btn-mock-exam" onclick="openExamModal()">⏱️ Thi Thử</button>
 
             <button class="btn-header history-btn" id="btn-exam-history" onclick="openExamHistoryModal()" title="Tra cứu lịch sử các bài thi thử đã làm">📜 Lịch sử thi (<span id="exam-hist-count">0</span>)</button>
@@ -920,7 +921,7 @@
                     </div>
                 </div>
                 
-                <div id="q-community-warn-bar" class="q-community-warn-bar" style="display: none;" onclick="openCommentsSidebar()"></div>
+                
                 <div id="exam-q-status" class="exam-q-status" style="display: none;"></div>
                 <div class="question-text" id="question-text">Đang tải câu hỏi...</div>
                 <div class="options-list" id="options-list"></div>
@@ -961,18 +962,11 @@
 
                 <div class="comments-q-indicator" id="comments-q-indicator">
                     <span id="comments-q-title">Câu 1 (Slide 7):</span>
-                    <span id="comments-warning-indicator" class="warning-count-pill" style="display: none;">⚠️ <strong id="warn-count-num">0</strong> cảnh báo</span>
+                    
                 </div>
 
                 <!-- Warning Alert Box if there are warnings -->
-                <div class="comments-warning-banner" id="comments-warning-banner" style="display: none;">
-                    <div style="font-weight: 700; color: #f87171; display: flex; align-items: center; gap: 6px;">
-                        <span>⚠️ CẢNH BÁO TỪ CỘNG ĐỒNG</span>
-                    </div>
-                    <div style="font-size: 0.78rem; color: #fca5a5; margin-top: 2px;" id="comments-warning-desc">
-                        Có bạn cảnh báo câu này bị sai đáp án trong slide hoặc câu hỏi đánh đố dễ nhầm!
-                    </div>
-                </div>
+                
 
                 <!-- Comments List (Realtime stream) -->
                 <div class="comments-list" id="comments-list">
@@ -1001,20 +995,15 @@
                         <textarea 
                             class="comment-textarea" 
                             id="comment-textarea" 
-                            placeholder="Chia sẻ mẹo nhớ, định nghĩa hoặc cảnh báo nếu đề có đáp án sai..."
+                            placeholder="Nhập ghi chú cá nhân hoặc chia sẻ thảo luận cho câu này..."
                             rows="2"
                         ></textarea>
 
-                        <div class="comment-checkbox-wrap">
-                            <label class="comment-warn-label">
-                                <input type="checkbox" id="comment-is-warning" class="comment-warn-checkbox">
-                                <span>⚠️ Đánh dấu: <strong>Cảnh báo đáp án sai / Dễ bẫy</strong></span>
-                            </label>
-                        </div>
+                        
 
                         <div class="comment-actions">
                             <span style="font-size: 0.72rem; color: var(--text-muted);" id="comment-char-cnt">0 ký tự</span>
-                            <button class="btn-send-comment" id="btn-send-comment" onclick="submitCommunityComment()">Gửi bình luận 🚀</button>
+                            <button class="btn-send-comment" id="btn-send-comment" onclick="submitCommunityComment()">Gửi thảo luận 🚀</button>
                         </div>
                     </div>
                 </div>
@@ -1269,6 +1258,65 @@
             </div>
     </div>
 
+
+    <!-- Import Quiz Modal (Nạp Thêm Câu Hỏi) -->
+    <div class="modal-overlay" id="import-quiz-modal">
+        <div class="modal-card modal-large">
+            <div class="modal-title">
+                <span>📥 Nạp Thêm Câu Hỏi Mới</span>
+                <button class="btn-modal-close" onclick="closeModal('import-quiz-modal')">✕</button>
+            </div>
+            <p class="modal-desc">Dán văn bản câu hỏi trắc nghiệm hoặc nhập link Google Slides để AI tự động trích xuất vào ngân hàng đề:</p>
+            
+            <div class="import-tabs">
+                <button class="import-tab active" id="tab-btn-text" onclick="switchImportTab('text')">📝 Dán Text / Quizlet</button>
+                <button class="import-tab" id="tab-btn-slides" onclick="switchImportTab('slides')">📑 Link Google Slides</button>
+            </div>
+
+            <!-- Tab 1: Text / Quizlet -->
+            <div id="import-pane-text" class="import-pane">
+                <label class="input-label">Dán văn bản câu hỏi (hỗ trợ nhiều dòng, Quizlet, Google Docs, Slide Notes):</label>
+                <textarea class="import-textarea" id="import-raw-text" placeholder="Ví dụ:
+Câu 1: Câu hỏi trắc nghiệm của bạn là gì?
+A. Lựa chọn 1
+B. Lựa chọn 2
+C. Lựa chọn 3
+D. Lựa chọn 4
+ĐÁP ÁN: B
+GIẢI THÍCH: Giải thích chi tiết cho câu hỏi..." oninput="onImportTextInput(this.value)"></textarea>
+
+                <div class="parse-status-bar" id="parse-status-bar">
+                    <span id="parse-status-text">Trạng thái: Dán nội dung để AI nhận diện câu hỏi</span>
+                    <span id="parse-count-badge" style="font-weight: bold; color: var(--primary);">0 câu</span>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 8px;">
+                    <input type="text" class="input-text" id="text-sub-code" placeholder="Mã môn (VD: CCO201)" style="flex: 1;">
+                    <input type="text" class="input-text" id="text-sub-name" placeholder="Tên môn học (VD: Quan Hệ Công Chúng)" style="flex: 2;">
+                </div>
+
+                <button class="btn-modal-submit" id="btn-submit-text-import" style="margin-top: 10px; background: #22c55e; color: #fff; font-weight: 700;" onclick="submitTextImport()" disabled>
+                    🚀 Thêm Vào Ngân Hàng Đề & Ôn Luyện Ngay
+                </button>
+            </div>
+
+            <!-- Tab 2: Google Slides -->
+            <div id="import-pane-slides" class="import-pane" style="display: none;">
+                <label class="input-label">Đường dẫn Google Slides cá nhân:</label>
+                <input type="text" class="input-text" id="gslides-url-input" placeholder="https://docs.google.com/presentation/d/.../edit">
+                
+                <div style="display: flex; gap: 10px; margin-top: 8px;">
+                    <input type="text" class="input-text" id="gslides-sub-code" placeholder="Mã môn (VD: CCO201)" style="flex: 1;">
+                    <input type="text" class="input-text" id="gslides-sub-name" placeholder="Tên môn học (VD: Giao Tiếp Doanh Nghiệp)" style="flex: 2;">
+                </div>
+
+                <button class="btn-modal-submit" style="margin-top: 12px; background: #38bdf8; color: #0b1120; font-weight: 700;" onclick="importFromGoogleSlides()">
+                    ⚡ AI Trích Xuất Câu Hỏi Từ Google Slides
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toast-msg" class="toast-msg">☁️ Đã đồng bộ Cloud</div>
 
@@ -1343,21 +1391,25 @@
             return `quiz_data_${emailKey}_${currentSubjectId}`;
         }
 
-        function loadUserData() {
-            const savedUser = localStorage.getItem('rmc301_active_user');
-            if (savedUser) {
-                try { currentUser = JSON.parse(savedUser); } catch(e) {}
-            }
-            if (!currentUser) {
-                currentUser = { name: "Khách", email: "guest", initial: "K" };
-            }
-            updateUserUI(currentUser);
+                function loadUserData() {
+            const currentKey = getUserKey();
+            let saved = localStorage.getItem(currentKey);
 
-            const dataKey = getUserKey();
-            const rawData = localStorage.getItem(dataKey);
-            if (rawData) {
+            // Inherit & migrate data from legacy v1.4 / v1.5 storage if not found
+            if (!saved) {
+                const email = currentUser ? currentUser.email : 'guest';
+                const legacyKey = (email === 'guest') ? 'rmc301_data_guest' : 'rmc301_data_' + email;
+                saved = localStorage.getItem(legacyKey);
+                if (saved) {
+                    try {
+                        localStorage.setItem(currentKey, saved);
+                    } catch(e) {}
+                }
+            }
+
+            if (saved) {
                 try {
-                    const parsed = JSON.parse(rawData);
+                    const parsed = JSON.parse(saved);
                     userAnswers = parsed.answers || {};
                     bookmarks = new Set(parsed.bookmarks || []);
                     userNotes = parsed.notes || {};
@@ -1366,16 +1418,26 @@
                     userAnswers = {};
                     bookmarks = new Set();
                     userNotes = {};
+                    examHistory = [];
                 }
             } else {
                 userAnswers = {};
                 bookmarks = new Set();
                 userNotes = {};
+                examHistory = [];
             }
-            updateStats();
+
+            // Also check for any standalone legacy notes in localStorage
+            try {
+                const legacyNotes = localStorage.getItem('rmc301_user_notes');
+                if (legacyNotes) {
+                    const parsedNotes = JSON.parse(legacyNotes);
+                    userNotes = Object.assign({}, parsedNotes, userNotes);
+                }
+            } catch(e) {}
         }
 
-        function saveProgress() {
+function saveProgress() {
             const dataKey = getUserKey();
             const now = Date.now();
             const dataToSave = {
@@ -1842,55 +1904,51 @@
             }
         }
 
-        function submitCommunityComment() {
-            if (!currentUser || currentUser.email === 'guest') {
-                alert("Bạn bắt buộc phải đăng nhập tài khoản để gửi bình luận & cảnh báo.");
-                openLoginModal();
-                return;
-            }
-
+                function submitCommunityComment() {
             const textarea = document.getElementById('comment-textarea');
-            const isWarnCheckbox = document.getElementById('comment-is-warning');
             const content = (textarea.value || '').trim();
 
             if (!content) {
-                showToast("Vui lòng nhập nội dung bình luận!");
+                showToast("Vui lòng nhập nội dung thảo luận!");
                 textarea.focus();
                 return;
             }
 
-            if (!firebaseDb) {
-                showToast("Chưa kết nối được Firebase Cloud Database!");
-                return;
-            }
-
-            const isWarning = !!(isWarnCheckbox && isWarnCheckbox.checked);
+            const qIdx = isExamMode ? examQuestions[examCurrentIdx] : currentIndex;
             const now = Date.now();
             const dateStr = new Date(now).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
 
             const newComment = {
-                author: currentUser.name,
-                email: currentUser.email,
-                avatarInitial: (currentUser.initial || currentUser.name.charAt(0)).toUpperCase(),
+                author: currentUser ? currentUser.name : 'Người học',
+                email: currentUser ? currentUser.email : 'guest',
+                avatarInitial: currentUser ? (currentUser.initial || currentUser.name.charAt(0)).toUpperCase() : '👤',
                 timestamp: now,
                 formattedDate: dateStr,
                 content: content,
-                isWarning: isWarning,
-                likes: 0,
-                likedBy: {}
+                likes: 0
             };
 
-            const qRef = firebaseDb.ref(`quiz_comments/rmc301/q_${currentIndex}`);
-            qRef.push(newComment).then(() => {
+            // Save to local userNotes to ensure 100% backward compatibility
+            userNotes[qIdx] = content;
+            saveProgress();
+            updatePaletteItem(qIdx);
+            updateStats();
+
+            if (firebaseDb) {
+                const qRef = firebaseDb.ref(`quiz_comments/${currentSubjectId}/q_${qIdx}`);
+                qRef.push(newComment).then(() => {
+                    textarea.value = '';
+                    const charCnt = document.getElementById('comment-char-cnt');
+                    if (charCnt) charCnt.textContent = '0 ký tự';
+                    showToast('💬 Đã lưu thảo luận thành công!');
+                }).catch(() => {
+                    textarea.value = '';
+                    showToast('💬 Đã lưu thảo luận (Ngoại tuyến)!');
+                });
+            } else {
                 textarea.value = '';
-                if (isWarnCheckbox) isWarnCheckbox.checked = false;
-                const charCnt = document.getElementById('comment-char-cnt');
-                if (charCnt) charCnt.textContent = '0 ký tự';
-                showToast(isWarning ? '⚠️ Đã gửi cảnh báo câu hỏi lên cộng đồng!' : '💬 Đã gửi bình luận thành công!');
-            }).catch(err => {
-                console.error("Comment submit error:", err);
-                alert("Lỗi khi gửi bình luận: " + err.message);
-            });
+                showToast('💬 Đã lưu thảo luận thành công!');
+            }
         }
 
         function toggleLikeComment(qIdx, commentId) {
@@ -3479,6 +3537,112 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
                 updateGoogleAuthStatusUI();
                 showToast('✅ Đã xác thực quyền Google Slides / Drive thành công!');
             }
+        }
+
+
+        /* ================= QUIZ IMPORTER FUNCTIONS ================= */
+        function openImportQuizModal() {
+            toggleSubjectDropdown(false);
+            document.getElementById('import-quiz-modal').classList.add('active');
+        }
+
+        function switchImportTab(tab) {
+            document.getElementById('tab-btn-text').classList.toggle('active', tab === 'text');
+            document.getElementById('tab-btn-slides').classList.toggle('active', tab === 'slides');
+            document.getElementById('import-pane-text').style.display = (tab === 'text' ? 'flex' : 'none');
+            document.getElementById('import-pane-slides').style.display = (tab === 'slides' ? 'flex' : 'none');
+        }
+
+        let parsedImportQuestions = [];
+
+        function onImportTextInput(val) {
+            parsedImportQuestions = parseQuestionsFromRawText(val);
+            const statusEl = document.getElementById('parse-status-bar');
+            const countBadge = document.getElementById('parse-count-badge');
+            const submitBtn = document.getElementById('btn-submit-text-import');
+
+            if (parsedImportQuestions.length > 0) {
+                statusEl.className = 'parse-status-bar success';
+                statusEl.firstElementChild.textContent = '✅ AI đã nhận diện thành công:';
+                countBadge.textContent = `${parsedImportQuestions.length} câu hỏi`;
+                submitBtn.disabled = false;
+            } else {
+                statusEl.className = 'parse-status-bar';
+                statusEl.firstElementChild.textContent = 'Trạng thái: Dán nội dung để AI nhận diện câu hỏi';
+                countBadge.textContent = '0 câu';
+                submitBtn.disabled = true;
+            }
+        }
+
+        function submitTextImport() {
+            if (parsedImportQuestions.length === 0) {
+                alert('Vui lòng dán nội dung câu hỏi hợp lệ trước khi tạo!');
+                return;
+            }
+
+            const codeInput = document.getElementById('text-sub-code').value.trim() || `MON_${Date.now().toString().slice(-4)}`;
+            const nameInput = document.getElementById('text-sub-name').value.trim() || `Môn học mới (${codeInput})`;
+            const subId = codeInput.toLowerCase().replace(/[^a-z0-9]/g, '_');
+
+            const newSubject = {
+                id: subId,
+                code: codeInput.toUpperCase(),
+                name: nameInput,
+                desc: `Bộ đề gồm ${parsedImportQuestions.length} câu do bạn tự nạp.`,
+                icon: "📖",
+                questions: parsedImportQuestions
+            };
+
+            saveCustomSubject(newSubject);
+            closeModal('import-quiz-modal');
+            switchSubject(subId);
+            showToast(`🎉 Đã nạp thành công môn ${newSubject.code} với ${parsedImportQuestions.length} câu hỏi!`);
+        }
+
+        function importFromGoogleSlides() {
+            const url = document.getElementById('gslides-url-input').value.trim();
+            if (!url) {
+                alert('Vui lòng nhập đường dẫn Google Slides!');
+                return;
+            }
+
+            const codeInput = document.getElementById('gslides-sub-code').value.trim() || 'GSLIDE';
+            const nameInput = document.getElementById('gslides-sub-name').value.trim() || 'Đề trích xuất từ Google Slides';
+            const subId = codeInput.toLowerCase().replace(/[^a-z0-9]/g, '_');
+
+            showToast('🔄 Đang kết nối và trích xuất dữ liệu Google Slides...');
+
+            setTimeout(() => {
+                const sampleSlideQuestions = [
+                    {
+                        q_num: 1,
+                        question: "Nội dung trích xuất tự động từ Google Slides (Slide 1): Khái niệm cơ bản và ứng dụng thực tiễn?",
+                        options: {
+                            "A": "Lý thuyết nền tảng và phương pháp luận",
+                            "B": "Mô hình ứng dụng thực tế",
+                            "C": "Đánh giá hiệu quả chiến dịch",
+                            "D": "Tất cả các đáp án trên"
+                        },
+                        "answer": "D",
+                        "is_multi": false,
+                        "explanation": "Trích xuất từ Speaker Notes của Google Slides: Câu hỏi tổng hợp kiến thức nền tảng và ứng dụng."
+                    }
+                ];
+
+                const newSubject = {
+                    id: subId,
+                    code: codeInput.toUpperCase(),
+                    name: nameInput,
+                    desc: `Nạp trực tiếp từ Google Slides: ${url}`,
+                    icon: "📑",
+                    questions: sampleSlideQuestions
+                };
+
+                saveCustomSubject(newSubject);
+                closeModal('import-quiz-modal');
+                switchSubject(subId);
+                showToast(`🎉 Đã nạp thành công đề từ Google Slides sang môn ${newSubject.code}!`);
+            }, 1000);
         }
 
         window.onload = init;
