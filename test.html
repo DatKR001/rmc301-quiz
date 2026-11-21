@@ -670,49 +670,7 @@
         .btn-cat-action.primary:hover { background: var(--primary-hover); }
 
         /* Import Quiz Tabs & Form */
-        .import-tabs { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        .import-tab {
-            background: #1e293b;
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            padding: 8px 16px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-        .import-tab:hover { color: #fff; border-color: var(--primary); }
-        .import-tab.active { background: #38bdf820; border-color: var(--primary); color: var(--primary); }
-        
-        .import-pane { display: flex; flex-direction: column; gap: 10px; }
-        .input-label { font-size: 0.82rem; font-weight: 600; color: #e2e8f0; }
-        .import-textarea {
-            width: 100%;
-            height: 180px;
-            background: #0f172a;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 12px;
-            color: #f8fafc;
-            font-size: 0.85rem;
-            line-height: 1.5;
-            resize: vertical;
-            font-family: inherit;
-        }
-        .import-textarea:focus { border-color: var(--primary); outline: none; }
-        .parse-status-bar {
-            background: #0f172a;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 0.8rem;
-            color: #94a3b8;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .parse-status-bar.success { border-color: #22c55e50; color: #4ade80; }
+        /* Importer styles removed */
 
         /* Google Auth in Login Modal */
         .btn-google-signin {
@@ -907,7 +865,7 @@
             <!-- Mode Switchers -->
             <button class="btn-header" onclick="openSubjectCatalogModal()" title="Xem danh mục tất cả môn học">🏛️ Môn học</button>
             
-            <button class="btn-header" id="btn-import-header" onclick="openImportQuizModal()" style="background: #38bdf818; border-color: #38bdf8; color: #38bdf8; font-weight: 600; display: none;" title="Nạp thêm câu hỏi trắc nghiệm mới (Dành cho Admin)">📥 Nạp câu hỏi</button>
+            
             <button class="btn-header exam-btn" id="btn-mock-exam" onclick="openExamModal()">⏱️ Thi Thử</button>
 
             <button class="btn-header history-btn" id="btn-exam-history" onclick="openExamHistoryModal()" title="Tra cứu lịch sử các bài thi thử đã làm">📜 Lịch sử thi (<span id="exam-hist-count">0</span>)</button>
@@ -1335,62 +1293,7 @@
     </div>
 
 
-    <!-- Import Quiz Modal (Nạp Thêm Câu Hỏi) -->
-    <div class="modal-overlay" id="import-quiz-modal">
-        <div class="modal-card modal-large">
-            <div class="modal-title">
-                <span>📥 Nạp Thêm Câu Hỏi Mới</span>
-                <button class="btn-modal-close" onclick="closeModal('import-quiz-modal')">✕</button>
-            </div>
-            <p class="modal-desc">Dán văn bản câu hỏi trắc nghiệm hoặc nhập link Google Slides để AI tự động trích xuất vào ngân hàng đề:</p>
-            
-            <div class="import-tabs">
-                <button class="import-tab active" id="tab-btn-text" onclick="switchImportTab('text')">📝 Dán Text / Quizlet</button>
-                <button class="import-tab" id="tab-btn-slides" onclick="switchImportTab('slides')">📑 Link Google Slides</button>
-            </div>
-
-            <!-- Tab 1: Text / Quizlet -->
-            <div id="import-pane-text" class="import-pane">
-                <label class="input-label">Dán văn bản câu hỏi (hỗ trợ nhiều dòng, Quizlet, Google Docs, Slide Notes):</label>
-                <textarea class="import-textarea" id="import-raw-text" placeholder="Ví dụ:
-Câu 1: Câu hỏi trắc nghiệm của bạn là gì?
-A. Lựa chọn 1
-B. Lựa chọn 2
-C. Lựa chọn 3
-D. Lựa chọn 4
-ĐÁP ÁN: B
-GIẢI THÍCH: Giải thích chi tiết cho câu hỏi..." oninput="onImportTextInput(this.value)"></textarea>
-
-                <div class="parse-status-bar" id="parse-status-bar">
-                    <span id="parse-status-text">Trạng thái: Dán nội dung để AI nhận diện câu hỏi</span>
-                    <span id="parse-count-badge" style="font-weight: bold; color: var(--primary);">0 câu</span>
-                </div>
-
-                <div style="display: flex; gap: 10px; margin-top: 8px;">
-                    <input type="text" class="input-text" id="text-sub-code" placeholder="Mã môn (VD: CCO201)" style="flex: 1;">
-                    <input type="text" class="input-text" id="text-sub-name" placeholder="Tên môn học (VD: Quan Hệ Công Chúng)" style="flex: 2;">
-                </div>
-
-                <button class="btn-modal-submit" id="btn-submit-text-import" style="margin-top: 10px; background: #22c55e; color: #fff; font-weight: 700;" onclick="submitTextImport()" disabled>
-                    🚀 Thêm Vào Ngân Hàng Đề & Ôn Luyện Ngay
-                </button>
-            </div>
-
-            <!-- Tab 2: Google Slides -->
-            <div id="import-pane-slides" class="import-pane" style="display: none;">
-                <label class="input-label">Đường dẫn Google Slides cá nhân:</label>
-                <input type="text" class="input-text" id="gslides-url-input" placeholder="https://docs.google.com/presentation/d/.../edit">
-                
-                <div style="display: flex; gap: 10px; margin-top: 8px;">
-                    <input type="text" class="input-text" id="gslides-sub-code" placeholder="Mã môn (VD: CCO201)" style="flex: 1;">
-                    <input type="text" class="input-text" id="gslides-sub-name" placeholder="Tên môn học (VD: Giao Tiếp Doanh Nghiệp)" style="flex: 2;">
-                </div>
-
-                <button class="btn-modal-submit" style="margin-top: 12px; background: #38bdf8; color: #0b1120; font-weight: 700;" onclick="importFromGoogleSlides()">
-                    ⚡ AI Trích Xuất Câu Hỏi Từ Google Slides
-                </button>
-            </div>
-        </div>
+    
     </div>
 
     <!-- Toast Notification -->
@@ -3587,12 +3490,7 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
 
         function updateAdminUI() {
             const isUserAdmin = isAdmin();
-            const btnImportHeader = document.getElementById('btn-import-header');
-            const btnImportCatalog = document.getElementById('btn-import-catalog');
             const adminBadge = document.getElementById('user-admin-badge');
-
-            if (btnImportHeader) btnImportHeader.style.display = isUserAdmin ? 'inline-flex' : 'none';
-            if (btnImportCatalog) btnImportCatalog.style.display = isUserAdmin ? 'inline-flex' : 'none';
             if (adminBadge) adminBadge.style.display = isUserAdmin ? 'inline-block' : 'none';
         }
 
@@ -3613,7 +3511,7 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
             renderPalette();
             renderQuestion(currentIndex);
             
-            const adminMsg = isAdmin() ? ' 👑 (Quyền Admin: Được thêm & nạp môn học)' : ' (Quyền Học viên: Được chọn các môn học có sẵn)';
+            const adminMsg = isAdmin() ? ' 👑 (Quyền Admin)' : ' (Quyền Học viên)';
             showToast(`Đã đăng nhập Google: ${name}${adminMsg}`);
         }
 
@@ -3654,185 +3552,10 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
             updateAdminUI();
             renderPalette();
             renderQuestion(currentIndex);
-            showToast('Đang học với vai trò Khách (Chỉ chọn học các môn có sẵn)');
+            showToast('Đang học với vai trò Khách');
         }
 
-        /* ================= QUIZ IMPORTER FUNCTIONS ================= */
-                function openImportQuizModal() {
-            if (!isAdmin()) {
-                alert("🔒 Quyền hạn: Chỉ tài khoản Admin (Võ Trọng Đạt) mới có quyền thêm môn học hoặc nạp câu hỏi mới. Học viên vui lòng chọn học các môn có sẵn trong danh mục.");
-                return;
-            }
-            toggleSubjectDropdown(false);
-            document.getElementById('import-quiz-modal').classList.add('active');
-        }
-
-        function switchImportTab(tab) {
-            document.getElementById('tab-btn-text').classList.toggle('active', tab === 'text');
-            document.getElementById('tab-btn-slides').classList.toggle('active', tab === 'slides');
-            document.getElementById('import-pane-text').style.display = (tab === 'text' ? 'flex' : 'none');
-            document.getElementById('import-pane-slides').style.display = (tab === 'slides' ? 'flex' : 'none');
-        }
-
-                function parseQuestionsFromRawText(rawText) {
-            if (!rawText || !rawText.trim()) return [];
-            const text = rawText.trim();
-            const questions = [];
-            
-            const blocks = text.split(/\n(?=(?:Câu\s*\d+|Q\d+|\d+[\.\)])\s*)/i);
-            if (blocks.length > 1 || /^(?:Câu\s*\d+|\d+[\.\)])/i.test(blocks[0])) {
-                blocks.forEach((blk, idx) => {
-                    const lines = blk.split('\n').map(l => l.trim()).filter(Boolean);
-                    if (lines.length < 2) return;
-                    let qText = lines[0].replace(/^(?:Câu\s*\d+[:.]?|\d+[\.\)]|Q\d+[:.]?)\s*/i, '');
-                    let options = {};
-                    let correct = [];
-                    let explanation = '';
-
-                    for (let i = 1; i < lines.length; i++) {
-                        const line = lines[i];
-                        const optMatch = line.match(/^([A-D])[\.\)]\s*(.*)/i);
-                        const ansMatch = line.match(/^(?:Đáp án|ĐA|Answer|Key)[:\s]+([A-D,\s]+)/i);
-                        const expMatch = line.match(/^(?:Giải thích|Explanation)[:\s]+(.*)/i);
-
-                        if (ansMatch) {
-                            correct = ansMatch[1].toUpperCase().split(/[\s,]+/).filter(x => ['A','B','C','D'].includes(x));
-                        } else if (expMatch) {
-                            explanation = expMatch[1];
-                        } else if (optMatch) {
-                            const ltr = optMatch[1].toUpperCase();
-                            options[ltr] = optMatch[2];
-                        } else {
-                            if (Object.keys(options).length === 0) {
-                                qText += ' ' + line;
-                            }
-                        }
-                    }
-                    if (Object.keys(options).length >= 2) {
-                        if (correct.length === 0) correct = ['A'];
-                        questions.push({
-                            slide_num: idx + 1,
-                            question: qText,
-                            options: options,
-                            correct_answers: correct,
-                            is_multi: correct.length > 1,
-                            explanation: explanation || 'Không có giải thích chi tiết.'
-                        });
-                    }
-                });
-            }
-
-            if (questions.length === 0) {
-                const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-                lines.forEach((line, idx) => {
-                    const parts = line.split('\t');
-                    if (parts.length >= 2) {
-                        questions.push({
-                            slide_num: idx + 1,
-                            question: parts[0].trim(),
-                            options: { "A": parts[1].trim(), "B": "Đáp án khác 1", "C": "Đáp án khác 2", "D": "Đáp án khác 3" },
-                            correct_answers: ["A"],
-                            is_multi: false,
-                            explanation: `Đáp án chính xác: ${parts[1].trim()}`
-                        });
-                    }
-                });
-            }
-
-            return questions;
-        }
-
-        let parsedImportQuestions = [];
-
-        function onImportTextInput(val) {
-            parsedImportQuestions = parseQuestionsFromRawText(val);
-            const statusEl = document.getElementById('parse-status-bar');
-            const countBadge = document.getElementById('parse-count-badge');
-            const submitBtn = document.getElementById('btn-submit-text-import');
-
-            if (parsedImportQuestions.length > 0) {
-                statusEl.className = 'parse-status-bar success';
-                statusEl.firstElementChild.textContent = '✅ AI đã nhận diện thành công:';
-                countBadge.textContent = `${parsedImportQuestions.length} câu hỏi`;
-                submitBtn.disabled = false;
-            } else {
-                statusEl.className = 'parse-status-bar';
-                statusEl.firstElementChild.textContent = 'Trạng thái: Dán nội dung để AI nhận diện câu hỏi';
-                countBadge.textContent = '0 câu';
-                submitBtn.disabled = true;
-            }
-        }
-
-        function submitTextImport() {
-            if (parsedImportQuestions.length === 0) {
-                alert('Vui lòng dán nội dung câu hỏi hợp lệ trước khi tạo!');
-                return;
-            }
-
-            const codeInput = document.getElementById('text-sub-code').value.trim() || `MON_${Date.now().toString().slice(-4)}`;
-            const nameInput = document.getElementById('text-sub-name').value.trim() || `Môn học mới (${codeInput})`;
-            const subId = codeInput.toLowerCase().replace(/[^a-z0-9]/g, '_');
-
-            const newSubject = {
-                id: subId,
-                code: codeInput.toUpperCase(),
-                name: nameInput,
-                desc: `Bộ đề gồm ${parsedImportQuestions.length} câu do bạn tự nạp.`,
-                icon: "📖",
-                questions: parsedImportQuestions
-            };
-
-            saveCustomSubject(newSubject);
-            closeModal('import-quiz-modal');
-            switchSubject(subId);
-            showToast(`🎉 Đã nạp thành công môn ${newSubject.code} với ${parsedImportQuestions.length} câu hỏi!`);
-        }
-
-        function importFromGoogleSlides() {
-            const url = document.getElementById('gslides-url-input').value.trim();
-            if (!url) {
-                alert('Vui lòng nhập đường dẫn Google Slides!');
-                return;
-            }
-
-            const codeInput = document.getElementById('gslides-sub-code').value.trim() || 'GSLIDE';
-            const nameInput = document.getElementById('gslides-sub-name').value.trim() || 'Đề trích xuất từ Google Slides';
-            const subId = codeInput.toLowerCase().replace(/[^a-z0-9]/g, '_');
-
-            showToast('🔄 Đang kết nối và trích xuất dữ liệu Google Slides...');
-
-            setTimeout(() => {
-                const sampleSlideQuestions = [
-                    {
-                        q_num: 1,
-                        question: "Nội dung trích xuất tự động từ Google Slides (Slide 1): Khái niệm cơ bản và ứng dụng thực tiễn?",
-                        options: {
-                            "A": "Lý thuyết nền tảng và phương pháp luận",
-                            "B": "Mô hình ứng dụng thực tế",
-                            "C": "Đánh giá hiệu quả chiến dịch",
-                            "D": "Tất cả các đáp án trên"
-                        },
-                        "answer": "D",
-                        "is_multi": false,
-                        "explanation": "Trích xuất từ Speaker Notes của Google Slides: Câu hỏi tổng hợp kiến thức nền tảng và ứng dụng."
-                    }
-                ];
-
-                const newSubject = {
-                    id: subId,
-                    code: codeInput.toUpperCase(),
-                    name: nameInput,
-                    desc: `Nạp trực tiếp từ Google Slides: ${url}`,
-                    icon: "📑",
-                    questions: sampleSlideQuestions
-                };
-
-                saveCustomSubject(newSubject);
-                closeModal('import-quiz-modal');
-                switchSubject(subId);
-                showToast(`🎉 Đã nạp thành công đề từ Google Slides sang môn ${newSubject.code}!`);
-            }, 1000);
-        }
+        /* Quiz importer functions removed - using Antigravity skills instead */
 
         window.onload = init;
     </script>
