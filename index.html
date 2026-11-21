@@ -3163,76 +3163,7 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
 
 
         /* ================= V2.0 MULTI-SUBJECT & GOOGLE AUTH ENGINE ================= */
-        // Starter questions for CCO201 (Corporate Communication / PR)
-        const CCO201_SAMPLE_QUESTIONS = [
-            {
-                "q_num": 1,
-                "question": "Mục đích cốt lõi của hoạt động Quan hệ Công chúng (Public Relations - PR) trong doanh nghiệp là gì?",
-                "options": {
-                    "A": "Bán hàng trực tiếp và tối đa hóa doanh thu ngắn hạn",
-                    "B": "Xây dựng, duy trì uy tín và sự thấu hiểu lẫn nhau giữa tổ chức với các nhóm công chúng",
-                    "C": "Giảm thiểu chi phí nhân sự và vận hành",
-                    "D": "Thay thế hoàn toàn bộ phận Marketing và Quảng cáo"
-                },
-                "answer": "B",
-                "is_multi": false,
-                "explanation": "PR (Public Relations) tập trung vào việc thiết lập và duy trì sự thấu hiểu, uy tín và mối quan hệ tốt đẹp lâu dài giữa tổ chức với công chúng của mình."
-            },
-            {
-                "q_num": 2,
-                "question": "Những nhóm công chúng nào sau đây là 'Công chúng nội bộ' (Internal Publics) của một công ty? (Chọn tất cả các đáp án đúng)",
-                "options": {
-                    "A": "Nhân viên toàn thời gian và bán thời gian",
-                    "B": "Khách hàng tiềm năng trên thị trường",
-                    "C": "Ban lãnh đạo và hội đồng quản trị",
-                    "D": "Các cơ quan quản lý nhà nước"
-                },
-                "answer": "AC",
-                "is_multi": true,
-                "explanation": "Công chúng nội bộ bao gồm những người trực tiếp làm việc và gắn bó bên trong tổ chức như nhân viên, quản lý, ban điều hành và hội đồng quản trị."
-            },
-            {
-                "q_num": 3,
-                "question": "Thông cáo báo chí (Press Release) nên tuân theo mô hình cấu trúc nào để đạt hiệu quả cao nhất?",
-                "options": {
-                    "A": "Mô hình tam giác xuôi (chi tiết trước, cốt lõi sau)",
-                    "B": "Mô hình kim tự tháp ngược (thông tin quan trọng nhất đưa lên đầu)",
-                    "C": "Mô hình vòng tròn lặp lại",
-                    "D": "Mô hình tự sự tuyến tính theo trình tự thời gian"
-                },
-                "answer": "B",
-                "is_multi": false,
-                "explanation": "Mô hình kim tự tháp ngược (Inverted Pyramid) giúp các nhà báo nắm bắt ngay thông tin quan trọng nhất (5W1H) ngay ở đoạn mở đầu (Lead)."
-            },
-            {
-                "q_num": 4,
-                "question": "Khi xảy ra khủng hoảng truyền thông (Crisis Communication), nguyên tắc vàng đầu tiên doanh nghiệp cần thực hiện là gì?",
-                "options": {
-                    "A": "Giữ im lặng tuyệt đối và xóa tất cả bài đăng trên mạng xã hội",
-                    "B": "Đổ lỗi cho đối thủ cạnh tranh hoặc bên thứ ba",
-                    "C": "Phản hồi nhanh chóng, trung thực, chịu trách nhiệm và cung cấp thông tin chính xác",
-                    "D": "Chi tiền quảng cáo để đẩy tin tiêu cực xuống"
-                },
-                "answer": "C",
-                "is_multi": false,
-                "explanation": "Nguyên tắc xử lý khủng hoảng cốt lõi là: Nhanh chóng - Trung thực - Chịu trách nhiệm và Thể hiện sự đồng cảm với các bên bị ảnh hưởng."
-            },
-            {
-                "q_num": 5,
-                "question": "Khái niệm 'CSR' trong truyền thông doanh nghiệp viết tắt của cụm từ nào?",
-                "options": {
-                    "A": "Customer Service Relations",
-                    "B": "Corporate Social Responsibility (Trách nhiệm xã hội của doanh nghiệp)",
-                    "C": "Company Sales Revenue",
-                    "D": "Crisis Solving Resource"
-                },
-                "answer": "B",
-                "is_multi": false,
-                "explanation": "CSR là Corporate Social Responsibility, thể hiện cam kết của doanh nghiệp đóng góp cho sự phát triển kinh tế bền vững và nâng cao chất lượng cuộc sống cho cộng đồng."
-            }
-        ];
-
-        // Subject Catalog Store
+        // Subject Catalog Store (Only official subjects with verified questions)
         let subjectCatalog = {
             "rmc301": {
                 id: "rmc301",
@@ -3241,18 +3172,14 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
                 desc: "Bộ ngân hàng đề thi 380 câu toàn diện với đầy đủ giải thích chi tiết tiếng Việt.",
                 icon: "🎯",
                 questions: quizData
-            },
-            "cco201": {
-                id: "cco201",
-                code: "CCO201",
-                name: "Giao Tiếp & Quan Hệ Công Chúng (Corporate Comm)",
-                desc: "Bộ đề trắc nghiệm lý thuyết PR, truyền thông nội bộ và xử lý khủng hoảng truyền thông.",
-                icon: "📢",
-                questions: CCO201_SAMPLE_QUESTIONS
             }
         };
 
         let currentSubjectId = localStorage.getItem('active_subject_id') || 'rmc301';
+        if (currentSubjectId.toLowerCase().includes('cco') || !subjectCatalog[currentSubjectId]) {
+            currentSubjectId = 'rmc301';
+            try { localStorage.setItem('active_subject_id', 'rmc301'); } catch(e) {}
+        }
         let currentSubject = subjectCatalog[currentSubjectId] || subjectCatalog['rmc301'];
         let activeQuizData = currentSubject.questions; quizData = activeQuizData;
 
@@ -3261,13 +3188,51 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
                 const stored = localStorage.getItem('quiz_custom_subjects');
                 if (stored) {
                     const customList = JSON.parse(stored);
+                    let changed = false;
                     Object.keys(customList).forEach(id => {
-                        subjectCatalog[id] = customList[id];
+                        const sub = customList[id];
+                        // Automatically remove any CCO or empty subject
+                        if (id.toLowerCase().includes('cco') || (sub && sub.code && sub.code.toLowerCase().includes('cco'))) {
+                            delete customList[id];
+                            changed = true;
+                        } else {
+                            subjectCatalog[id] = customList[id];
+                        }
                     });
+                    if (changed) {
+                        localStorage.setItem('quiz_custom_subjects', JSON.stringify(customList));
+                    }
                 }
             } catch(e) {
                 console.error('Error loading custom subjects:', e);
             }
+        }
+
+        function deleteSubject(subId) {
+            if (subId === 'rmc301') {
+                alert('Không thể xóa môn mặc định RMC301!');
+                return;
+            }
+            if (!isAdmin()) {
+                alert('Chỉ tài khoản Admin (Võ Trọng Đạt) mới có quyền xóa môn học!');
+                return;
+            }
+            if (!confirm(`Bạn có chắc chắn muốn xóa môn này không?`)) return;
+            delete subjectCatalog[subId];
+            try {
+                const stored = localStorage.getItem('quiz_custom_subjects');
+                if (stored) {
+                    const customList = JSON.parse(stored);
+                    delete customList[subId];
+                    localStorage.setItem('quiz_custom_subjects', JSON.stringify(customList));
+                }
+            } catch(e) {}
+            if (currentSubjectId === subId) {
+                switchSubject('rmc301');
+            } else {
+                openSubjectCatalogModal();
+            }
+            showToast('Đã xóa môn thành công!');
         }
 
         function saveCustomSubject(subObj) {
@@ -3403,6 +3368,11 @@ ${q.explanation || 'Không có giải thích chi tiết.'}`;
                         <button class="btn-cat-action ${isActive ? 'primary' : ''}" onclick="switchSubject('${sub.id}')">
                             ${isActive ? 'Tiếp tục học' : 'Vào học môn này'}
                         </button>
+                        ${(isAdmin() && sub.id !== 'rmc301') ? `
+                            <button class="btn-del-comment" style="padding: 6px 12px; margin-top: 6px;" onclick="deleteSubject('${sub.id}')" title="Xóa môn với quyền Admin (Võ Trọng Đạt)">
+                                🗑️ Xóa môn (Admin)
+                            </button>
+                        ` : ''}
                     </div>
                 `;
                 grid.appendChild(card);
