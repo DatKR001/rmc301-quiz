@@ -1229,9 +1229,10 @@
             }
         }
 
-        /* ================= NOTES LOGIC ================= */
+        /* ================= NOTES LOGIC (SAFE / LEGACY COMPAT) ================= */
         function loadCurrentQuestionNote() {
             const noteEl = document.getElementById('note-textarea');
+            if (!noteEl) return;
             const indicatorEl = document.getElementById('notes-q-indicator');
             const countEl = document.getElementById('note-char-count');
             const statusEl = document.getElementById('notes-save-status');
@@ -1240,19 +1241,23 @@
             const currentNote = userNotes[qIdx] || '';
             
             noteEl.value = currentNote;
-            indicatorEl.textContent = `Ghi chú cho Câu ${qIdx + 1}:`;
-            countEl.textContent = `${currentNote.length} ký tự`;
-            statusEl.textContent = 'Đã lưu 🟢';
-            statusEl.className = 'notes-save-badge saved';
+            if (indicatorEl) indicatorEl.textContent = `Ghi chú cho Câu ${qIdx + 1}:`;
+            if (countEl) countEl.textContent = `${currentNote.length} ký tự`;
+            if (statusEl) {
+                statusEl.textContent = 'Đã lưu 🟢';
+                statusEl.className = 'notes-save-badge saved';
+            }
         }
 
         function onNoteInput(text) {
             const countEl = document.getElementById('note-char-count');
             const statusEl = document.getElementById('notes-save-status');
-            countEl.textContent = `${text.length} ký tự`;
+            if (countEl) countEl.textContent = `${text.length} ký tự`;
             
-            statusEl.textContent = 'Đang lưu... 🔄';
-            statusEl.className = 'notes-save-badge saving';
+            if (statusEl) {
+                statusEl.textContent = 'Đang lưu... 🔄';
+                statusEl.className = 'notes-save-badge saving';
+            }
 
             if (noteSaveTimeout) clearTimeout(noteSaveTimeout);
             noteSaveTimeout = setTimeout(() => {
@@ -1264,8 +1269,10 @@
                     delete userNotes[qIdx];
                 }
                 saveProgress();
-                statusEl.textContent = 'Đã lưu 🟢';
-                statusEl.className = 'notes-save-badge saved';
+                if (statusEl) {
+                    statusEl.textContent = 'Đã lưu 🟢';
+                    statusEl.className = 'notes-save-badge saved';
+                }
                 updatePaletteItem(qIdx);
                 updateStats();
             }, 500);
@@ -1276,8 +1283,10 @@
             if (userNotes[qIdx]) {
                 if (confirm(`Bạn có chắc chắn muốn xóa ghi chú của Câu ${qIdx + 1}?`)) {
                     delete userNotes[qIdx];
-                    document.getElementById('note-textarea').value = '';
-                    document.getElementById('note-char-count').textContent = '0 ký tự';
+                    const noteEl = document.getElementById('note-textarea');
+                    if (noteEl) noteEl.value = '';
+                    const countEl = document.getElementById('note-char-count');
+                    if (countEl) countEl.textContent = '0 ký tự';
                     saveProgress();
                     updatePaletteItem(qIdx);
                     updateStats();
