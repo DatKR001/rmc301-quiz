@@ -686,6 +686,41 @@
             gap: 4px;
         }
 
+
+        .ai-key-setup-card {
+            background: linear-gradient(135deg, #0f172a, #1e1b4b);
+            border: 1.5px solid #6366f180;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.15);
+        }
+        .ai-live-active-bar {
+            background: #022c22;
+            border: 1px solid #22c55e60;
+            color: #4ade80;
+            padding: 7px 12px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .btn-change-key {
+            background: transparent;
+            border: 1px solid #22c55e80;
+            color: #4ade80;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+        .btn-change-key:hover {
+            background: #22c55e20;
+        }
+
 /* ================= PALETTE DRAWER & SEARCH ================= */
         .palette-drawer { background: #131d31; border-top: 1px solid var(--border); padding: 18px 24px; margin-top: 24px; border-radius: 16px 16px 0 0; }
         .palette-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
@@ -2065,6 +2100,8 @@
 
             <!-- 1. Interactive AI Discussion Box -->
             <div class="ai-chat-box">
+                <!-- Live Gemini Key Setup / Status Container -->
+                <div id="ai-key-container"></div>
                 <div style="font-size: 0.8rem; font-weight: 700; color: #38bdf8; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
                     <span>💬 Phản biện Học thuật Độc lập (Tham chiếu Arthur Asa Berger):</span>
                     <span style="font-size: 0.7rem; color: #94a3b8; font-weight: normal;">* AI sẽ đối chiếu logic & bác bỏ nếu phản biện sai</span>
@@ -3383,7 +3420,7 @@ Nếu bạn thấy đáp án này chưa chính xác hoặc muốn phản biện,
             renderAiChatHistory();
 
             document.getElementById('ai-chat-input').value = '';
-            updateGeminiKeyButtonUI();
+            renderGeminiKeyUI();
             modal.classList.add('active');
         }
         window.openAiAuditReportModal = openAiAuditReportModal;
@@ -3415,36 +3452,100 @@ Nếu bạn thấy đáp án này chưa chính xác hoặc muốn phản biện,
             container.scrollTop = container.scrollHeight;
         }
 
-        function promptGeminiApiKey() {
-            const currentKey = localStorage.getItem('rmc301_gemini_api_key') || '';
-            const newKey = prompt('Nhập Google Gemini API Key để AI phản biện trực tiếp bằng mô hình ngôn ngữ lớn (Để trống nếu muốn dùng bộ máy phản biện học thuật tích hợp sẵn):', currentKey);
-            if (newKey !== null) {
-                if (newKey.trim()) {
-                    localStorage.setItem('rmc301_gemini_api_key', newKey.trim());
-                    showToast('🔑 Đã lưu Gemini API Key! AI sẽ phản biện trực tiếp thời gian thực.');
-                } else {
-                    localStorage.removeItem('rmc301_gemini_api_key');
-                    showToast('⚙️ Chuyển về Bộ máy Phản biện Giáo trình Arthur Asa Berger tích hợp sẵn.');
+        function renderGeminiKeyUI() {
+            const container = document.getElementById('ai-key-container');
+            const headerBtn = document.getElementById('btn-gemini-key-status');
+            if (!container) return;
+
+            const savedKey = localStorage.getItem('rmc301_gemini_api_key') || '';
+            if (savedKey) {
+                container.innerHTML = `
+                    <div class="ai-live-active-bar">
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <span>🟢</span>
+                            <span><strong>Live Gemini AI (1.5 Flash)</strong>: Đang trực tuyến · Phản biện học thuật thời gian thực</span>
+                        </div>
+                        <button class="btn-change-key" onclick="clearGeminiApiKey()">Đổi Key</button>
+                    </div>
+                `;
+                if (headerBtn) {
+                    headerBtn.textContent = '⚡ Live Gemini AI: BẬT';
+                    headerBtn.style.borderColor = '#22c55e';
+                    headerBtn.style.color = '#4ade80';
                 }
-                updateGeminiKeyButtonUI();
+            } else {
+                container.innerHTML = `
+                    <div class="ai-key-setup-card">
+                        <div style="font-size: 0.88rem; font-weight: 700; color: #38bdf8; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                            <span>🤖 Kích hoạt Trí tuệ Nhân tạo Phản biện Thực tế (Live Gemini AI)</span>
+                        </div>
+                        <p style="font-size: 0.78rem; color: #cbd5e1; line-height: 1.55; margin-bottom: 10px;">
+                            Để AI có thể <strong>thực sự tương tác, đọc hiểu sâu sắc và tranh luận phản biện tự do</strong> với bạn (thay vì các câu trả lời mẫu), bạn chỉ cần dán Gemini API Key hoàn toàn miễn phí từ Google:
+                        </p>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <input 
+                                type="password" 
+                                id="input-modal-gemini-key" 
+                                placeholder="Dán Gemini API Key (bắt đầu bằng AIzaSy...) vào đây..." 
+                                class="input-text" 
+                                style="flex: 1; min-width: 220px; padding: 7px 12px; font-size: 0.82rem;"
+                                onkeydown="if(event.key==='Enter') activateGeminiApiKey();"
+                            >
+                            <button class="btn-submit-exam" style="padding: 7px 14px; font-size: 0.82rem;" onclick="activateGeminiApiKey()">Kích hoạt AI 🚀</button>
+                            <a href="https://aistudio.google.com/app/apikey" target="_blank" class="btn-header" style="text-decoration: none; padding: 7px 12px; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 4px;">
+                                <span>Lấy Key Free (10s) ↗</span>
+                            </a>
+                        </div>
+                        <div style="font-size: 0.72rem; color: #94a3b8; margin-top: 6px;">
+                            💡 Đăng nhập tài khoản Google của bạn tại Google AI Studio, bấm <strong>"Create API key"</strong> là có ngay. Key được lưu an toàn trong trình duyệt của riêng bạn.
+                        </div>
+                    </div>
+                `;
+                if (headerBtn) {
+                    headerBtn.textContent = '🔑 Kích hoạt Live AI';
+                    headerBtn.style.borderColor = '#f59e0b';
+                    headerBtn.style.color = '#fbbf24';
+                }
+            }
+        }
+
+        function activateGeminiApiKey() {
+            const input = document.getElementById('input-modal-gemini-key');
+            const key = (input ? input.value : '').trim();
+            if (!key) {
+                alert('Vui lòng dán Gemini API Key hợp lệ (bắt đầu bằng AIzaSy...)');
+                return;
+            }
+            localStorage.setItem('rmc301_gemini_api_key', key);
+            showToast('✅ Đã kích hoạt thành công Live Gemini AI! Bạn có thể bắt đầu trò chuyện.');
+            renderGeminiKeyUI();
+            
+            // Add a confirmation welcome message in chat
+            aiChatLog.push({
+                sender: 'ai',
+                text: '🟢 Live Gemini AI 1.5 Flash đã được kích hoạt thành công! Tôi đã nạp toàn bộ câu hỏi, các phương án lựa chọn và tri thức từ Giáo trình Media and Communication Research Methods (Arthur Asa Berger). Xin mời bạn đưa ra phản biện hoặc thắc mắc!'
+            });
+            renderAiChatHistory();
+        }
+        window.activateGeminiApiKey = activateGeminiApiKey;
+
+        function clearGeminiApiKey() {
+            if (confirm('Bạn có muốn xóa API Key hiện tại để nhập key khác không?')) {
+                localStorage.removeItem('rmc301_gemini_api_key');
+                showToast('Đã xóa API Key.');
+                renderGeminiKeyUI();
+            }
+        }
+        window.clearGeminiApiKey = clearGeminiApiKey;
+
+        function promptGeminiApiKey() {
+            const keyInput = document.getElementById('input-modal-gemini-key');
+            if (keyInput) keyInput.focus();
+            else {
+                clearGeminiApiKey();
             }
         }
         window.promptGeminiApiKey = promptGeminiApiKey;
-
-        function updateGeminiKeyButtonUI() {
-            const btn = document.getElementById('btn-gemini-key-status');
-            if (!btn) return;
-            const hasKey = !!localStorage.getItem('rmc301_gemini_api_key');
-            if (hasKey) {
-                btn.textContent = '⚡ Live Gemini AI: BẬT';
-                btn.style.borderColor = '#22c55e';
-                btn.style.color = '#4ade80';
-            } else {
-                btn.textContent = '🔑 Live Gemini API: Tùy chọn';
-                btn.style.borderColor = '#38bdf880';
-                btn.style.color = '#94a3b8';
-            }
-        }
 
         async function submitAiChatMessage() {
             const input = document.getElementById('ai-chat-input');
@@ -3492,7 +3593,7 @@ Người học phản biện như sau:
 
 Hãy phản biện lại một cách học thuật, sắc sảo, khách quan:`;
 
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
