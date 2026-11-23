@@ -97,16 +97,68 @@
         .btn-toggle-sidebar { background: #38bdf818; border: 1px solid #38bdf860; color: #38bdf8; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; display: inline-flex !important; align-items: center; gap: 6px; transition: all 0.2s; }
         .btn-toggle-sidebar:hover { background: #38bdf830; border-color: var(--primary); }
         
-        .question-text { font-size: 1.15rem; line-height: 1.6; margin-bottom: 22px; font-weight: 600; color: #fff; }
+        .question-text { 
+            font-size: 1.15rem; 
+            line-height: 1.6; 
+            margin-bottom: 22px; 
+            font-weight: 600; 
+            color: #fff; 
+            user-select: text !important; 
+            -webkit-user-select: text !important; 
+        }
         
         /* Options List */
         .options-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 22px; }
-        .opt-btn { background: #0f172a; border: 1px solid var(--border); color: var(--text-main); padding: 14px 16px; border-radius: 12px; text-align: left; cursor: pointer; transition: all 0.15s ease; display: flex; align-items: flex-start; gap: 12px; font-size: 1rem; line-height: 1.5; }
+        .opt-btn { 
+            background: #0f172a; 
+            border: 1.5px solid var(--border); 
+            color: var(--text-main); 
+            padding: 14px 16px; 
+            border-radius: 12px; 
+            text-align: left; 
+            cursor: pointer; 
+            transition: all 0.15s ease; 
+            display: flex; 
+            align-items: flex-start; 
+            gap: 12px; 
+            font-size: 1rem; 
+            line-height: 1.5; 
+            user-select: text !important;
+            -webkit-user-select: text !important;
+        }
+        .opt-btn * {
+            user-select: text !important;
+            -webkit-user-select: text !important;
+        }
+        .opt-text {
+            user-select: text !important;
+            -webkit-user-select: text !important;
+            cursor: text;
+            flex: 1;
+        }
         .opt-btn:hover:not(.disabled) { border-color: var(--primary); background: #1a2538; }
-        .opt-btn.selected { border-color: var(--primary); background: #38bdf818; }
+        .opt-btn.selected { 
+            border-color: #38bdf8 !important; 
+            background: #38bdf820 !important; 
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+        }
+        .opt-btn.selected .opt-key {
+            background: #38bdf8;
+            color: #0f172a;
+        }
         .opt-btn.correct { border-color: var(--correct) !important; background: var(--correct-bg) !important; color: #4ade80 !important; }
         .opt-btn.wrong { border-color: var(--wrong) !important; background: var(--wrong-bg) !important; color: #f87171 !important; }
-        .opt-key { font-weight: bold; background: #334155; color: #fff; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.9rem; }
+        .opt-btn.disabled { 
+            cursor: default; 
+            user-select: text !important;
+            -webkit-user-select: text !important;
+        }
+        .opt-btn.disabled .opt-text {
+            cursor: text;
+            user-select: text !important;
+            -webkit-user-select: text !important;
+        }
+        .opt-key { font-weight: bold; background: #334155; color: #fff; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.9rem; user-select: none; }
         .opt-btn.correct .opt-key { background: var(--correct); color: #000; }
         .opt-btn.wrong .opt-key { background: var(--wrong); color: #fff; }
         .opt-btn.exam-selected { border-color: var(--primary) !important; background: #38bdf825 !important; }
@@ -906,7 +958,7 @@
             <div>
                 <div class="logo-title">
                     <span id="header-app-title">RMC301m_RE Exam Practice</span>
-                    <span class="version-badge" id="app-version-badge">v2.4 (Kiểm Thử Chuyên Sâu - Đầy Đủ Chương)</span>
+                    <span class="version-badge" id="app-version-badge">v2.5 (Nút Xác Nhận & Giữ Tiến Độ)</span>
                     
                     <!-- Subject Dropdown Selector -->
                     <div class="subject-dropdown-wrap">
@@ -1421,6 +1473,7 @@
         }
         let examHistory = [];         // [ { date, mode, score, total, duration } ]
         let currentMultiSelection = new Set();
+        let currentPendingSelection = null;
         let currentUser = null;
         let currentFilter = 'all';
         let searchQuery = '';
@@ -1468,6 +1521,12 @@
                 if (['input', 'textarea'].includes(document.activeElement.tagName.toLowerCase())) return;
                 if (e.key === 'ArrowRight') nextQuestion();
                 if (e.key === 'ArrowLeft') prevQuestion();
+                if (e.key === 'Enter') {
+                    const submitBtn = document.getElementById('btn-submit-multi');
+                    if (submitBtn && submitBtn.style.display !== 'none') {
+                        submitCurrentAnswer();
+                    }
+                }
                 if (['1', 'a', 'A'].includes(e.key)) selectOptionByKey('A');
                 if (['2', 'b', 'B'].includes(e.key)) selectOptionByKey('B');
                 if (['3', 'c', 'C'].includes(e.key)) selectOptionByKey('C');
@@ -1476,65 +1535,97 @@
         }
 
         function getUserKey() {
+            if (!currentUser) {
+                try {
+                    const savedUser = localStorage.getItem('rmc301_active_user');
+                    if (savedUser) {
+                        currentUser = JSON.parse(savedUser);
+                    }
+                } catch(e) {}
+            }
             const emailKey = (!currentUser || currentUser.email === 'guest') ? 'guest' : currentUser.email;
             return `quiz_data_${emailKey}_${currentSubjectId}`;
         }
 
                 function loadUserData() {
-            const currentKey = getUserKey();
-            let saved = localStorage.getItem(currentKey);
-
-            // Inherit & migrate data from legacy v1.4 / v1.5 storage if not found
-            if (!saved) {
-                const email = currentUser ? currentUser.email : 'guest';
-                const legacyKey = (email === 'guest') ? 'rmc301_data_guest' : 'rmc301_data_' + email;
-                saved = localStorage.getItem(legacyKey);
-                if (saved) {
-                    try {
-                        localStorage.setItem(currentKey, saved);
-                    } catch(e) {}
-                }
-            }
-
-            if (saved) {
+            // 1. Restore active user if saved in localStorage
+            if (!currentUser) {
                 try {
-                    const parsed = JSON.parse(saved);
-                    userAnswers = parsed.answers || {};
-                    bookmarks = new Set(parsed.bookmarks || []);
-                    examHistory = parsed.examHistory || [];
-                    if (parsed.notes) {
-                        delete parsed.notes;
-                        try { localStorage.setItem(currentKey, JSON.stringify(parsed)); } catch(e) {}
+                    const savedUser = localStorage.getItem('rmc301_active_user');
+                    if (savedUser) {
+                        currentUser = JSON.parse(savedUser);
+                        updateUserUI(currentUser);
                     }
                 } catch(e) {
-                    userAnswers = {};
-                    bookmarks = new Set();
-                    examHistory = [];
+                    console.warn('Error restoring user:', e);
                 }
-            } else {
-                userAnswers = {};
-                bookmarks = new Set();
-                examHistory = [];
             }
 
-            // Purge any obsolete standalone legacy notes to prevent false discussion marks
+            const currentKey = getUserKey();
+            
+            // 2. Scan ALL localStorage keys to recover and merge any past answers for this subject
+            let mergedAnswers = {};
+            let mergedBookmarks = new Set();
+            let mergedExamHistory = [];
+
             try {
-                localStorage.removeItem('rmc301_user_notes');
-                const email = currentUser ? currentUser.email : 'guest';
-                const legacyKey = (email === 'guest') ? 'rmc301_data_guest' : 'rmc301_data_' + email;
-                const legacySaved = localStorage.getItem(legacyKey);
-                if (legacySaved) {
-                    const lp = JSON.parse(legacySaved);
-                    if (lp.notes) {
-                        delete lp.notes;
-                        localStorage.setItem(legacyKey, JSON.stringify(lp));
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (!key) continue;
+                    
+                    const isRelevant = (
+                        key.includes(currentSubjectId) || 
+                        (currentSubjectId === 'rmc301' && (key.includes('rmc301') || key.includes('RMC301m_RE')))
+                    ) && (key.startsWith('quiz_data_') || key.startsWith('rmc301_data_'));
+
+                    if (isRelevant) {
+                        const raw = localStorage.getItem(key);
+                        if (raw) {
+                            try {
+                                const p = JSON.parse(raw);
+                                if (p.answers && typeof p.answers === 'object') {
+                                    Object.entries(p.answers).forEach(([qIdx, ansObj]) => {
+                                        if (!mergedAnswers[qIdx] || (ansObj.timestamp && ansObj.timestamp > (mergedAnswers[qIdx].timestamp || 0))) {
+                                            mergedAnswers[qIdx] = ansObj;
+                                        }
+                                    });
+                                }
+                                if (Array.isArray(p.bookmarks)) {
+                                    p.bookmarks.forEach(b => mergedBookmarks.add(b));
+                                }
+                                if (Array.isArray(p.examHistory) && p.examHistory.length > mergedExamHistory.length) {
+                                    mergedExamHistory = p.examHistory;
+                                }
+                            } catch(e) {}
+                        }
                     }
                 }
-            } catch(e) {}
+            } catch(e) {
+                console.warn('Error recovering past user answers:', e);
+            }
+
+            userAnswers = mergedAnswers;
+            bookmarks = mergedBookmarks;
+            examHistory = mergedExamHistory;
             userNotes = {};
+
+            // Immediately persist recovered answers to current canonical key
+            try {
+                const now = Date.now();
+                const dataToSave = {
+                    answers: userAnswers,
+                    bookmarks: Array.from(bookmarks),
+                    examHistory: examHistory,
+                    lastUpdated: new Date(now).toISOString(),
+                    localTimestamp: now
+                };
+                localStorage.setItem(currentKey, JSON.stringify(dataToSave));
+            } catch(e) {}
+
+            updateStats();
         }
 
-function saveProgress() {
+        function saveProgress() {
             const dataKey = getUserKey();
             const now = Date.now();
             const dataToSave = {
@@ -1618,29 +1709,32 @@ function saveProgress() {
 
                 const cloudLastUpdated = cloudVal.lastUpdated || 0;
 
-                if (cloudLastUpdated > localLastUpdated) {
-                    isSyncingFromCloud = true;
-                    if (cloudVal.answers) userAnswers = cloudVal.answers;
-                    if (cloudVal.bookmarks) bookmarks = new Set(cloudVal.bookmarks);
-                    if (cloudVal.notes && firebaseDb && userKey) { firebaseDb.ref(`quiz_progress/${userKey}/notes`).remove().catch(()=>{}); }
-                    if (cloudVal.examHistory) examHistory = cloudVal.examHistory;
-
-                    const dataToSave = {
-                        answers: userAnswers,
-                        bookmarks: Array.from(bookmarks),
-                        notes: userNotes,
-                        examHistory: examHistory,
-                        lastUpdated: new Date(cloudLastUpdated).toISOString(),
-                        localTimestamp: cloudLastUpdated
-                    };
-                    localStorage.setItem(localKey, JSON.stringify(dataToSave));
-
-                    updateStats();
-                    renderPalette();
-                    if (!isExamMode) renderQuestion(currentIndex);
-                    isSyncingFromCloud = false;
-                    showToast('☁️ Đã đồng bộ tiến độ & ghi chú từ Cloud!');
+                isSyncingFromCloud = true;
+                // Merge cloud answers with local answers so neither overwrites the other
+                if (cloudVal.answers && typeof cloudVal.answers === 'object') {
+                    userAnswers = { ...cloudVal.answers, ...userAnswers };
                 }
+                if (Array.isArray(cloudVal.bookmarks)) {
+                    cloudVal.bookmarks.forEach(b => bookmarks.add(b));
+                }
+                if (Array.isArray(cloudVal.examHistory) && cloudVal.examHistory.length > examHistory.length) {
+                    examHistory = cloudVal.examHistory;
+                }
+
+                const now = Math.max(cloudLastUpdated, localLastUpdated, Date.now());
+                const dataToSave = {
+                    answers: userAnswers,
+                    bookmarks: Array.from(bookmarks),
+                    examHistory: examHistory,
+                    lastUpdated: new Date(now).toISOString(),
+                    localTimestamp: now
+                };
+                localStorage.setItem(localKey, JSON.stringify(dataToSave));
+
+                updateStats();
+                renderPalette();
+                if (!isExamMode) renderQuestion(currentIndex);
+                isSyncingFromCloud = false;
             });
         }
 
@@ -2236,8 +2330,12 @@ function toggleCommentsSidebar() {
             document.getElementById('question-text').textContent = q.question;
             
             currentMultiSelection.clear();
+            currentPendingSelection = null;
             const submitBtn = document.getElementById('btn-submit-multi');
-            submitBtn.style.display = (q.is_multi && !userAnswers[index]) ? 'inline-block' : 'none';
+            if (submitBtn) {
+                submitBtn.style.display = 'none';
+                submitBtn.textContent = q.is_multi ? 'Xác nhận chọn nhiều đáp án 🎯' : 'Xác nhận đáp án 🎯';
+            }
 
             const optsContainer = document.getElementById('options-list');
             optsContainer.innerHTML = '';
@@ -2249,7 +2347,7 @@ function toggleCommentsSidebar() {
                 const btn = document.createElement('button');
                 btn.className = 'opt-btn';
                 btn.id = `opt-btn-${key}`;
-                btn.innerHTML = `<span class="opt-key">${key}</span><span>${text}</span>`;
+                btn.innerHTML = `<span class="opt-key">${key}</span><span class="opt-text">${escapeHtml(text)}</span>`;
                 
                 if (answered) {
                     btn.classList.add('disabled');
@@ -2264,6 +2362,9 @@ function toggleCommentsSidebar() {
                 
                 optsContainer.appendChild(btn);
             }
+
+            // Auto-scroll smoothly to top of page on question change
+            try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e) {}
 
             // Explanation
             const expBox = document.getElementById('explanation-box');
@@ -2295,28 +2396,61 @@ function toggleCommentsSidebar() {
             }
             if (userAnswers[currentIndex]) return;
             const q = quizData[currentIndex];
+            const submitBtn = document.getElementById('btn-submit-multi');
 
             if (isMulti) {
                 const btn = document.getElementById(`opt-btn-${key}`);
                 if (currentMultiSelection.has(key)) {
                     currentMultiSelection.delete(key);
-                    btn.classList.remove('selected');
+                    if (btn) btn.classList.remove('selected');
                 } else {
                     currentMultiSelection.add(key);
-                    btn.classList.add('selected');
+                    if (btn) btn.classList.add('selected');
+                }
+                if (submitBtn) {
+                    submitBtn.textContent = 'Xác nhận chọn nhiều đáp án 🎯';
+                    submitBtn.style.display = currentMultiSelection.size > 0 ? 'inline-block' : 'none';
                 }
             } else {
-                evaluateAnswer([key]);
+                // Single-choice: User selects option, highlights it, can freely change to another option before confirming
+                currentPendingSelection = key;
+                for (const optKey of Object.keys(q.options)) {
+                    const b = document.getElementById(`opt-btn-${optKey}`);
+                    if (b) {
+                        if (optKey === key) {
+                            b.classList.add('selected');
+                        } else {
+                            b.classList.remove('selected');
+                        }
+                    }
+                }
+                if (submitBtn) {
+                    submitBtn.textContent = `Xác nhận đáp án (${key}) 🎯`;
+                    submitBtn.style.display = 'inline-block';
+                }
             }
         }
 
-        function submitMultiAnswer() {
-            if (currentMultiSelection.size === 0) {
-                alert('Vui lòng chọn ít nhất một đáp án!');
-                return;
+        function submitCurrentAnswer() {
+            if (userAnswers[currentIndex]) return;
+            const q = quizData[currentIndex];
+
+            if (q.is_multi) {
+                if (currentMultiSelection.size === 0) {
+                    showToast('Vui lòng chọn ít nhất 1 đáp án!');
+                    return;
+                }
+                evaluateAnswer(Array.from(currentMultiSelection));
+            } else {
+                if (!currentPendingSelection) {
+                    showToast('Vui lòng chọn một đáp án trước khi xác nhận!');
+                    return;
+                }
+                evaluateAnswer([currentPendingSelection]);
             }
-            evaluateAnswer(Array.from(currentMultiSelection));
         }
+        window.submitMultiAnswer = submitCurrentAnswer;
+        window.submitCurrentAnswer = submitCurrentAnswer;
 
         function evaluateAnswer(selectedKeys) {
             const q = quizData[currentIndex];
@@ -2326,8 +2460,13 @@ function toggleCommentsSidebar() {
 
             userAnswers[currentIndex] = {
                 selected: selectedKeys,
-                isCorrect: isCorrect
+                isCorrect: isCorrect,
+                timestamp: Date.now()
             };
+
+            currentPendingSelection = null;
+            const submitBtn = document.getElementById('btn-submit-multi');
+            if (submitBtn) submitBtn.style.display = 'none';
 
             saveProgress();
             renderQuestion(currentIndex);
@@ -2686,7 +2825,18 @@ function retryCurrentQuestion() {
             const cur = document.getElementById(`palette-item-${idx}`);
             if (cur) {
                 cur.classList.add('current');
-                cur.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                const container = cur.closest('.palette-grid');
+                if (container) {
+                    const cTop = container.scrollTop;
+                    const cHeight = container.clientHeight;
+                    const elTop = cur.offsetTop;
+                    const elHeight = cur.offsetHeight;
+                    if (elTop < cTop) {
+                        container.scrollTop = elTop;
+                    } else if (elTop + elHeight > cTop + cHeight) {
+                        container.scrollTop = elTop + elHeight - cHeight;
+                    }
+                }
             }
         }
 
@@ -2821,6 +2971,7 @@ function retryCurrentQuestion() {
         }
 
         function renderExamQuestion(eIdx) {
+            try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e) {}
             examCurrentIdx = eIdx;
             const qIdx = examQuestions[eIdx];
             const q = quizData[qIdx];
