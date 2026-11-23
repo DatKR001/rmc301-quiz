@@ -2043,6 +2043,16 @@
             try { initCloudSync(); } catch(e) { console.warn('initCloudSync error:', e); }
             try { fetchLatestMainProgress(); } catch(e) { console.warn('fetchLatestMainProgress error:', e); }
 
+            // Auto-sync realtime across preview links, main web, and devices on tab focus
+            try {
+                window.addEventListener('focus', () => { fetchLatestMainProgress(); });
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden) fetchLatestMainProgress();
+                });
+                // Background polling every 15s to keep all tabs 100% in sync
+                setInterval(() => { fetchLatestMainProgress(); }, 15000);
+            } catch(e) { console.warn(e); }
+
             // Keyboard Shortcuts
             try {
                 document.addEventListener('keydown', (e) => {
@@ -2132,7 +2142,7 @@
             userNotes = {};
 
                         // 3. Seed with latest cloud progress & ensure union merge prioritizing whichever side has more completed answers
-            const seedAnswers = {"0": {"isCorrect": true, "selected": ["C", "D"]}, "1": {"isCorrect": true, "selected": ["C", "D"]}, "2": {"isCorrect": true, "selected": ["A"]}, "3": {"isCorrect": true, "selected": ["A"]}, "4": {"isCorrect": true, "selected": ["A"]}, "5": {"isCorrect": false, "selected": ["B"]}, "6": {"isCorrect": true, "selected": ["A"]}, "7": {"isCorrect": true, "selected": ["B"]}, "8": {"isCorrect": true, "selected": ["A"]}, "9": {"isCorrect": true, "selected": ["A"]}, "10": {"isCorrect": true, "selected": ["B"]}, "11": {"isCorrect": true, "selected": ["B"]}, "12": {"isCorrect": true, "selected": ["B"]}, "13": {"isCorrect": true, "selected": ["A"]}, "14": {"isCorrect": false, "selected": ["B"]}, "15": {"isCorrect": true, "selected": ["D"]}, "16": {"isCorrect": true, "selected": ["D"]}, "17": {"isCorrect": true, "selected": ["D"]}, "18": {"isCorrect": true, "selected": ["B"]}, "19": {"isCorrect": true, "selected": ["D"]}, "20": {"isCorrect": true, "selected": ["D"]}, "21": {"isCorrect": true, "selected": ["C"]}, "22": {"isCorrect": true, "selected": ["D"]}, "23": {"isCorrect": true, "selected": ["B"]}, "24": {"isCorrect": true, "selected": ["B"]}, "25": {"isCorrect": true, "selected": ["C"]}, "26": {"isCorrect": true, "selected": ["B"]}, "27": {"isCorrect": true, "selected": ["D"]}, "28": {"isCorrect": true, "selected": ["D"]}, "29": {"isCorrect": true, "selected": ["D"]}, "30": {"isCorrect": true, "selected": ["B"]}, "31": {"isCorrect": false, "selected": ["A"], "timestamp": 1795430304701}};
+            const seedAnswers = {"0": {"isCorrect": false, "selected": ["D"]}, "1": {"isCorrect": true, "selected": ["C", "D"]}, "2": {"isCorrect": false, "selected": ["B"]}, "3": {"isCorrect": true, "selected": ["A"]}, "4": {"isCorrect": true, "selected": ["A"]}, "5": {"isCorrect": false, "selected": ["B"]}, "6": {"isCorrect": true, "selected": ["A"]}, "7": {"isCorrect": true, "selected": ["B"]}, "8": {"isCorrect": true, "selected": ["A"]}, "9": {"isCorrect": true, "selected": ["A"]}, "10": {"isCorrect": true, "selected": ["B"]}, "11": {"isCorrect": true, "selected": ["B"]}, "12": {"isCorrect": true, "selected": ["B"]}, "13": {"isCorrect": true, "selected": ["A"]}, "14": {"isCorrect": true, "selected": ["A"]}, "15": {"isCorrect": true, "selected": ["D"]}, "16": {"isCorrect": true, "selected": ["D"]}, "17": {"isCorrect": true, "selected": ["D"]}, "18": {"isCorrect": true, "selected": ["B"]}, "19": {"isCorrect": true, "selected": ["D"]}, "20": {"isCorrect": true, "selected": ["D"]}, "21": {"isCorrect": true, "selected": ["C"]}, "22": {"isCorrect": true, "selected": ["D"]}, "23": {"isCorrect": true, "selected": ["B"]}, "24": {"isCorrect": true, "selected": ["B"]}, "25": {"isCorrect": true, "selected": ["C"]}, "26": {"isCorrect": true, "selected": ["B"]}, "27": {"isCorrect": true, "selected": ["D"]}, "28": {"isCorrect": true, "selected": ["D"]}, "29": {"isCorrect": false, "selected": ["C"]}, "30": {"isCorrect": true, "selected": ["B"]}, "31": {"isCorrect": false, "revealed": true, "selected": ["A"], "timestamp": 1795430304701}, "32": {"isCorrect": false, "selected": ["C"]}, "38": {"isCorrect": true, "selected": ["D"]}, "51": {"isCorrect": false, "selected": ["C"]}, "63": {"isCorrect": false, "selected": ["D"]}, "162": {"isCorrect": false, "selected": ["C"]}, "163": {"isCorrect": false, "selected": ["D"]}, "303": {"isCorrect": false, "selected": ["D"]}, "331": {"isCorrect": true, "selected": ["D"]}};
             Object.entries(seedAnswers).forEach(([qIdx, ansObj]) => {
                 if (!mergedAnswers[qIdx]) {
                     mergedAnswers[qIdx] = ansObj;
