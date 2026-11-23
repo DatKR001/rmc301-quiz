@@ -252,7 +252,267 @@
             .notes-sidebar { width: 100%; position: static; }
         }
 
-        /* ================= PALETTE DRAWER & SEARCH ================= */
+        
+        /* ================= HAMBURGER & MOBILE DRAWER ================= */
+        .btn-hamburger {
+            display: none;
+            background: #1e293b;
+            border: 1px solid var(--border);
+            color: #fff;
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
+            cursor: pointer;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            padding: 0;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        .btn-hamburger:hover {
+            border-color: var(--primary);
+            background: #334155;
+        }
+        .hamburger-bar {
+            width: 18px;
+            height: 2px;
+            background: #38bdf8;
+            border-radius: 2px;
+            transition: all 0.2s ease;
+        }
+
+        .mobile-drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.65);
+            z-index: 998;
+            display: none;
+            backdrop-filter: blur(2px);
+            transition: opacity 0.25s ease;
+        }
+        .mobile-drawer-overlay.active {
+            display: block;
+        }
+        .mobile-drawer {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 300px;
+            height: 100%;
+            background: #0f172a;
+            border-left: 1px solid var(--border);
+            z-index: 999;
+            box-shadow: -8px 0 25px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            transition: right 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+        }
+        .mobile-drawer.active {
+            right: 0;
+        }
+        .mobile-drawer-header {
+            padding: 16px 14px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #131d31;
+        }
+        .mobile-drawer-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+        .mobile-user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #38bdf8;
+            color: #0f172a;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+        .mobile-user-info {
+            min-width: 0;
+        }
+        .m-user-name {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #f8fafc;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .m-user-email {
+            font-size: 0.72rem;
+            color: #94a3b8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .btn-drawer-close {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+        .btn-drawer-close:hover {
+            color: #fff;
+            background: #1e293b;
+        }
+
+        .mobile-drawer-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            padding: 12px 14px;
+            background: #131d3180;
+            border-bottom: 1px solid var(--border);
+        }
+        .m-stat-box {
+            background: #0b1120;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 8px 4px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+        }
+        .m-stat-num {
+            font-size: 0.95rem;
+            font-weight: 800;
+        }
+        .m-stat-label {
+            font-size: 0.65rem;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        .mobile-drawer-menu {
+            padding: 12px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+        .m-menu-item {
+            background: #131d31;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-align: left;
+            color: #f8fafc;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            width: 100%;
+        }
+        .m-menu-item:hover, .m-menu-item:active {
+            background: #1e293b;
+            border-color: #38bdf8;
+        }
+        .m-menu-icon {
+            font-size: 1.2rem;
+            width: 26px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .m-menu-text {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .m-menu-title {
+            font-size: 0.84rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+        .m-menu-sub {
+            font-size: 0.68rem;
+            color: #64748b;
+            margin-top: 1px;
+        }
+        .m-menu-arrow {
+            font-size: 1.1rem;
+            color: #475569;
+        }
+        .m-menu-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 6px 0;
+        }
+        .m-menu-danger {
+            border-color: #ef444440;
+        }
+        .m-menu-danger:hover {
+            border-color: #ef4444;
+            background: #ef444415;
+        }
+        .m-menu-danger .m-menu-title {
+            color: #f87171;
+        }
+
+        @media (max-width: 900px) {
+            .btn-hamburger { display: flex; }
+            .desktop-header-action { display: none !important; }
+            header {
+                padding: 10px 14px;
+                flex-wrap: nowrap;
+                justify-content: space-between;
+                gap: 8px;
+            }
+            .logo-area {
+                flex: 1;
+                min-width: 0;
+            }
+            .logo-title {
+                font-size: 0.92rem;
+                gap: 6px;
+            }
+            .version-badge { display: none; }
+            .online-pill { display: none; }
+            #header-sub-desc { display: none; }
+        }
+
+        @media (max-width: 600px) {
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .header-btn-group {
+                width: 100%;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .btn-instant-toggle, .btn-exp-toggle {
+                font-size: 0.78rem;
+                padding: 4px 10px;
+            }
+            .quiz-card {
+                padding: 16px;
+            }
+        }
+
+/* ================= PALETTE DRAWER & SEARCH ================= */
         .palette-drawer { background: #131d31; border-top: 1px solid var(--border); padding: 18px 24px; margin-top: 24px; border-radius: 16px 16px 0 0; }
         .palette-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
         .palette-title { font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
@@ -1037,23 +1297,20 @@
                         <span><strong id="online-learners-count">1</strong> người đang học</span>
                     </div>
                 </div>
-                <div style="font-size: 0.72rem; color: #4ade80;">● Đồng bộ thời gian thực 2 chiều với Firebase</div>
+                <div id="header-sub-desc" style="font-size: 0.72rem; color: #4ade80;">● Đồng bộ thời gian thực 2 chiều với Firebase</div>
             </div>
         </div>
 
         <div class="header-actions">
 
-            <!-- Mode Switchers -->
-            <button class="btn-header" onclick="openSubjectCatalogModal()" title="Xem danh mục tất cả môn học">🏛️ Môn học</button>
-            
-            
-            <button class="btn-header exam-btn" id="btn-mock-exam" onclick="openExamModal()">⏱️ Thi Thử</button>
+            <!-- Desktop Mode Switchers -->
+            <button class="btn-header desktop-header-action" onclick="openSubjectCatalogModal()" title="Xem danh mục tất cả môn học">🏛️ Môn học</button>
+            <button class="btn-header exam-btn desktop-header-action" id="btn-mock-exam" onclick="openExamModal()">⏱️ Thi Thử</button>
+            <button class="btn-header history-btn desktop-header-action" id="btn-exam-history" onclick="openExamHistoryModal()" title="Tra cứu lịch sử các bài thi thử đã làm">📜 Lịch sử thi (<span id="exam-hist-count">0</span>)</button>
+            <button class="btn-header analytics-btn desktop-header-action" onclick="openAnalyticsModal()">📊 Thống kê</button>
 
-            <button class="btn-header history-btn" id="btn-exam-history" onclick="openExamHistoryModal()" title="Tra cứu lịch sử các bài thi thử đã làm">📜 Lịch sử thi (<span id="exam-hist-count">0</span>)</button>
-            <button class="btn-header analytics-btn" onclick="openAnalyticsModal()">📊 Thống kê</button>
-
-            <!-- Stats Bar -->
-            <div class="stats-bar" id="study-stats-bar">
+            <!-- Desktop Stats Bar -->
+            <div class="stats-bar desktop-header-action" id="study-stats-bar">
                 <div class="stat-item">Câu: <span id="stat-current" class="stat-val">1</span>/<span id="stat-total" class="stat-val">380</span></div>
                 <div class="stat-item">Đúng: <span id="stat-correct" class="stat-val" style="color: #4ade80;">0</span></div>
                 <div class="stat-item">Sai: <span id="stat-wrong" class="stat-val" style="color: #f87171;">0</span></div>
@@ -1061,14 +1318,14 @@
                 <div class="stat-item" title="Số câu có thảo luận">💬: <span id="stat-notes" class="stat-val" style="color: #38bdf8;">0</span></div>
             </div>
 
-            <!-- Cloud Sync Indicator -->
-            <button class="btn-cloud-sync" id="btn-cloud-sync" onclick="openCloudModal()" title="Cài đặt đồng bộ đám mây (Google Firebase)">
+            <!-- Desktop Cloud Sync Indicator -->
+            <button class="btn-cloud-sync desktop-header-action" id="btn-cloud-sync" onclick="openCloudModal()" title="Cài đặt đồng bộ đám mây (Google Firebase)">
                 <span class="cloud-dot connected" id="cloud-dot"></span>
                 <span id="cloud-status-text">Cloud: Bật (Tức thì)</span>
             </button>
 
-            <!-- User Auth Area -->
-            <div class="auth-container">
+            <!-- Desktop User Auth Area -->
+            <div class="auth-container desktop-header-action">
                 <button class="btn-auth-action" id="btn-login" onclick="openLoginModal()" style="display:none;">
                     <span>Đăng nhập</span>
                 </button>
@@ -1082,8 +1339,116 @@
                 </div>
                 <button class="btn-reset-action" onclick="resetAllProgress()" title="Xóa toàn bộ tiến độ để làm lại từ đầu">🗑️ Reset tiến độ</button>
             </div>
+
+            <!-- Mobile Hamburger Menu Button (3 gạch) -->
+            <button class="btn-hamburger" id="btn-hamburger" onclick="toggleMobileMenu()" title="Mở menu chức năng">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
         </div>
     </header>
+    <!-- Mobile Hamburger Drawer & Backdrop -->
+    <div class="mobile-drawer-overlay" id="mobile-drawer-overlay" onclick="toggleMobileMenu(false)"></div>
+    <div class="mobile-drawer" id="mobile-drawer">
+        <div class="mobile-drawer-header">
+            <div class="mobile-drawer-user" id="mobile-drawer-user" onclick="toggleMobileMenu(false); openLoginModal()" style="cursor: pointer;">
+                <div class="mobile-user-avatar" id="m-user-avatar">Đ</div>
+                <div class="mobile-user-info">
+                    <div class="m-user-name" id="m-user-name">Võ Trọng Đạt</div>
+                    <div class="m-user-email" id="m-user-email">votrongdat1606@gmail.com</div>
+                </div>
+            </div>
+            <button class="btn-drawer-close" onclick="toggleMobileMenu(false)" title="Đóng menu">✕</button>
+        </div>
+
+        <!-- Mobile Drawer Stats Bar -->
+        <div class="mobile-drawer-stats">
+            <div class="m-stat-box">
+                <span class="m-stat-num" id="m-stat-done" style="color: #38bdf8;">0</span>
+                <span class="m-stat-label">Đã làm</span>
+            </div>
+            <div class="m-stat-box">
+                <span class="m-stat-num" id="m-stat-correct" style="color: #4ade80;">0</span>
+                <span class="m-stat-label">Đúng</span>
+            </div>
+            <div class="m-stat-box">
+                <span class="m-stat-num" id="m-stat-wrong" style="color: #f87171;">0</span>
+                <span class="m-stat-label">Sai</span>
+            </div>
+            <div class="m-stat-box">
+                <span class="m-stat-num" id="m-stat-bm" style="color: #fbbf24;">0</span>
+                <span class="m-stat-label">Đánh dấu</span>
+            </div>
+        </div>
+
+        <!-- Mobile Drawer Navigation Links -->
+        <div class="mobile-drawer-menu">
+            <button class="m-menu-item" onclick="toggleMobileMenu(false); openSubjectCatalogModal()">
+                <span class="m-menu-icon">🏛️</span>
+                <div class="m-menu-text">
+                    <span class="m-menu-title">Danh mục Môn học</span>
+                    <span class="m-menu-sub">Chuyển hoặc thêm môn học mới</span>
+                </div>
+                <span class="m-menu-arrow">›</span>
+            </button>
+
+            <button class="m-menu-item" onclick="toggleMobileMenu(false); openExamModal()">
+                <span class="m-menu-icon">⏱️</span>
+                <div class="m-menu-text">
+                    <span class="m-menu-title">Chế độ Thi Thử</span>
+                    <span class="m-menu-sub">Thi trắc nghiệm tính giờ 30-50 câu</span>
+                </div>
+                <span class="m-menu-arrow">›</span>
+            </button>
+
+            <button class="m-menu-item" onclick="toggleMobileMenu(false); openExamHistoryModal()">
+                <span class="m-menu-icon">📜</span>
+                <div class="m-menu-text">
+                    <span class="m-menu-title">Lịch sử Thi thử (<span id="m-exam-hist-count">0</span>)</span>
+                    <span class="m-menu-sub">Xem kết quả & điểm thi các lần trước</span>
+                </div>
+                <span class="m-menu-arrow">›</span>
+            </button>
+
+            <button class="m-menu-item" onclick="toggleMobileMenu(false); openAnalyticsModal()">
+                <span class="m-menu-icon">📊</span>
+                <div class="m-menu-text">
+                    <span class="m-menu-title">Thống kê Ôn tập</span>
+                    <span class="m-menu-sub">Biểu đồ tỷ lệ đúng/sai & tiến độ</span>
+                </div>
+                <span class="m-menu-arrow">›</span>
+            </button>
+
+            <button class="m-menu-item" onclick="toggleMobileMenu(false); openCloudModal()">
+                <span class="m-menu-icon">☁️</span>
+                <div class="m-menu-text">
+                    <span class="m-menu-title">Đồng bộ Đám mây (Firebase)</span>
+                    <span class="m-menu-sub" id="m-cloud-status">Bật (Tức thì)</span>
+                </div>
+                <span class="m-menu-arrow">›</span>
+            </button>
+
+            <div class="m-menu-divider"></div>
+
+            <button class="m-menu-item m-menu-danger" onclick="toggleMobileMenu(false); resetAllProgress()">
+                <span class="m-menu-icon">🗑️</span>
+                <div class="m-menu-text">
+                    <span class="m-menu-title">Reset tiến độ làm bài</span>
+                    <span class="m-menu-sub">Xóa làm lại từ đầu môn này</span>
+                </div>
+            </button>
+
+            <button class="m-menu-item" id="m-btn-auth" onclick="toggleMobileMenu(false); openLoginModal()">
+                <span class="m-menu-icon">👤</span>
+                <div class="m-menu-text">
+                    <span class="m-menu-title" id="m-auth-title">Đăng nhập tài khoản</span>
+                    <span class="m-menu-sub">Đồng bộ đa thiết bị</span>
+                </div>
+            </button>
+        </div>
+    </div>
+
 
     <!-- Exam Mode Banner (Active only during mock test) -->
     <div class="exam-banner" id="exam-banner">
@@ -1948,16 +2313,32 @@
             setTimeout(updateAdminUI, 0);
             const btnLogin = document.getElementById('btn-login');
             const userProfile = document.getElementById('user-profile');
+            const mAvatar = document.getElementById('m-user-avatar');
+            const mName = document.getElementById('m-user-name');
+            const mEmail = document.getElementById('m-user-email');
+            const mAuthTitle = document.getElementById('m-auth-title');
+
             if (user && user.email !== 'guest') {
                 btnLogin.style.display = 'none';
                 userProfile.style.display = 'flex';
-                document.getElementById('user-avatar').textContent = user.initial || user.name.charAt(0).toUpperCase();
+                const initial = user.initial || user.name.charAt(0).toUpperCase();
+                document.getElementById('user-avatar').textContent = initial;
                 document.getElementById('user-name').textContent = user.name;
                 document.getElementById('user-email').textContent = user.email;
+
+                if (mAvatar) mAvatar.textContent = initial;
+                if (mName) mName.textContent = user.name || 'Thành viên';
+                if (mEmail) mEmail.textContent = user.email || '';
+                if (mAuthTitle) mAuthTitle.textContent = 'Đổi tài khoản';
             } else {
                 btnLogin.style.display = 'flex';
                 btnLogin.innerHTML = '<span>👤 Đăng nhập</span>';
                 userProfile.style.display = 'none';
+
+                if (mAvatar) mAvatar.textContent = '👤';
+                if (mName) mName.textContent = 'Khách (Chưa đăng nhập)';
+                if (mEmail) mEmail.textContent = 'Chạm để đăng nhập Google';
+                if (mAuthTitle) mAuthTitle.textContent = 'Đăng nhập tài khoản';
             }
         }
 
@@ -2607,7 +2988,26 @@ function toggleCommentsSidebar() {
             loadCurrentQuestionNote();
         }
 
-                function updateAutoExpToggleUI() {
+                
+        /* ================= MOBILE DRAWER MENU LOGIC ================= */
+        function toggleMobileMenu(open) {
+            const drawer = document.getElementById('mobile-drawer');
+            const overlay = document.getElementById('mobile-drawer-overlay');
+            if (!drawer || !overlay) return;
+            const shouldOpen = (typeof open === 'boolean') ? open : !drawer.classList.contains('active');
+            if (shouldOpen) {
+                drawer.classList.add('active');
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            } else {
+                drawer.classList.remove('active');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+        window.toggleMobileMenu = toggleMobileMenu;
+
+        function updateAutoExpToggleUI() {
             const btn = document.getElementById('btn-exp-toggle');
             const icon = document.getElementById('exp-toggle-icon');
             const text = document.getElementById('exp-toggle-text');
@@ -3156,6 +3556,18 @@ function retryCurrentQuestion() {
             }
             const cntConf = document.getElementById('cnt-conflict');
             if (cntConf) cntConf.textContent = conflictCount;
+
+            // Sync Mobile Drawer Stats
+            const mDone = document.getElementById('m-stat-done');
+            if (mDone) mDone.textContent = answeredTotal;
+            const mCorr = document.getElementById('m-stat-correct');
+            if (mCorr) mCorr.textContent = correct;
+            const mWrong = document.getElementById('m-stat-wrong');
+            if (mWrong) mWrong.textContent = wrong;
+            const mBm = document.getElementById('m-stat-bm');
+            if (mBm) mBm.textContent = bmCount;
+            const mHist = document.getElementById('m-exam-hist-count');
+            if (mHist) mHist.textContent = examHistory ? examHistory.length : 0;
         }
 
         /* ================= MOCK EXAM MODE ================= */
