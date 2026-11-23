@@ -1932,7 +1932,35 @@
             databaseURL: "https://rmc301-quiz-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
 
-                async function fetchLatestMainProgress() {
+                
+        async function pushProgressViaRest(cleanKey, payload) {
+            try {
+                const targetKey = cleanKey || (
+                    (currentUser && currentUser.email && currentUser.email !== 'guest')
+                        ? currentUser.email.replace(/[.#$[\]]/g, '_')
+                        : 'votrongdat1606@gmail_com'
+                );
+                const body = payload || {
+                    answers: userAnswers,
+                    bookmarks: Array.from(bookmarks),
+                    examHistory: examHistory,
+                    lastUpdated: Date.now(),
+                    updatedAt: new Date().toLocaleString(),
+                    device: navigator.userAgent.includes('Mobile') ? 'Điện thoại' : 'Máy tính',
+                    user: currentUser
+                };
+                await fetch(`https://rmc301-quiz-default-rtdb.asia-southeast1.firebasedatabase.app/quiz_progress/${targetKey}.json`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+            } catch(e) {
+                console.warn('REST PUT sync fallback warning:', e);
+            }
+        }
+        window.pushProgressViaRest = pushProgressViaRest;
+
+        async function fetchLatestMainProgress() {
             try {
                 const res = await fetch('https://rmc301-quiz-default-rtdb.asia-southeast1.firebasedatabase.app/quiz_progress/votrongdat1606@gmail_com.json');
                 if (!res.ok) return;
@@ -2073,33 +2101,26 @@
                 for (let i = 0; i < localStorage.length; i++) {
                     const key = localStorage.key(i);
                     if (!key) continue;
-                    
-                    const isRelevant = (
-                        key.includes(currentSubjectId) || 
-                        (currentSubjectId === 'rmc301' && (key.includes('rmc301') || key.includes('RMC301m_RE')))
-                    ) && (key.startsWith('quiz_data_') || key.startsWith('rmc301_data_'));
-
-                    if (isRelevant) {
-                        const raw = localStorage.getItem(key);
-                        if (raw) {
-                            try {
-                                const p = JSON.parse(raw);
-                                if (p.answers && typeof p.answers === 'object') {
-                                    Object.entries(p.answers).forEach(([qIdx, ansObj]) => {
-                                        if (!mergedAnswers[qIdx] || (ansObj.timestamp && ansObj.timestamp > (mergedAnswers[qIdx].timestamp || 0))) {
-                                            mergedAnswers[qIdx] = ansObj;
-                                        }
-                                    });
+                    const raw = localStorage.getItem(key);
+                    if (!raw || !raw.startsWith('{') || !raw.includes('"answers"')) continue;
+                    try {
+                        const p = JSON.parse(raw);
+                        if (p.answers && typeof p.answers === 'object') {
+                            Object.entries(p.answers).forEach(([qIdx, ansObj]) => {
+                                if (ansObj && typeof ansObj === 'object') {
+                                    if (!mergedAnswers[qIdx] || (ansObj.timestamp && ansObj.timestamp > (mergedAnswers[qIdx].timestamp || 0))) {
+                                        mergedAnswers[qIdx] = ansObj;
+                                    }
                                 }
-                                if (Array.isArray(p.bookmarks)) {
-                                    p.bookmarks.forEach(b => mergedBookmarks.add(b));
-                                }
-                                if (Array.isArray(p.examHistory) && p.examHistory.length > mergedExamHistory.length) {
-                                    mergedExamHistory = p.examHistory;
-                                }
-                            } catch(e) {}
+                            });
                         }
-                    }
+                        if (Array.isArray(p.bookmarks)) {
+                            p.bookmarks.forEach(b => mergedBookmarks.add(b));
+                        }
+                        if (Array.isArray(p.examHistory) && p.examHistory.length > mergedExamHistory.length) {
+                            mergedExamHistory = p.examHistory;
+                        }
+                    } catch(e) {}
                 }
             } catch(e) {
                 console.warn('Error recovering past user answers:', e);
@@ -2121,7 +2142,7 @@
                 [10, 14, 16].forEach(b => mergedBookmarks.add(b));
             }
 
-            // Immediately persist recovered answers to current canonical key
+            // Immediately persist recovered answers to current canonical key and permanent backup
             try {
                 const now = Date.now();
                 const dataToSave = {
@@ -2132,6 +2153,10 @@
                     localTimestamp: now
                 };
                 localStorage.setItem(currentKey, JSON.stringify(dataToSave));
+                localStorage.setItem('rmc301_permanent_backup', JSON.stringify(dataToSave));
+                if (Object.keys(userAnswers).length > 32) {
+                    pushProgressViaRest(null, dataToSave);
+                }
             } catch(e) {}
 
             updateStats();
@@ -2147,9 +2172,13 @@
                 lastUpdated: new Date(now).toISOString(),
                 localTimestamp: now
             };
-            localStorage.setItem(dataKey, JSON.stringify(dataToSave));
+            try {
+                localStorage.setItem(dataKey, JSON.stringify(dataToSave));
+                localStorage.setItem('rmc301_permanent_backup', JSON.stringify(dataToSave));
+            } catch(e) {}
             updateStats();
             syncToCloud();
+            pushProgressViaRest(null, dataToSave);
         }
 
                 let communityCommentsMap = {}; // { [qIdx]: count }
