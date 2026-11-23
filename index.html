@@ -2086,7 +2086,7 @@
         <div class="modal-card modal-large" style="max-width: 680px; max-height: 92vh;">
             <div class="modal-title">
                 <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                    <span id="ai-report-modal-title">🤖 Trao đổi & Hiệu chỉnh Thẩm định AI</span>
+                    <span id="ai-report-modal-title">👨‍🏫 Trao đổi & Hiệu chỉnh Thẩm định AI (Academic Mentor)</span>
                     <button class="btn-header" style="padding: 2px 8px; font-size: 0.72rem; border-color: #38bdf880;" onclick="promptGeminiApiKey()" id="btn-gemini-key-status" title="Cấu hình Google Gemini API để AI đối thoại trực tiếp theo thời gian thực">
                         🔑 Live Gemini API: Tự động
                     </button>
@@ -2095,7 +2095,7 @@
             </div>
             
             <p class="modal-desc" id="ai-report-modal-desc" style="margin-bottom: 12px;">
-                Trao đổi phản biện trực tiếp với AI về đáp án và sửa lại thẩm định cho câu này. Dữ liệu sửa đổi sẽ được lưu đồng bộ lên Cloud cho toàn thể người học.
+                Cố vấn học thuật AI (Arthur Asa Berger Mentor) đồng hành phân tích bẫy nhận thức, giải thích vì sao bạn nghĩ sai/đúng, đối chiếu giáo trình và hỗ trợ hiệu chỉnh thẩm định lên Cloud.
             </p>
 
             <!-- 1. Interactive AI Discussion Box -->
@@ -2103,8 +2103,8 @@
                 <!-- Live Gemini Key Setup / Status Container -->
                 <div id="ai-key-container"></div>
                 <div style="font-size: 0.8rem; font-weight: 700; color: #38bdf8; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
-                    <span>💬 Phản biện Học thuật Độc lập (Tham chiếu Arthur Asa Berger):</span>
-                    <span style="font-size: 0.7rem; color: #94a3b8; font-weight: normal;">* AI sẽ đối chiếu logic & bác bỏ nếu phản biện sai</span>
+                    <span>💬 Cố Vấn Học Thuật Đồng Hành (Mentor RMC301 - Arthur Asa Berger):</span>
+                    <span style="font-size: 0.7rem; color: #94a3b8; font-weight: normal;">* Phân tích bẫy nhận thức · Đối chiếu giáo trình kinh điển</span>
                 </div>
                 <div class="ai-chat-history" id="ai-chat-history">
                     <!-- Dynamic chat bubbles -->
@@ -2114,10 +2114,10 @@
                         type="text" 
                         class="ai-chat-input" 
                         id="ai-chat-input" 
-                        placeholder="Nhập lập luận hoặc thắc mắc của bạn (vd: Slide chọn B mới đúng vì...)"
+                        placeholder="Hỏi Mentor vì sao đáp án này đúng, chia sẻ suy nghĩ của bạn (vd: 'Tôi nghĩ là A vì...', 'Tại sao không phải B?')..."
                         onkeydown="if(event.key==='Enter') submitAiChatMessage();"
                     >
-                    <button class="btn-ai-chat-send" id="btn-ai-chat-send" onclick="submitAiChatMessage()">Gửi phản biện 🚀</button>
+                    <button class="btn-ai-chat-send" id="btn-ai-chat-send" onclick="submitAiChatMessage()">Trao đổi cùng Mentor 💬</button>
                 </div>
             </div>
 
@@ -3394,7 +3394,7 @@ function toggleCommentsSidebar() {
             const modal = document.getElementById('ai-report-modal');
             const titleEl = document.getElementById('ai-report-modal-title');
             if (titleEl) {
-                titleEl.textContent = `🤖 Trao đổi & Hiệu chỉnh Thẩm định AI (Câu ${q.q_num} · Slide ${q.slide_num})`;
+                titleEl.textContent = `👨‍🏫 Mentor Học Thuật & Hiệu chỉnh Thẩm định AI (Câu ${q.q_num} · Slide ${q.slide_num})`;
             }
 
             const currentAudit = q.ai_audit || {};
@@ -3406,15 +3406,30 @@ function toggleCommentsSidebar() {
             document.getElementById('edit-citation').value = currentAudit.citation || 'Giáo trình Media and Communication Research Methods (Arthur Asa Berger)';
             document.getElementById('edit-proof-text').value = currentAudit.proof || '';
 
-            // Initialize chat
-            const chatContainer = document.getElementById('ai-chat-history');
+            // Initialize chat with Academic Mentor Persona
+            const slideAns = (q.answer || '').trim();
+            const aiAns = (currentAudit.ai_answer || slideAns || '').trim();
+            const optEntries = Object.entries(q.options || {});
+            const optListStr = optEntries.map(([k, v]) => `  • [${k}] ${v}`).join('\n');
+            const conclusionLabel = currentAudit.conclusion || (currentAudit.status === 'CONFLICT' ? '[⚡ XUNG ĐỘT ĐÁP ÁN]' : currentAudit.status === 'AMBIGUOUS' ? '[🟡 CẦN LƯU Ý]' : '[KHỚP VỚI SLIDE]');
+
             aiChatLog = [
                 {
                     sender: 'ai',
-                    text: `Xin chào! Tôi là Trợ lý Thẩm định AI. Đối với Câu ${q.q_num} (Slide ${q.slide_num}):
-• Câu hỏi: "${q.question}"
-• Trạng thái hiện tại: [${currentAudit.status || 'MATCH'}] - Đáp án Slide: ${q.answer}, AI: ${currentAudit.ai_answer || q.answer}.
-Nếu bạn thấy đáp án này chưa chính xác hoặc muốn phản biện, hãy nhắn cho tôi lý do (ví dụ: Slide chọn đáp án nào, giáo trình viết gì...) để chúng ta cùng đối chiếu và sửa lại nhé!`
+                    text: `👋 Chào bạn! Tôi là Mentor Học Thuật môn Phương pháp Nghiên cứu Truyền thông (RMC301). Rất vui được đồng hành cùng bạn mổ xẻ kiến thức ở Câu ${q.q_num} (Slide ${q.slide_num})!
+
+📖 Đề bài:
+"${q.question}"
+
+Các phương án:
+${optListStr}
+
+🎯 Hiện trạng thẩm định:
+• Đáp án trên Slide: [${slideAns}]
+• Đáp án chuẩn Giáo trình: [${aiAns}] (${currentAudit.citation || 'Arthur Asa Berger'})
+• Kết luận: ${conclusionLabel}
+
+Bạn đang băn khoăn về câu hỏi này, muốn bảo vệ một phương án khác, hay cần làm rõ vì sao đáp án này đúng? Hãy cứ chia sẻ tự nhiên suy nghĩ của bạn, tôi sẽ cùng bạn phân tích bẫy nhận thức và đối chiếu với giáo trình nhé! 😊`
                 }
             ];
             renderAiChatHistory();
@@ -3561,7 +3576,7 @@ Nếu bạn thấy đáp án này chưa chính xác hoặc muốn phản biện,
             const typingBubble = document.createElement('div');
             typingBubble.className = 'chat-bubble ai';
             typingBubble.id = 'ai-typing-temp';
-            typingBubble.innerHTML = '<em>🤖 Đang tra cứu giáo trình Berger & đánh giá tính hợp lý...</em>';
+            typingBubble.innerHTML = '<em>👨‍🏫 Mentor đang đối chiếu giáo trình Berger & chuẩn bị phản hồi sư phạm...</em>';
             container.appendChild(typingBubble);
             container.scrollTop = container.scrollHeight;
 
@@ -3571,27 +3586,43 @@ Nếu bạn thấy đáp án này chưa chính xác hoặc muốn phản biện,
             // Tier 2: Live Gemini API call if key provided
             if (apiKey) {
                 try {
-                    const systemPrompt = `Bạn là Chuyên gia Thẩm định & Phản biện Nghiên cứu Truyền thông (RMC301) dựa trên giáo trình gốc: Media and Communication Research Methods (Arthur Asa Berger).
-QUY TẮC BẮT BUỘC:
-1. PHẢN BIỆN ĐỘC LẬP & KHÁCH QUAN: Tuyệt đối KHÔNG được chiều theo người học, KHÔNG được tự động đồng ý chỉ vì người học khăng khăng đòi chọn đáp án khác.
-2. XEM XÉT TÍNH HỢP LÝ CỦA LUẬN ĐIỂM:
-   - Nếu người học hiểu sai khái niệm, bám víu vào đáp án sai của Slide hoặc ngộ nhận: DŨNG CẢM BÁC BỎ, chỉ ra lý do sai theo giáo trình và giải thích vì sao đáp án thẩm định mới đúng.
-   - Nếu người học chỉ ra đúng một lỗi sai in ấn của Slide hoặc mâu thuẫn thực sự giữa Slide và định nghĩa của Berger: Xác nhận và đồng ý hiệu chỉnh.
-   - Nếu câu hỏi mập mờ, chỉ ra cả 2 mặt và đề xuất AMBIGUOUS.
-3. KẾT LUẬN: Ghi rõ bạn Bác bỏ hay Chấp nhận phản biện, và đề xuất giữ [MATCH], [CONFLICT] hay [AMBIGUOUS].`;
+                    const systemPrompt = `Bạn là một NGƯỜI THẦY / MENTOR HỌC THUẬT môn Phương pháp Nghiên cứu Truyền thông (RMC301) dựa trên Giáo trình của Arthur Asa Berger: "Media and Communication Research Methods" (SAGE Publications).
 
-                    const promptText = `Ngữ cảnh câu hỏi:
+TƯ THẾ TƯƠNG TÁC (ACADEMIC MENTOR PERSONA):
+1. TẬN TÂM, THẤU HIỂU, ĐỒNG HÀNH (KHÔNG PHÁN XÉT HAY CHẤT VẤN):
+   - Tuyệt đối KHÔNG hành xử như giám thị, KHÔNG dùng các từ ngữ áp đặt, quan liêu, khô cứng (như "Bác bỏ", "Thiếu minh chứng", "Bạn chưa đưa ra chứng cứ khư khư").
+   - Luôn dùng giọng điệu ấm áp, tôn trọng, mang tính sư phạm và khuyến khích người học tư duy ("Chào bạn!", "Tôi rất hiểu vì sao bạn lại chọn đáp án này...", "Đây là một cái bẫy rất tự nhiên mà nhiều sinh viên thường gặp...").
+
+2. KHI NGƯỜI HỌC ĐÒI MỘT ĐÁP ÁN SAI (HOẶC BỊ ĐỀ BÀI / SLIDE ĐÁNH LỪA):
+   - Bước 1 (Phân tích bẫy nhận thức / Tại sao người học nghĩ như vậy): Hãy đồng cảm và giải thích vì sao người học lại dễ bị thu hút bởi phương án đó. Phân tích bẫy từ ngữ bề mặt (surface wording trap), bẫy trực giác đời thường, hoặc sự nhầm lẫn phổ biến giữa các khái niệm (ví dụ: nhầm lẫn giữa ưu điểm của Khảo sát và Phân tích nội dung, nhầm lẫn tác động vật lý của ánh sáng với tâm lý được quan tâm trong Hiệu ứng Hawthorne, v.v.).
+   - Bước 2 (Đối chiếu giáo trình Arthur Asa Berger): Trích dẫn và phân tích bản chất khoa học chuẩn xác theo sách của Berger (nêu rõ Chương, định nghĩa, thực nghiệm) để làm sáng tỏ VÌ SAO phương án khác mới là đáp án đúng đắn về mặt phương pháp luận.
+   - Bước 3 (Lời khuyên sư phạm & Takeaway): Đúc kết một lời khuyên ngắn gọn, dễ nhớ để người học không bị mắc bẫy tương tự khi đi thi.
+
+3. KHI NGƯỜI HỌC CÓ LÝ HOẶC CHỈ RA ĐIỂM XUNG ĐỘT / MỜ NGHĨA CỦA ĐỀ BÀI:
+   - Khen ngợi tư duy phản biện sắc bén của người học.
+   - Phân tích vì sao góc nhìn của họ có cơ sở khoa học hoặc vì sao câu hỏi có tính đa nghĩa (AMBIGUOUS), hoặc Slide bài giảng có lỗi in ấn/sai lệch so với lý thuyết gốc của Berger (CONFLICT).
+   - Đề xuất cập nhật lại thẩm định cho câu hỏi và hỗ trợ họ lưu lại lên Cloud.
+
+4. KHI NGƯỜI HỌC HỎI CHUNG HOẶC NHỜ GIẢI THÍCH:
+   - Mổ xẻ câu hỏi một cách hệ thống: bản chất vấn đề, phân tích từng phương án, chỉ ra bẫy và chốt đáp án chuẩn khoa học.`;
+
+                    const promptText = `Thông tin câu hỏi đang thảo luận:
+- Câu số: ${q.q_num} (Slide ${q.slide_num})
 - Đề bài: ${q.question}
-- Các phương án: ${JSON.stringify(q.options)}
-- Đáp án Slide: ${q.answer}
-- Thẩm định hiện tại: ${q.ai_audit ? q.ai_audit.status : 'MATCH'} (Đáp án chuẩn: ${q.ai_audit ? q.ai_audit.ai_answer : q.answer})
-- Dẫn chứng giáo trình: ${q.ai_audit ? q.ai_audit.citation : 'Tài liệu môn học'}
-- Minh chứng hiện tại: ${q.ai_audit ? q.ai_audit.proof : ''}
+- Các phương án lựa chọn:
+${Object.entries(q.options || {}).map(([k, v]) => `  [${k}] ${v}`).join('\n')}
+- Đáp án Slide ghi nhận: ${q.answer}
+- Thẩm định AI hiện tại: [${q.ai_audit ? q.ai_audit.status : 'MATCH'}] (Đáp án chuẩn: ${q.ai_audit ? q.ai_audit.ai_answer : q.answer})
+- Dẫn chứng giáo trình: ${q.ai_audit ? q.ai_audit.citation : 'Arthur Asa Berger - Media and Communication Research Methods'}
+- Giải thích / Minh chứng hiện tại: ${q.ai_audit ? q.ai_audit.proof : (q.explanation || '')}
+${q.ai_audit?.translation ? `- Bản dịch tiếng Việt tham khảo:
+  + Đề bài: ${q.ai_audit.translation.question}
+  + Các phương án: ${JSON.stringify(q.ai_audit.translation.options)}` : ''}
 
-Người học phản biện như sau:
+Người học đang chia sẻ / thảo luận:
 "${text}"
 
-Hãy phản biện lại một cách học thuật, sắc sảo, khách quan:`;
+Hãy phản hồi như một Người Thầy / Academic Mentor tận tâm, đồng cảm, phân tích tại sao người học nghĩ như vậy, đối chiếu giáo trình Berger và hướng dẫn giải pháp:`;
 
                     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                         method: 'POST',
@@ -3615,7 +3646,7 @@ Hãy phản biện lại một cách học thuật, sắc sảo, khách quan:`;
                 }
             }
 
-            // Tier 1: Built-in Academic Critical Thinking Engine (Arthur Asa Berger Ground Truth)
+            // Tier 1: Built-in Academic Mentor Engine (Arthur Asa Berger Ground Truth)
             setTimeout(() => {
                 const temp = document.getElementById('ai-typing-temp');
                 if (temp) temp.remove();
@@ -3627,108 +3658,194 @@ Hãy phản biện lại một cách học thuật, sắc sảo, khách quan:`;
         }
         window.submitAiChatMessage = submitAiChatMessage;
 
-        /* ================= BUILT-IN ACADEMIC CRITICAL ENGINE ================= */
+        /* ================= BUILT-IN ACADEMIC MENTOR ENGINE ================= */
         function runAcademicCriticalEngine(userText, q) {
             const raw = userText.toLowerCase();
             const upper = userText.toUpperCase();
             const audit = q.ai_audit || {};
             const citation = audit.citation || 'Giáo trình Arthur Asa Berger - Media and Communication Research Methods';
-            const slideAns = q.answer || '';
-            const aiAns = audit.ai_answer || slideAns;
+            const slideAns = (q.answer || '').trim();
+            const aiAns = (audit.ai_answer || slideAns || '').trim();
             const currentStatus = audit.status || 'MATCH';
+            const options = q.options || {};
+            const trans = audit.translation || {};
+            const transOpts = trans.options || {};
 
-            // Detect mentioned options
+            // 1. Detect mentioned options (A, B, C, D, E, True, False, etc.)
             let mentionedKey = '';
-            ['A', 'B', 'C', 'D', 'CD', 'TRUE', 'FALSE'].forEach(k => {
+            ['CD', 'AB', 'BC', 'AD', 'BD', 'AC', 'A', 'B', 'C', 'D', 'E', 'TRUE', 'FALSE'].forEach(k => {
                 const regex = new RegExp(`\\b${k}\\b`, 'i');
                 if (regex.test(userText) && !mentionedKey) mentionedKey = k.toUpperCase();
             });
             if (mentionedKey === 'TRUE') mentionedKey = 'B';
             if (mentionedKey === 'FALSE') mentionedKey = 'A';
 
-            // Case 1: Question 6 / Western Electric Hawthorne Experiments (Classic conflict: lighting vs observation)
+            // Helper to get option display text
+            const getOptSummary = (k) => {
+                if (!k) return '';
+                const orig = options[k] || '';
+                const vi = transOpts[k] ? ` (${transOpts[k]})` : '';
+                return orig ? `[${k}] "${orig}"${vi}` : `[${k}]`;
+            };
+
+            // CASE 1: Hawthorne Experiments (Q6 or mentions of Hawthorne / lighting / ánh sáng)
             if (q.q_num === 6 || raw.includes('hawthorne') || raw.includes('ánh sáng') || raw.includes('lighting')) {
-                if (mentionedKey === 'A' || raw.includes('tăng ánh sáng') || raw.includes('cường độ')) {
-                    return `⛔ BÁC BỎ PHẢN BIỆN (Không thể chiều theo Slide):
-Bạn đang muốn chọn đáp án [A] vì Slide bài giảng ghi A. Nhưng theo Giáo trình Arthur Asa Berger (Chương 15: Experiments), thí nghiệm Western Electric tại Hawthorne (1924–1932) của Elton Mayo đã chứng minh một chân lý khoa học kinh điển: Năng suất công nhân tăng lên KHÔNG PHẢI do tăng cường độ ánh sáng, mà do họ nhận thức được mình đang là đối tượng nghiên cứu được quan tâm (Hiệu ứng Hawthorne). Kể cả khi hạ ánh sáng xuống mức trăng rằm, năng suất vẫn tăng!
+                if (mentionedKey === 'A' || raw.includes('tăng ánh sáng') || raw.includes('cường độ') || raw.includes('slide')) {
+                    return `Chào bạn! Tôi hoàn toàn thấu hiểu vì sao bạn (và ngay cả người soạn Slide bài giảng) lại chọn phương án [A - Cường độ ánh sáng].
 
-Vì vậy, Slide gán nhãn A là một SAI SÓT HỌC THUẬT NGHIÊM TRỌNG. Đáp án giáo trình BẮT BUỘC là [B] và câu này BẮT BUỘC phải là [⚡ XUNG ĐỘT ĐÁP ÁN]. Tôi giữ vững nhận định độc lập này để bảo vệ kiến thức chuẩn cho người học.`;
+💡 Vì sao chúng ta lại dễ nghĩ như vậy?
+Theo trực giác đời thường, bất kỳ ai cũng sẽ nghĩ rằng khi tăng độ sáng trong nhà xưởng, công nhân nhìn rõ hơn, môi trường làm việc tốt hơn thì năng suất lao động đương nhiên sẽ tăng lên. Đây là cái bẫy trực giác rất kinh điển!
+
+📖 Tuy nhiên, hãy cùng nhìn vào bản chất thí nghiệm trong Giáo trình Arthur Asa Berger (Chương 15: Experiments):
+Điểm chấn động và làm nên danh tiếng lịch sử của Thí nghiệm Hawthorne (1924–1932 do Elton Mayo thực hiện) lại chính là việc BÁC BỎ hoàn toàn trực giác vật lý này!
+Khi các nhà nghiên cứu thử nghiệm giảm ánh sáng xuống mức lờ mờ như ánh trăng rằm, năng suất của công nhân vẫn tiếp tục tăng! Nguyên nhân sâu xa là yếu tố TÂM LÝ - XÃ HỘI: Các nữ công nhân nhận thức được họ đang được các nhà khoa học và ban giám đốc quan tâm đặc biệt, khiến họ có động lực làm việc cao hơn. Đây chính là khái niệm kinh điển mang tên "Hiệu ứng Hawthorne" (Hawthorne Effect) – tức Phương án [B].
+
+🎯 Lời khuyên của Mentor:
+Slide bài giảng ghi nhận [A] là một sự nhầm lẫn tai hại về mặt kiến thức kinh điển. Nếu đi thi gặp câu này, bạn hãy tự tin chọn [B] (yếu tố tâm lý được quan tâm) nhé! Bạn thấy giải thích bản chất lịch sử này đã làm sáng tỏ hoàn toàn câu hỏi chưa?`;
                 }
             }
 
-            // Case 2: Question 13 / APA Style Title Page
+            // CASE 2: APA Style Title Page (Q13 or mentions of APA / title page / trang bìa / trang tiêu đề)
             if (q.q_num === 13 || (raw.includes('apa') && (raw.includes('title page') || raw.includes('trang tiêu đề') || raw.includes('trang bìa')))) {
-                if (mentionedKey === 'A' || raw.includes('false') || raw.includes('sai')) {
-                    return `⛔ BÁC BỎ PHẢN BIỆN:
-Bạn cho rằng phong cách APA không yêu cầu trang tiêu đề (chọn False - A). 
-Tuy nhiên, theo Cẩm nang xuất bản APA 7th Edition & Giáo trình Arthur Asa Berger (Chương 17: Writing Research Reports), Trang tiêu đề (Title page) là trang đầu tiên BẮT BUỘC phải có trong mọi bài viết học thuật theo chuẩn APA (bao gồm title, author, institution). 
-Do đó phát biểu 'In APA style, you should include a title page' là phát biểu ĐÚNG (True - Đáp án B). Nhận định của bạn không phù hợp với chuẩn APA.`;
+                if (mentionedKey === 'A' || raw.includes('false') || raw.includes('không cần') || raw.includes('sai')) {
+                    return `Chào bạn! Tôi rất hiểu vì sao bạn lại nghĩ APA không bắt buộc trang tiêu đề (chọn False - A).
+
+💡 Vì sao chúng ta lại dễ nghĩ như vậy?
+Trong thực tế học tập, với các bài tiểu luận ngắn hoặc bài tập tuần, giảng viên thường cho phép viết tiêu đề ngay trên đầu trang 1 mà không cần tách riêng một trang bìa để tiết kiệm giấy. Hơn nữa, phong cách MLA cũng không bắt buộc trang bìa riêng.
+
+📖 Tuy nhiên, đối chiếu với Cẩm nang xuất bản APA 7th Edition & Giáo trình Arthur Asa Berger (Chương 17: Writing Research Reports):
+Quy chuẩn chính thức của APA (áp dụng cho cả bài nghiên cứu sinh viên và bài báo chuyên nghiệp) là: TRANG TIÊU ĐỀ (Title Page) luôn là trang số 1 bắt buộc, bao gồm: Tiêu đề bài viết, tên tác giả, tên trường/khoa, mã môn học và tên giảng viên.
+
+🎯 Vì vậy:
+Phát biểu "In APA style, you should include a title page" là một phát biểu hoàn toàn ĐÚNG (True - Đáp án [B]). Bạn lưu ý điểm này để vừa làm đúng câu hỏi trắc nghiệm vừa định dạng bài nghiên cứu chuẩn chỉnh nhé!`;
                 }
             }
 
-            // Case 3: Question 59 / James A. Schellenberg Experiment Definition
+            // CASE 3: James A. Schellenberg Experiment Definition (Q59)
             if (q.q_num === 59 || raw.includes('schellenberg') || raw.includes('phenomena under controlled')) {
                 if (mentionedKey === 'A') {
-                    return `⛔ BÁC BỎ PHẢN BIỆN:
-Bạn đề xuất chọn phương án A. Tuy nhiên trong Chương 14 (Experiments), Arthur Asa Berger trích dẫn nguyên văn: 'An experiment may be defined as the observation of phenomena under controlled conditions' là định nghĩa nổi tiếng của nhà xã hội học James A. Schellenberg (Phương án B). Phương án A là sai tác giả. Slide ở câu này ghi A là bị lỗi in ấn, đáp án đúng theo giáo trình phải là B.`;
+                    return `Chào bạn! Bạn đang chọn phương án [A] vì câu chữ định nghĩa ở các phương án này rất giống nhau và dễ làm chúng ta phân vân về tên tác giả.
+
+📖 Đối chiếu với Giáo trình Arthur Asa Berger (Chương 14: Experiments):
+Giáo trình trích dẫn nguyên văn định nghĩa kinh điển về thực nghiệm: "An experiment may be defined as the observation of phenomena under controlled conditions" là phát biểu nổi tiếng của nhà xã hội học James A. Schellenberg (Phương án [B]).
+Phương án [A] chỉ là đáp án nhiễu về tên tác giả. Slide ghi A là lỗi gõ phím khi trích xuất tài liệu.
+
+🎯 Đáp án chuẩn khoa học theo sách Berger bắt buộc phải là [B]. Bạn nhớ chú ý tên tác giả Schellenberg để không bị nhầm lẫn nhé!`;
                 }
             }
 
-            // Case 4: Content Analysis vs Historical Analysis / Survey (Q41, Q184)
+            // CASE 4: Content Analysis vs Survey / Representative sample (Q41, Q184)
             if (raw.includes('representative sample') || (q.q_num === 41 && mentionedKey && mentionedKey !== 'E')) {
-                return `⛔ BÁC BỎ PHẢN BIỆN:
-Đề bài hỏi điều nào 'KHÔNG PHẢI là ưu điểm của phân tích nội dung' (NOT an advantage). Trong Chương 12 (Content Analysis), Berger chỉ rõ: Tìm mẫu đại diện cho quần thể (Representative sample) là đặc trưng và ưu điểm của Khảo sát (Survey), không phải của Content Analysis. Vì vậy phương án [E] mới là đáp án chuẩn xác.`;
+                return `Chào bạn! Ở câu hỏi này, có một chiếc "bẫy từ vựng" cực kỳ tinh vi mà rất nhiều sinh viên vướng phải!
+
+💡 Vì sao bạn lại dễ chọn nhầm?
+Đề bài có từ khóa phủ định: "NOT an advantage" (Điều nào KHÔNG PHẢI là ưu điểm của phân tích nội dung). Khi đọc nhanh, nhìn thấy cụm từ "Representative sample" (Mẫu mang tính đại diện), trực giác chúng ta thường nghĩ ngay: "Mẫu đại diện là điều quá tốt trong nghiên cứu khoa học, sao lại không phải ưu điểm?".
+
+📖 Nhưng hãy cùng đối chiếu với Giáo trình Arthur Asa Berger (Chương 11 & Chương 12):
+• "Mẫu đại diện cho toàn thể dân số" là thế mạnh và mục tiêu cốt lõi của phương pháp KHẢO SÁT (Survey).
+• Còn trong PHÂN TÍCH NỘI DUNG (Content Analysis), đối tượng nghiên cứu là khối lượng khổng lồ các văn bản, tin tức, hình ảnh... Việc xây dựng một mẫu mang tính đại diện thực sự là cực kỳ khó khăn và là một HẠN CHẾ lớn, chứ không phải ưu điểm!
+
+🎯 Vì vậy:
+Phương án [E - Representative sample] chính là câu trả lời đúng cho câu hỏi "Điều nào KHÔNG PHẢI là ưu điểm". Bạn hãy luôn chú ý các câu hỏi có chữ NOT nhé!`;
             }
 
-            // Case 5: User blindly demands aligning with Slide when Slide is in CONFLICT
-            if (currentStatus === 'CONFLICT' && (raw.includes('theo slide') || raw.includes('slide chọn') || raw.includes('giống slide') || raw.includes('slide đúng'))) {
-                return `⛔ BẢO VỆ CHÍNH KIẾN HỌC THUẬT ĐỘC LẬP:
-Tôi nhận thấy bạn muốn chuyển câu này thành [Khớp với Slide (${slideAns})]. Tuy nhiên, qua đối chiếu độc lập với ${citation}:
-${audit.proof || 'Nội dung câu hỏi và các phương án mâu thuẫn trực tiếp với lý thuyết chuẩn.'}
-
-Slide bài giảng có lỗi gõ phím/lệch đáp án rõ ràng. Mục tiêu thẩm định của AI là cảnh báo lỗi sai để người học không bị mất điểm oan khi thi thật, chứ không phải mù quáng tuân theo đáp án sai của Slide. Nếu bạn có tài liệu giáo trình chính thống chứng minh Slide đúng, xin hãy trích dẫn số trang cụ thể!`;
-            }
-
-            // Case 6: User points out a genuine ambiguity or plausible academic argument
-            if (raw.includes('mập mờ') || raw.includes('đa nghĩa') || raw.includes('hai cách hiểu') || raw.includes('ambiguous') || raw.includes('cả hai')) {
+            // CASE 5: User raises genuine ambiguity ("đa nghĩa", "mập mờ", "cả hai", "ambiguous", "tùy cách hiểu")
+            if (raw.includes('mập mờ') || raw.includes('đa nghĩa') || raw.includes('hai cách hiểu') || raw.includes('ambiguous') || raw.includes('cả hai') || raw.includes('tranh cãi') || raw.includes('tùy cách hiểu')) {
                 selectAuditStatusChoice('AMBIGUOUS');
                 const proofArea = document.getElementById('edit-proof-text');
                 if (proofArea) {
                     proofArea.value = (proofArea.value + `\n\n[Ghi nhận phản biện về tính đa nghĩa]: Đề bài có cách diễn đạt mở, có thể tiếp cận theo 2 hướng khác nhau. Đề xuất phân loại AMBIGUOUS.`).trim();
                 }
-                return `⚖️ CHẤP THUẬN PHẢN BIỆN CÓ CƠ SỞ HỌC THUẬT:
-Lập luận của bạn rất có giá trị! Khi xem xét kỹ cấu trúc ngôn ngữ của câu hỏi '${q.question.slice(0, 70)}...', cách diễn đạt này quả thực tồn tại tính đa nghĩa và có thể hiểu theo nhiều góc độ phương pháp luận.
-Tôi đồng thuận với bạn điều chỉnh trạng thái câu này sang [🟡 CẦN LƯU Ý / AMBIGUOUS]. Tôi đã cập nhật biểu mẫu bên dưới để bạn bấm 'Lưu & Cập nhật' lên Cloud.`;
+                return `Chào bạn! Tôi rất hoan nghênh và đánh giá cao tư duy phản biện sắc sảo của bạn! 👏
+
+💡 Phân tích góc nhìn của bạn:
+Khi xem xét kỹ cấu trúc ngôn ngữ của câu hỏi "${q.question.slice(0, 75)}...", cách diễn đạt quả thực có tính chất mở, khiến người học có thể suy luận theo hai hướng tiếp cận khác nhau tùy thuộc vào ngữ cảnh.
+
+📖 Trong phương pháp luận nghiên cứu (Arthur Asa Berger):
+Một câu hỏi đo lường tốt phải đảm bảo tính đơn nghĩa và rõ ràng. Khi đề bài xuất hiện điểm mờ, việc phân loại câu hỏi là [🟡 CẦN LƯU Ý / AMBIGUOUS] là hoàn toàn chuẩn xác và công bằng cho người học.
+
+🎯 Hành động đề xuất:
+Tôi đã tự động chuyển trạng thái thẩm định ở biểu mẫu bên dưới sang [🟡 CẦN LƯU Ý / AMBIGUOUS] và bổ sung lập luận của bạn. Bạn chỉ cần rà soát lại và bấm nút "💾 Lưu & Cập nhật Thẩm định lên Cloud 🚀" là xong nhé!`;
             }
 
-            // Case 7: User provides a specific alternate option with explanation
+            // CASE 6: User sticks to Slide blindly ("theo slide", "slide ghi", "slide chọn", "giống slide") when Slide is in CONFLICT
+            if (currentStatus === 'CONFLICT' && (raw.includes('theo slide') || raw.includes('slide ghi') || raw.includes('slide chọn') || raw.includes('slide đúng') || raw.includes('slide là'))) {
+                return `Chào bạn! Tôi hoàn toàn hiểu tâm lý của bạn: khi ôn thi, phản xạ tự nhiên của chúng ta là bám sát Slide bài giảng của thầy cô để cảm thấy an tâm.
+
+💡 Nhưng hãy cùng nhau nhìn nhận khách quan:
+Trong quá trình các giảng viên biên soạn hàng trăm slide bài giảng, việc xảy ra lỗi đánh máy (typing error) hoặc trích xuất nhầm đáp án là điều khó tránh khỏi. 
+Nếu chúng ta chỉ học vẹt theo một đáp án in sai trên slide:
+1. Khi gặp đề thi chính thức được chuẩn hóa theo ngân hàng đề của Bộ môn, bạn sẽ bị mất điểm oan.
+2. Về mặt học thuật, chúng ta sẽ hiểu sai lệch bản chất khái niệm.
+
+📖 Đối chiếu với ${citation}:
+${audit.proof || 'Đáp án khoa học chuẩn mực đã được xác minh rõ ràng trong giáo trình.'}
+Đáp án đúng về bản chất khoa học bắt buộc là [${aiAns}]. Mục tiêu của tôi là bảo vệ kiến thức chuẩn cho bạn để đi thi tự tin đạt điểm tối đa. Bạn thấy phân tích này có hợp lý không?`;
+            }
+
+            // CASE 7: User argues for a specific option different from aiAns
             if (mentionedKey && mentionedKey !== aiAns) {
-                // If user argues for a key with detailed explanation
-                if (userText.length > 35 && (raw.includes('vì') || raw.includes('bởi vì') || raw.includes('theo') || raw.includes('trong'))) {
-                    selectAuditStatusChoice('CONFLICT');
-                    document.getElementById('edit-ai-ans').value = mentionedKey;
-                    const proofArea = document.getElementById('edit-proof-text');
-                    if (proofArea) {
-                        proofArea.value = (proofArea.value + `\n\n[Hiệu chỉnh dựa trên phản biện hợp lý của người học]: Đề xuất chuyển đáp án sang [${mentionedKey}]. Lý do: ${userText}`).trim();
-                    }
-                    return `⚖️ ĐÁNH GIÁ PHẢN BIỆN CÓ CĂN CỨ:
-Phân tích của bạn: "${userText}" đã đưa ra một góc nhìn đối chiếu đáng tin cậy. Dựa trên lập luận này, việc lựa chọn phương án [${mentionedKey}] là có cơ sở khoa học vượt trội hơn so với phương án hiện tại.
-Tôi chấp thuận ghi nhận trường hợp này là [⚡ XUNG ĐỘT ĐÁP ÁN] với đáp án đề xuất mới là [${mentionedKey}]. Bạn vui lòng rà soát lại thông tin trong biểu mẫu bên dưới và ấn 'Lưu & Cập nhật lên Cloud' để công bố cho toàn bộ người học!`;
+                const userOptText = getOptSummary(mentionedKey);
+                const aiOptText = getOptSummary(aiAns);
+
+                // If user provided reasoning
+                if (userText.length > 25 && (raw.includes('vì') || raw.includes('bởi') || raw.includes('do') || raw.includes('theo') || raw.includes('trong'))) {
+                    return `Chào bạn! Tôi rất trân trọng lập luận chi tiết mà bạn vừa chia sẻ: "${userText}".
+
+💡 Phân tích góc nhìn của bạn đối với phương án ${userOptText}:
+Tôi thấy bạn đã suy nghĩ rất thấu đáo. Phương án này thoạt nhìn rất thuyết phục khi tiếp cận từ bối cảnh mà bạn vừa nêu.
+
+📖 Nhưng hãy cùng đối chiếu lại với định nghĩa cốt lõi trong Giáo trình Arthur Asa Berger (${citation}):
+Trong giáo trình, phương án ${aiOptText} được chọn làm đáp án chuẩn vì:
+${audit.proof || q.explanation || 'Nó phản ánh trực tiếp nguyên lý nền tảng của phương pháp này và hạn chế tối đa sự sai lệch trong nghiên cứu.'}
+
+🤔 Hướng xử lý:
+1. Nếu bạn thấy lập luận của mình thực sự làm sáng tỏ một góc nhìn chưa được bao quát của đề bài, bạn có thể chuyển câu này sang [🟡 CẦN LƯU Ý / AMBIGUOUS] hoặc [⚡ XUNG ĐỘT ĐÁP ÁN].
+2. Bạn có muốn tôi hỗ trợ điền phương án [${mentionedKey}] vào biểu mẫu bên dưới để lưu lại bản hiệu chỉnh này lên Cloud không? Hãy cho tôi biết nhé!`;
                 } else {
-                    return `⚠️ PHẢN BIỆN THIẾU MINH CHỨNG:
-Bạn đề xuất chọn phương án [${mentionedKey}], nhưng bạn chưa đưa ra lập luận hoặc trích dẫn giáo trình cụ thể để chứng minh vì sao phương án [${aiAns}] hiện tại là sai.
-Theo nguyên tắc thẩm định độc lập (Zero-Bias Audit), tôi không thể tự tiện thay đổi đáp án khi chưa có bằng chứng học thuật rõ ràng. Bạn vui lòng giải thích rõ: Dựa vào định nghĩa nào trong giáo trình Arthur Asa Berger mà bạn chọn [${mentionedKey}]?`;
+                    return `Chào bạn! Tôi thấy bạn đang nghiêng về phương án ${userOptText}.
+
+💡 Vì sao bạn lại nghĩ đến phương án này?
+Phương án [${mentionedKey}] thường được thiết kế như một "phương án gây nhiễu" (distractor) rất khéo léo. Nó chứa các từ ngữ quen thuộc trong đời sống hoặc phản ánh một cách hiểu thông thường, khiến người học rất dễ bị cuốn theo nếu chỉ đọc lướt qua đề bài.
+
+📖 Tuy nhiên, khi đối chiếu với Giáo trình Arthur Asa Berger (${citation}):
+Đáp án chuẩn khoa học cho câu hỏi này là ${aiOptText}.
+${audit.proof || q.explanation || 'Phương án này mới thể hiện đúng nguyên lý phương pháp luận được định nghĩa trong giáo trình.'}
+
+🎯 Bạn thấy sự khác biệt bản chất giữa [${mentionedKey}] và [${aiAns}] đã rõ ràng hơn chưa? Nếu bạn có thêm lý do nào khiến bạn thấy [${mentionedKey}] vẫn hợp lý, hãy chia sẻ cùng tôi nhé!`;
                 }
             }
 
-            // General Default: Critical Inquiry
-            return `🤔 ĐÁNH GIÁ PHẢN BIỆN:
-Ý kiến của bạn: "${userText}".
-Đối chiếu với ${citation}, kết luận hiện tại của câu này là: [${audit.conclusion || currentStatus}] (Đáp án Slide: ${slideAns}, Đáp án Giáo trình: ${aiAns}).
-Để đảm bảo tính nghiêm cẩn học thuật, tôi cần bạn làm rõ:
-1. Bạn cho rằng Slide sai hay AI thẩm định sai?
-2. Bạn đề xuất đáp án nào là đúng (A, B, C, D...) và có thể trích đoạn câu chữ nào trong giáo trình chứng minh không?
-Tôi sẽ đối chiếu lại tính hợp lý và trả lời bạn ngay!`;
+            // CASE 8: User agrees with aiAns
+            if (mentionedKey && (mentionedKey === aiAns || (aiAns.includes(mentionedKey) && mentionedKey.length > 1))) {
+                const aiOptText = getOptSummary(aiAns);
+                return `Chào bạn! Nhận định của bạn hoàn toàn chính xác! 🎯
+
+Phương án ${aiOptText} chính là câu trả lời chuẩn xác nhất theo Giáo trình Arthur Asa Berger (${citation}).
+
+📖 Bản chất lý thuyết:
+${audit.proof || q.explanation || 'Nội dung phương án này khớp hoàn toàn với định nghĩa và chuẩn mực trong giáo trình.'}
+
+Bạn nắm bắt kiến thức phương pháp luận rất chắc chắn! Chúng ta cùng tiếp tục phát huy ở các câu tiếp theo nhé.`;
+            }
+
+            // CASE 9: General inquiry / explanation request ("tại sao", "giải thích", "vì sao", etc.)
+            const aiOptText = getOptSummary(aiAns);
+            const slideNotice = (currentStatus === 'CONFLICT')
+                ? `\n⚠️ Lưu ý đặc biệt: Slide bài giảng ghi nhận [${slideAns}], nhưng đây là lỗi in ấn. Đáp án chuẩn khoa học của giáo trình là [${aiAns}].`
+                : `\n• Đáp án Slide và Giáo trình đồng thuận ở phương án: [${aiAns}].`;
+
+            return `Chào bạn! Rất vui được cùng bạn phân tích sâu câu hỏi này! 👨‍🏫
+
+📖 Về câu hỏi "${q.question}":
+${slideNotice}
+
+💡 Giải thích bản chất theo Giáo trình Arthur Asa Berger (${citation}):
+Phương án chuẩn xác là ${aiOptText}.
+${audit.proof || q.explanation || 'Phương án này nêu bật nguyên lý nền tảng và cách tiếp cận khoa học chuẩn tắc của nghiên cứu truyền thông.'}
+
+🎯 Lời khuyên khi làm bài:
+Bạn hãy chú ý đến bối cảnh phương pháp luận của chương này và tránh các bẫy suy luận cảm tính thông thường nhé. Bạn còn băn khoăn ở phương án nào của câu này không? Tôi luôn sẵn sàng giải đáp thêm!`;
         }
 
 
