@@ -1508,6 +1508,61 @@
             databaseURL: "https://rmc301-quiz-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
 
+                async function fetchLatestMainProgress() {
+            try {
+                const res = await fetch('https://rmc301-quiz-default-rtdb.asia-southeast1.firebasedatabase.app/quiz_progress/votrongdat1606@gmail_com.json');
+                if (!res.ok) return;
+                const cloudVal = await res.json();
+                if (!cloudVal || !cloudVal.answers) return;
+
+                let hasNew = false;
+                if (Array.isArray(cloudVal.answers)) {
+                    cloudVal.answers.forEach((ansObj, idx) => {
+                        if (ansObj && typeof ansObj === 'object') {
+                            if (!userAnswers[idx] || (ansObj.timestamp && ansObj.timestamp > (userAnswers[idx].timestamp || 0))) {
+                                userAnswers[idx] = ansObj;
+                                hasNew = true;
+                            }
+                        }
+                    });
+                } else if (typeof cloudVal.answers === 'object') {
+                    Object.entries(cloudVal.answers).forEach(([idx, ansObj]) => {
+                        if (ansObj && typeof ansObj === 'object') {
+                            if (!userAnswers[idx] || (ansObj.timestamp && ansObj.timestamp > (userAnswers[idx].timestamp || 0))) {
+                                userAnswers[idx] = ansObj;
+                                hasNew = true;
+                            }
+                        }
+                    });
+                }
+                if (Array.isArray(cloudVal.bookmarks)) {
+                    cloudVal.bookmarks.forEach(b => bookmarks.add(b));
+                }
+                if (Array.isArray(cloudVal.examHistory) && cloudVal.examHistory.length > examHistory.length) {
+                    examHistory = cloudVal.examHistory;
+                }
+                if (hasNew) {
+                    try {
+                        const localKey = getUserKey();
+                        const now = Date.now();
+                        const dataToSave = {
+                            answers: userAnswers,
+                            bookmarks: Array.from(bookmarks),
+                            examHistory: examHistory,
+                            lastUpdated: new Date(now).toISOString(),
+                            localTimestamp: now
+                        };
+                        localStorage.setItem(localKey, JSON.stringify(dataToSave));
+                    } catch(e) {}
+                    updateStats();
+                    renderPalette();
+                    if (!isExamMode) renderQuestion(currentIndex);
+                }
+            } catch(e) {
+                console.warn('Could not fetch main progress via REST:', e);
+            }
+        }
+
         function init() {
             loadCustomSubjects();
             // Sync active subject code
@@ -1517,6 +1572,7 @@
             loadUserData();
             updateAdminUI();
             initCloudSync();
+            fetchLatestMainProgress();
             document.getElementById('stat-total').textContent = quizData.length;
             document.getElementById('cnt-all').textContent = quizData.length;
             renderPalette();
@@ -3580,7 +3636,7 @@ function retryCurrentQuestion() {
 
         /* ================= MODAL CONTROLS ================= */
         function openLoginModal() { document.getElementById('login-modal').classList.add('active'); }
-        function openCloudModal() { document.getElementById('cloud-modal').classList.add('active'); }
+        function openCloudModal() { const el = document.getElementById('login-modal'); if (el) el.classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
         function resetAllProgress() {
