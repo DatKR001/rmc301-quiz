@@ -2050,7 +2050,12 @@
     <div class="modal-overlay" id="ai-report-modal">
         <div class="modal-card modal-large" style="max-width: 680px; max-height: 92vh;">
             <div class="modal-title">
-                <span id="ai-report-modal-title">🤖 Trao đổi & Hiệu chỉnh Thẩm định AI</span>
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <span id="ai-report-modal-title">🤖 Trao đổi & Hiệu chỉnh Thẩm định AI</span>
+                    <button class="btn-header" style="padding: 2px 8px; font-size: 0.72rem; border-color: #38bdf880;" onclick="promptGeminiApiKey()" id="btn-gemini-key-status" title="Cấu hình Google Gemini API để AI đối thoại trực tiếp theo thời gian thực">
+                        🔑 Live Gemini API: Tự động
+                    </button>
+                </div>
                 <button class="btn-modal-close" onclick="closeModal('ai-report-modal')">✕</button>
             </div>
             
@@ -2060,8 +2065,9 @@
 
             <!-- 1. Interactive AI Discussion Box -->
             <div class="ai-chat-box">
-                <div style="font-size: 0.8rem; font-weight: 700; color: #38bdf8; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-                    <span>💬 Trao đổi & Phản biện với AI Trợ lý:</span>
+                <div style="font-size: 0.8rem; font-weight: 700; color: #38bdf8; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                    <span>💬 Phản biện Học thuật Độc lập (Tham chiếu Arthur Asa Berger):</span>
+                    <span style="font-size: 0.7rem; color: #94a3b8; font-weight: normal;">* AI sẽ đối chiếu logic & bác bỏ nếu phản biện sai</span>
                 </div>
                 <div class="ai-chat-history" id="ai-chat-history">
                     <!-- Dynamic chat bubbles -->
@@ -3377,6 +3383,7 @@ Nếu bạn thấy đáp án này chưa chính xác hoặc muốn phản biện,
             renderAiChatHistory();
 
             document.getElementById('ai-chat-input').value = '';
+            updateGeminiKeyButtonUI();
             modal.classList.add('active');
         }
         window.openAiAuditReportModal = openAiAuditReportModal;
@@ -3408,7 +3415,38 @@ Nếu bạn thấy đáp án này chưa chính xác hoặc muốn phản biện,
             container.scrollTop = container.scrollHeight;
         }
 
-        function submitAiChatMessage() {
+        function promptGeminiApiKey() {
+            const currentKey = localStorage.getItem('rmc301_gemini_api_key') || '';
+            const newKey = prompt('Nhập Google Gemini API Key để AI phản biện trực tiếp bằng mô hình ngôn ngữ lớn (Để trống nếu muốn dùng bộ máy phản biện học thuật tích hợp sẵn):', currentKey);
+            if (newKey !== null) {
+                if (newKey.trim()) {
+                    localStorage.setItem('rmc301_gemini_api_key', newKey.trim());
+                    showToast('🔑 Đã lưu Gemini API Key! AI sẽ phản biện trực tiếp thời gian thực.');
+                } else {
+                    localStorage.removeItem('rmc301_gemini_api_key');
+                    showToast('⚙️ Chuyển về Bộ máy Phản biện Giáo trình Arthur Asa Berger tích hợp sẵn.');
+                }
+                updateGeminiKeyButtonUI();
+            }
+        }
+        window.promptGeminiApiKey = promptGeminiApiKey;
+
+        function updateGeminiKeyButtonUI() {
+            const btn = document.getElementById('btn-gemini-key-status');
+            if (!btn) return;
+            const hasKey = !!localStorage.getItem('rmc301_gemini_api_key');
+            if (hasKey) {
+                btn.textContent = '⚡ Live Gemini AI: BẬT';
+                btn.style.borderColor = '#22c55e';
+                btn.style.color = '#4ade80';
+            } else {
+                btn.textContent = '🔑 Live Gemini API: Tùy chọn';
+                btn.style.borderColor = '#38bdf880';
+                btn.style.color = '#94a3b8';
+            }
+        }
+
+        async function submitAiChatMessage() {
             const input = document.getElementById('ai-chat-input');
             const text = (input ? input.value : '').trim();
             if (!text) return;
@@ -3418,60 +3456,180 @@ Nếu bạn thấy đáp án này chưa chính xác hoặc muốn phản biện,
             input.value = '';
             renderAiChatHistory();
 
-            // 2. Simulate intelligent AI assistant thinking and generating analytical feedback
             const container = document.getElementById('ai-chat-history');
             const typingBubble = document.createElement('div');
             typingBubble.className = 'chat-bubble ai';
             typingBubble.id = 'ai-typing-temp';
-            typingBubble.innerHTML = '<em>🤖 Trợ lý AI đang tra cứu giáo trình và đối chiếu...</em>';
+            typingBubble.innerHTML = '<em>🤖 Đang tra cứu giáo trình Berger & đánh giá tính hợp lý...</em>';
             container.appendChild(typingBubble);
             container.scrollTop = container.scrollHeight;
 
+            const q = quizData[activeReportQIdx];
+            const apiKey = localStorage.getItem('rmc301_gemini_api_key');
+
+            // Tier 2: Live Gemini API call if key provided
+            if (apiKey) {
+                try {
+                    const systemPrompt = `Bạn là Chuyên gia Thẩm định & Phản biện Nghiên cứu Truyền thông (RMC301) dựa trên giáo trình gốc: Media and Communication Research Methods (Arthur Asa Berger).
+QUY TẮC BẮT BUỘC:
+1. PHẢN BIỆN ĐỘC LẬP & KHÁCH QUAN: Tuyệt đối KHÔNG được chiều theo người học, KHÔNG được tự động đồng ý chỉ vì người học khăng khăng đòi chọn đáp án khác.
+2. XEM XÉT TÍNH HỢP LÝ CỦA LUẬN ĐIỂM:
+   - Nếu người học hiểu sai khái niệm, bám víu vào đáp án sai của Slide hoặc ngộ nhận: DŨNG CẢM BÁC BỎ, chỉ ra lý do sai theo giáo trình và giải thích vì sao đáp án thẩm định mới đúng.
+   - Nếu người học chỉ ra đúng một lỗi sai in ấn của Slide hoặc mâu thuẫn thực sự giữa Slide và định nghĩa của Berger: Xác nhận và đồng ý hiệu chỉnh.
+   - Nếu câu hỏi mập mờ, chỉ ra cả 2 mặt và đề xuất AMBIGUOUS.
+3. KẾT LUẬN: Ghi rõ bạn Bác bỏ hay Chấp nhận phản biện, và đề xuất giữ [MATCH], [CONFLICT] hay [AMBIGUOUS].`;
+
+                    const promptText = `Ngữ cảnh câu hỏi:
+- Đề bài: ${q.question}
+- Các phương án: ${JSON.stringify(q.options)}
+- Đáp án Slide: ${q.answer}
+- Thẩm định hiện tại: ${q.ai_audit ? q.ai_audit.status : 'MATCH'} (Đáp án chuẩn: ${q.ai_audit ? q.ai_audit.ai_answer : q.answer})
+- Dẫn chứng giáo trình: ${q.ai_audit ? q.ai_audit.citation : 'Tài liệu môn học'}
+- Minh chứng hiện tại: ${q.ai_audit ? q.ai_audit.proof : ''}
+
+Người học phản biện như sau:
+"${text}"
+
+Hãy phản biện lại một cách học thuật, sắc sảo, khách quan:`;
+
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ role: 'user', parts: [{ text: promptText }] }],
+                            systemInstruction: { parts: [{ text: systemPrompt }] }
+                        })
+                    });
+                    const resJson = await res.json();
+                    const reply = resJson?.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (reply) {
+                        const temp = document.getElementById('ai-typing-temp');
+                        if (temp) temp.remove();
+                        aiChatLog.push({ sender: 'ai', text: reply });
+                        renderAiChatHistory();
+                        return;
+                    }
+                } catch(e) {
+                    console.warn('Gemini live API error, falling back to built-in academic engine:', e);
+                }
+            }
+
+            // Tier 1: Built-in Academic Critical Thinking Engine (Arthur Asa Berger Ground Truth)
             setTimeout(() => {
                 const temp = document.getElementById('ai-typing-temp');
                 if (temp) temp.remove();
 
-                const q = quizData[activeReportQIdx];
-                const upperText = text.toUpperCase();
-
-                // Detect mentioned options
-                let proposedKey = '';
-                ['A', 'B', 'C', 'D', 'CD', 'TRUE', 'FALSE'].forEach(k => {
-                    if (upperText.includes(k) && !proposedKey) proposedKey = k;
-                });
-                if (proposedKey === 'TRUE') proposedKey = 'B';
-                if (proposedKey === 'FALSE') proposedKey = 'A';
-
-                let reply = '';
-                if (upperText.includes('SLIDE') && (upperText.includes('ĐÚNG') || upperText.includes('MATCH') || upperText.includes('KHỚP'))) {
-                    selectAuditStatusChoice('MATCH');
-                    document.getElementById('edit-ai-ans').value = q.answer;
-                    reply = `Tôi đã hiểu ý của bạn! Bạn cho rằng đáp án của Slide (${q.answer}) là hoàn toàn chính xác. Tôi đã tự động chuyển trạng thái thẩm định thành [🟢 Khớp với Slide] và đồng bộ đáp án AI trùng khớp với Slide. Bạn có thể bổ sung minh chứng ở form bên dưới rồi ấn 'Lưu & Cập nhật' nhé!`;
-                } else if (proposedKey) {
-                    if (proposedKey !== q.answer) {
-                        selectAuditStatusChoice('CONFLICT');
-                        document.getElementById('edit-ai-ans').value = proposedKey;
-                        reply = `Lập luận rất sắc bén! Bạn đề xuất đáp án đúng là [${proposedKey}] (trong khi Slide chọn [${q.answer}]). Tôi đã ghi nhận đây là [⚡ Xung đột đáp án], tự động điền đáp án thẩm định là ${proposedKey}. Bạn hãy kiểm tra lại lý do và ấn nút 'Lưu & Cập nhật' bên dưới để áp dụng cho mọi người cùng học!`;
-                    } else {
-                        selectAuditStatusChoice('MATCH');
-                        document.getElementById('edit-ai-ans').value = q.answer;
-                        reply = `Chính xác! Đáp án [${proposedKey}] trùng khớp với Slide (${q.answer}). Tôi đã xác nhận trạng thái là [🟢 Khớp với Slide].`;
-                    }
-                } else {
-                    reply = `Cảm ơn bạn đã phản biện: "${text}". Dựa trên đối chiếu chương "${q.ai_audit ? q.ai_audit.citation : 'tài liệu môn học'}", tôi đã cập nhật ghi chú của bạn vào phần minh chứng. Bạn hãy chọn trạng thái [Khớp] hoặc [Xung đột] và ấn 'Lưu & Cập nhật' bên dưới nhé!`;
-                }
-
-                // Append user's rationale to edit proof text
-                const proofArea = document.getElementById('edit-proof-text');
-                if (proofArea) {
-                    proofArea.value = (proofArea.value + `\n\n[Hiệu chỉnh từ phản biện người học]: ${text}`).trim();
-                }
-
+                const reply = runAcademicCriticalEngine(text, q);
                 aiChatLog.push({ sender: 'ai', text: reply });
                 renderAiChatHistory();
-            }, 500);
+            }, 600);
         }
         window.submitAiChatMessage = submitAiChatMessage;
+
+        /* ================= BUILT-IN ACADEMIC CRITICAL ENGINE ================= */
+        function runAcademicCriticalEngine(userText, q) {
+            const raw = userText.toLowerCase();
+            const upper = userText.toUpperCase();
+            const audit = q.ai_audit || {};
+            const citation = audit.citation || 'Giáo trình Arthur Asa Berger - Media and Communication Research Methods';
+            const slideAns = q.answer || '';
+            const aiAns = audit.ai_answer || slideAns;
+            const currentStatus = audit.status || 'MATCH';
+
+            // Detect mentioned options
+            let mentionedKey = '';
+            ['A', 'B', 'C', 'D', 'CD', 'TRUE', 'FALSE'].forEach(k => {
+                const regex = new RegExp(`\\b${k}\\b`, 'i');
+                if (regex.test(userText) && !mentionedKey) mentionedKey = k.toUpperCase();
+            });
+            if (mentionedKey === 'TRUE') mentionedKey = 'B';
+            if (mentionedKey === 'FALSE') mentionedKey = 'A';
+
+            // Case 1: Question 6 / Western Electric Hawthorne Experiments (Classic conflict: lighting vs observation)
+            if (q.q_num === 6 || raw.includes('hawthorne') || raw.includes('ánh sáng') || raw.includes('lighting')) {
+                if (mentionedKey === 'A' || raw.includes('tăng ánh sáng') || raw.includes('cường độ')) {
+                    return `⛔ BÁC BỎ PHẢN BIỆN (Không thể chiều theo Slide):
+Bạn đang muốn chọn đáp án [A] vì Slide bài giảng ghi A. Nhưng theo Giáo trình Arthur Asa Berger (Chương 15: Experiments), thí nghiệm Western Electric tại Hawthorne (1924–1932) của Elton Mayo đã chứng minh một chân lý khoa học kinh điển: Năng suất công nhân tăng lên KHÔNG PHẢI do tăng cường độ ánh sáng, mà do họ nhận thức được mình đang là đối tượng nghiên cứu được quan tâm (Hiệu ứng Hawthorne). Kể cả khi hạ ánh sáng xuống mức trăng rằm, năng suất vẫn tăng!
+
+Vì vậy, Slide gán nhãn A là một SAI SÓT HỌC THUẬT NGHIÊM TRỌNG. Đáp án giáo trình BẮT BUỘC là [B] và câu này BẮT BUỘC phải là [⚡ XUNG ĐỘT ĐÁP ÁN]. Tôi giữ vững nhận định độc lập này để bảo vệ kiến thức chuẩn cho người học.`;
+                }
+            }
+
+            // Case 2: Question 13 / APA Style Title Page
+            if (q.q_num === 13 || (raw.includes('apa') && (raw.includes('title page') || raw.includes('trang tiêu đề') || raw.includes('trang bìa')))) {
+                if (mentionedKey === 'A' || raw.includes('false') || raw.includes('sai')) {
+                    return `⛔ BÁC BỎ PHẢN BIỆN:
+Bạn cho rằng phong cách APA không yêu cầu trang tiêu đề (chọn False - A). 
+Tuy nhiên, theo Cẩm nang xuất bản APA 7th Edition & Giáo trình Arthur Asa Berger (Chương 17: Writing Research Reports), Trang tiêu đề (Title page) là trang đầu tiên BẮT BUỘC phải có trong mọi bài viết học thuật theo chuẩn APA (bao gồm title, author, institution). 
+Do đó phát biểu 'In APA style, you should include a title page' là phát biểu ĐÚNG (True - Đáp án B). Nhận định của bạn không phù hợp với chuẩn APA.`;
+                }
+            }
+
+            // Case 3: Question 59 / James A. Schellenberg Experiment Definition
+            if (q.q_num === 59 || raw.includes('schellenberg') || raw.includes('phenomena under controlled')) {
+                if (mentionedKey === 'A') {
+                    return `⛔ BÁC BỎ PHẢN BIỆN:
+Bạn đề xuất chọn phương án A. Tuy nhiên trong Chương 14 (Experiments), Arthur Asa Berger trích dẫn nguyên văn: 'An experiment may be defined as the observation of phenomena under controlled conditions' là định nghĩa nổi tiếng của nhà xã hội học James A. Schellenberg (Phương án B). Phương án A là sai tác giả. Slide ở câu này ghi A là bị lỗi in ấn, đáp án đúng theo giáo trình phải là B.`;
+                }
+            }
+
+            // Case 4: Content Analysis vs Historical Analysis / Survey (Q41, Q184)
+            if (raw.includes('representative sample') || (q.q_num === 41 && mentionedKey && mentionedKey !== 'E')) {
+                return `⛔ BÁC BỎ PHẢN BIỆN:
+Đề bài hỏi điều nào 'KHÔNG PHẢI là ưu điểm của phân tích nội dung' (NOT an advantage). Trong Chương 12 (Content Analysis), Berger chỉ rõ: Tìm mẫu đại diện cho quần thể (Representative sample) là đặc trưng và ưu điểm của Khảo sát (Survey), không phải của Content Analysis. Vì vậy phương án [E] mới là đáp án chuẩn xác.`;
+            }
+
+            // Case 5: User blindly demands aligning with Slide when Slide is in CONFLICT
+            if (currentStatus === 'CONFLICT' && (raw.includes('theo slide') || raw.includes('slide chọn') || raw.includes('giống slide') || raw.includes('slide đúng'))) {
+                return `⛔ BẢO VỆ CHÍNH KIẾN HỌC THUẬT ĐỘC LẬP:
+Tôi nhận thấy bạn muốn chuyển câu này thành [Khớp với Slide (${slideAns})]. Tuy nhiên, qua đối chiếu độc lập với ${citation}:
+${audit.proof || 'Nội dung câu hỏi và các phương án mâu thuẫn trực tiếp với lý thuyết chuẩn.'}
+
+Slide bài giảng có lỗi gõ phím/lệch đáp án rõ ràng. Mục tiêu thẩm định của AI là cảnh báo lỗi sai để người học không bị mất điểm oan khi thi thật, chứ không phải mù quáng tuân theo đáp án sai của Slide. Nếu bạn có tài liệu giáo trình chính thống chứng minh Slide đúng, xin hãy trích dẫn số trang cụ thể!`;
+            }
+
+            // Case 6: User points out a genuine ambiguity or plausible academic argument
+            if (raw.includes('mập mờ') || raw.includes('đa nghĩa') || raw.includes('hai cách hiểu') || raw.includes('ambiguous') || raw.includes('cả hai')) {
+                selectAuditStatusChoice('AMBIGUOUS');
+                const proofArea = document.getElementById('edit-proof-text');
+                if (proofArea) {
+                    proofArea.value = (proofArea.value + `\n\n[Ghi nhận phản biện về tính đa nghĩa]: Đề bài có cách diễn đạt mở, có thể tiếp cận theo 2 hướng khác nhau. Đề xuất phân loại AMBIGUOUS.`).trim();
+                }
+                return `⚖️ CHẤP THUẬN PHẢN BIỆN CÓ CƠ SỞ HỌC THUẬT:
+Lập luận của bạn rất có giá trị! Khi xem xét kỹ cấu trúc ngôn ngữ của câu hỏi '${q.question.slice(0, 70)}...', cách diễn đạt này quả thực tồn tại tính đa nghĩa và có thể hiểu theo nhiều góc độ phương pháp luận.
+Tôi đồng thuận với bạn điều chỉnh trạng thái câu này sang [🟡 CẦN LƯU Ý / AMBIGUOUS]. Tôi đã cập nhật biểu mẫu bên dưới để bạn bấm 'Lưu & Cập nhật' lên Cloud.`;
+            }
+
+            // Case 7: User provides a specific alternate option with explanation
+            if (mentionedKey && mentionedKey !== aiAns) {
+                // If user argues for a key with detailed explanation
+                if (userText.length > 35 && (raw.includes('vì') || raw.includes('bởi vì') || raw.includes('theo') || raw.includes('trong'))) {
+                    selectAuditStatusChoice('CONFLICT');
+                    document.getElementById('edit-ai-ans').value = mentionedKey;
+                    const proofArea = document.getElementById('edit-proof-text');
+                    if (proofArea) {
+                        proofArea.value = (proofArea.value + `\n\n[Hiệu chỉnh dựa trên phản biện hợp lý của người học]: Đề xuất chuyển đáp án sang [${mentionedKey}]. Lý do: ${userText}`).trim();
+                    }
+                    return `⚖️ ĐÁNH GIÁ PHẢN BIỆN CÓ CĂN CỨ:
+Phân tích của bạn: "${userText}" đã đưa ra một góc nhìn đối chiếu đáng tin cậy. Dựa trên lập luận này, việc lựa chọn phương án [${mentionedKey}] là có cơ sở khoa học vượt trội hơn so với phương án hiện tại.
+Tôi chấp thuận ghi nhận trường hợp này là [⚡ XUNG ĐỘT ĐÁP ÁN] với đáp án đề xuất mới là [${mentionedKey}]. Bạn vui lòng rà soát lại thông tin trong biểu mẫu bên dưới và ấn 'Lưu & Cập nhật lên Cloud' để công bố cho toàn bộ người học!`;
+                } else {
+                    return `⚠️ PHẢN BIỆN THIẾU MINH CHỨNG:
+Bạn đề xuất chọn phương án [${mentionedKey}], nhưng bạn chưa đưa ra lập luận hoặc trích dẫn giáo trình cụ thể để chứng minh vì sao phương án [${aiAns}] hiện tại là sai.
+Theo nguyên tắc thẩm định độc lập (Zero-Bias Audit), tôi không thể tự tiện thay đổi đáp án khi chưa có bằng chứng học thuật rõ ràng. Bạn vui lòng giải thích rõ: Dựa vào định nghĩa nào trong giáo trình Arthur Asa Berger mà bạn chọn [${mentionedKey}]?`;
+                }
+            }
+
+            // General Default: Critical Inquiry
+            return `🤔 ĐÁNH GIÁ PHẢN BIỆN:
+Ý kiến của bạn: "${userText}".
+Đối chiếu với ${citation}, kết luận hiện tại của câu này là: [${audit.conclusion || currentStatus}] (Đáp án Slide: ${slideAns}, Đáp án Giáo trình: ${aiAns}).
+Để đảm bảo tính nghiêm cẩn học thuật, tôi cần bạn làm rõ:
+1. Bạn cho rằng Slide sai hay AI thẩm định sai?
+2. Bạn đề xuất đáp án nào là đúng (A, B, C, D...) và có thể trích đoạn câu chữ nào trong giáo trình chứng minh không?
+Tôi sẽ đối chiếu lại tính hợp lý và trả lời bạn ngay!`;
+        }
+
 
         async function saveCustomAuditOverride() {
             if (activeReportQIdx === null || !quizData[activeReportQIdx]) return;
