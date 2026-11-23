@@ -194,7 +194,7 @@
         .btn-clear-note:hover { text-decoration: underline; }
 
         /* Instant Answer Toggle & Deferred Feedback Styles */
-        .btn-instant-toggle { 
+        .btn-exp-toggle { 
             background: #1e293b; 
             border: 1px solid var(--border); 
             color: #94a3b8; 
@@ -208,52 +208,35 @@
             gap: 6px; 
             transition: all 0.2s; 
         }
-        .btn-instant-toggle:hover { 
+        .btn-exp-toggle:hover { 
             border-color: var(--primary); 
             background: #334155; 
         }
-        .btn-instant-toggle.active { 
+        .btn-exp-toggle.active { 
             background: #38bdf820; 
             border-color: #38bdf8; 
             color: #38bdf8; 
         }
 
-        .opt-btn.submitted-choice { 
-            border-color: #818cf8 !important; 
-            background: rgba(129, 140, 248, 0.16) !important; 
-            color: #e0e7ff !important; 
-            box-shadow: 0 0 10px rgba(129, 140, 248, 0.25);
-        }
-        .opt-btn.submitted-choice .opt-key { 
-            background: #818cf8 !important; 
-            color: #0f172a !important; 
-        }
-
-        .btn-reveal-answer { 
+        .btn-toggle-exp { 
             background: #1e293b; 
-            border: 1.5px solid #818cf8; 
-            color: #c7d2fe; 
-            padding: 9px 18px; 
-            border-radius: 10px; 
-            font-weight: 700; 
-            font-size: 0.9rem; 
+            border: 1.5px solid #38bdf8; 
+            color: #38bdf8; 
+            padding: 8px 16px; 
+            border-radius: 9px; 
+            font-weight: 600; 
+            font-size: 0.88rem; 
             cursor: pointer; 
             display: inline-flex; 
             align-items: center; 
-            gap: 8px; 
+            gap: 6px; 
             transition: all 0.2s ease; 
         }
-        .btn-reveal-answer:hover { 
-            background: #818cf825; 
-            border-color: #a5b4fc; 
+        .btn-toggle-exp:hover { 
+            background: #38bdf820; 
+            border-color: #7dd3fc; 
             color: #fff; 
-            box-shadow: 0 0 12px rgba(129, 140, 248, 0.35); 
-        }
-
-        .p-item.submitted-unrevealed { 
-            border-color: #818cf8 !important; 
-            background: #818cf825 !important; 
-            color: #c7d2fe !important; 
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.3); 
         }
 
         /* Keep discussion sidebar on the right for laptops & desktop windows */
@@ -662,7 +645,7 @@
             font-size: 0.88rem; 
             line-height: 1.55; 
             resize: vertical; 
-            min-height: 110px; 
+            min-height: 130px; font-size: 0.9rem; line-height: 1.6; 
             font-family: inherit; 
             box-sizing: border-box;
             transition: border-color 0.2s, box-shadow 0.2s;
@@ -1014,63 +997,7 @@
         .tag-match { background: #22c55e20; color: #4ade80; border: 1px solid #22c55e40; }
         .tag-conflict { background: #f59e0b25; color: #fbbf24; border: 1px solid #f59e0b60; }
         .tag-ambiguous { background: #38bdf820; color: #38bdf8; border: 1px solid #38bdf840; }
-                /* AI Audit Translation Box Styles */
-        .ai-trans-box {
-            background: #090e1a;
-            border: 1px solid #24344d;
-            border-radius: 10px;
-            padding: 12px 14px;
-            margin-bottom: 14px;
-        }
-        .ai-trans-title {
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #38bdf8;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .ai-trans-q {
-            font-size: 0.86rem;
-            line-height: 1.55;
-            color: #f8fafc;
-            margin-bottom: 10px;
-            padding-bottom: 8px;
-            border-bottom: 1px dashed #334155;
-        }
-        .ai-trans-opts-wrap {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .ai-trans-opt-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            font-size: 0.82rem;
-            line-height: 1.45;
-        }
-        .ai-trans-opt-key {
-            font-weight: 700;
-            color: #c084fc;
-            flex-shrink: 0;
-            width: 18px;
-        }
-        .ai-trans-opt-body {
-            flex: 1;
-        }
-        .ai-trans-opt-orig {
-            color: #94a3b8;
-            font-size: 0.78rem;
-        }
-        .ai-trans-opt-vn {
-            color: #e2e8f0;
-            font-weight: 500;
-        }
-
-        .ai-audit-disc-content { padding: 12px 14px; font-size: 0.84rem; line-height: 1.6; color: #cbd5e1; border-top: 1px solid #1e293b; white-space: pre-line; max-height: 420px; overflow-y: auto; word-break: break-word; }
+                .ai-audit-disc-content { padding: 12px 14px; font-size: 0.84rem; line-height: 1.6; color: #cbd5e1; border-top: 1px solid #1e293b; white-space: pre-line; max-height: 420px; overflow-y: auto; word-break: break-word; }
         .ai-disc-cite { color: #94a3b8; font-size: 0.78rem; margin-bottom: 8px; }
 </style>
 </head>
@@ -1185,9 +1112,9 @@
                 <div class="card-header">
                     <span class="q-badge" id="q-badge">Câu 1 / 380 (Slide 7)</span>
                     <div class="header-btn-group">
-                        <button class="btn-instant-toggle" id="btn-instant-toggle" onclick="toggleInstantFeedback()" title="Bật/Tắt chế độ hiện đáp án ngay sau khi xác nhận">
-                            <span id="instant-toggle-icon">⏳</span>
-                            <span id="instant-toggle-text">Hiện đáp án: TẮT</span>
+                        <button class="btn-exp-toggle" id="btn-exp-toggle" onclick="toggleAutoExplanation()" title="Bật/Tắt tự động hiện giải thích chi tiết sau khi xác nhận">
+                            <span id="exp-toggle-icon">💡</span>
+                            <span id="exp-toggle-text">Tự hiện giải thích: TẮT</span>
                         </button>
                         <button class="btn-bookmark" id="btn-bookmark" onclick="toggleBookmark()">
                             <span id="bm-icon">☆</span>
@@ -1208,10 +1135,10 @@
                     <button class="btn-submit-multi" id="btn-submit-multi" style="display:none;" onclick="submitCurrentAnswer()">Xác nhận đáp án 🎯</button>
                 </div>
 
-                <!-- Action button for deferred feedback (chưa vội hiện đáp án) -->
-                <div id="unrevealed-action-wrap" style="display: none; margin-bottom: 14px; text-align: right;">
-                    <button class="btn-reveal-answer" id="btn-reveal-answer" onclick="revealCurrentAnswer()">
-                        👁️ Xem đáp án & giải thích chi tiết
+                <!-- Action button for toggling detailed explanation -->
+                <div id="exp-toggle-action-wrap" style="display: none; margin-bottom: 14px; text-align: right;">
+                    <button class="btn-toggle-exp" id="btn-toggle-exp" onclick="toggleExplanationBox()">
+                        💡 Xem giải thích chi tiết & phân tích ▾
                     </button>
                 </div>
 
@@ -1617,8 +1544,8 @@
 
         /* Exam State */
         let isExamMode = false;
-        // Option hiện đáp án ngay sau khi xác nhận: mặc định TẮT (chưa vội hiện đáp án) theo yêu cầu
-        let instantFeedback = (localStorage.getItem('rmc301_instant_feedback') === 'true');
+        // Tùy chọn tự động hiện giải thích chi tiết sau khi xác nhận: mặc định TẮT theo yêu cầu người dùng
+        let autoShowExplanation = (localStorage.getItem('rmc301_auto_explanation') === 'true');
         let examConfig = { questionsCount: 30, durationMinutes: 40 };
         let examQuestions = [];       // Array of indices from quizData
         let examAnswers = {};         // { [exam_idx]: [selectedKeys] }
@@ -1696,37 +1623,51 @@
         }
 
         function init() {
-            loadCustomSubjects();
-            // Sync active subject code
-            document.getElementById('sub-active-icon').textContent = currentSubject.icon;
-            document.getElementById('sub-active-code').textContent = currentSubject.code;
-            document.getElementById('header-app-title').textContent = `${currentSubject.code} Exam Practice`;
-            loadUserData();
-            updateInstantToggleUI();
-            updateAdminUI();
-            initCloudSync();
-            fetchLatestMainProgress();
-            document.getElementById('stat-total').textContent = quizData.length;
-            document.getElementById('cnt-all').textContent = quizData.length;
-            renderPalette();
-            renderQuestion(0);
+            try { loadCustomSubjects(); } catch(e) { console.warn(e); }
+            try {
+                const subIcon = document.getElementById('sub-active-icon');
+                if (subIcon) subIcon.textContent = currentSubject.icon;
+                const subCode = document.getElementById('sub-active-code');
+                if (subCode) subCode.textContent = currentSubject.code;
+                const headerTitle = document.getElementById('header-app-title');
+                if (headerTitle) headerTitle.textContent = `${currentSubject.code} Exam Practice`;
+            } catch(e) { console.warn(e); }
+
+            try { loadUserData(); } catch(e) { console.warn('loadUserData error:', e); }
+            try { updateAutoExpToggleUI(); } catch(e) { console.warn(e); }
+            try { updateAdminUI(); } catch(e) { console.warn(e); }
+
+            try {
+                const statTotal = document.getElementById('stat-total');
+                if (statTotal) statTotal.textContent = quizData.length;
+                const cntAll = document.getElementById('cnt-all');
+                if (cntAll) cntAll.textContent = quizData.length;
+            } catch(e) { console.warn(e); }
+
+            try { renderPalette(); } catch(e) { console.warn('renderPalette error:', e); }
+            try { renderQuestion(0); } catch(e) { console.warn('renderQuestion error:', e); }
+
+            try { initCloudSync(); } catch(e) { console.warn('initCloudSync error:', e); }
+            try { fetchLatestMainProgress(); } catch(e) { console.warn('fetchLatestMainProgress error:', e); }
 
             // Keyboard Shortcuts
-            document.addEventListener('keydown', (e) => {
-                if (['input', 'textarea'].includes(document.activeElement.tagName.toLowerCase())) return;
-                if (e.key === 'ArrowRight') nextQuestion();
-                if (e.key === 'ArrowLeft') prevQuestion();
-                if (e.key === 'Enter') {
-                    const submitBtn = document.getElementById('btn-submit-multi');
-                    if (submitBtn && submitBtn.style.display !== 'none') {
-                        submitCurrentAnswer();
+            try {
+                document.addEventListener('keydown', (e) => {
+                    if (['input', 'textarea'].includes(document.activeElement.tagName.toLowerCase())) return;
+                    if (e.key === 'ArrowRight') nextQuestion();
+                    if (e.key === 'ArrowLeft') prevQuestion();
+                    if (e.key === 'Enter') {
+                        const submitBtn = document.getElementById('btn-submit-multi');
+                        if (submitBtn && submitBtn.style.display !== 'none') {
+                            submitCurrentAnswer();
+                        }
                     }
-                }
-                if (['1', 'a', 'A'].includes(e.key)) selectOptionByKey('A');
-                if (['2', 'b', 'B'].includes(e.key)) selectOptionByKey('B');
-                if (['3', 'c', 'C'].includes(e.key)) selectOptionByKey('C');
-                if (['4', 'd', 'D'].includes(e.key)) selectOptionByKey('D');
-            });
+                    if (['1', 'a', 'A'].includes(e.key)) selectOptionByKey('A');
+                    if (['2', 'b', 'B'].includes(e.key)) selectOptionByKey('B');
+                    if (['3', 'c', 'C'].includes(e.key)) selectOptionByKey('C');
+                    if (['4', 'd', 'D'].includes(e.key)) selectOptionByKey('D');
+                });
+            } catch(e) { console.warn(e); }
         }
 
         function getUserKey() {
@@ -1804,14 +1745,15 @@
             examHistory = mergedExamHistory;
             userNotes = {};
 
-                        // 3. Seed with latest cloud progress if local storage is empty
-            const seedAnswers = {"0": {"isCorrect": true, "selected": ["C", "D"]}, "1": {"isCorrect": true, "selected": ["C", "D"]}, "2": {"isCorrect": true, "selected": ["A"]}, "3": {"isCorrect": true, "selected": ["A"]}, "4": {"isCorrect": true, "selected": ["A"]}, "5": {"isCorrect": false, "selected": ["B"]}, "6": {"isCorrect": true, "selected": ["A"]}, "7": {"isCorrect": true, "selected": ["B"]}, "8": {"isCorrect": true, "selected": ["A"]}, "9": {"isCorrect": true, "selected": ["A"]}, "10": {"isCorrect": true, "selected": ["B"]}, "11": {"isCorrect": true, "selected": ["B"]}, "12": {"isCorrect": true, "selected": ["B"]}, "13": {"isCorrect": true, "selected": ["A"]}, "14": {"isCorrect": false, "selected": ["B"]}, "15": {"isCorrect": true, "selected": ["D"]}, "16": {"isCorrect": true, "selected": ["D"]}, "17": {"isCorrect": true, "selected": ["D"]}, "18": {"isCorrect": true, "selected": ["B"]}, "19": {"isCorrect": true, "selected": ["D"]}, "20": {"isCorrect": true, "selected": ["D"]}, "21": {"isCorrect": true, "selected": ["C"]}, "22": {"isCorrect": true, "selected": ["D"]}, "23": {"isCorrect": true, "selected": ["B"]}, "24": {"isCorrect": true, "selected": ["B"]}, "25": {"isCorrect": true, "selected": ["C"]}, "26": {"isCorrect": true, "selected": ["B"]}, "27": {"isCorrect": true, "selected": ["D"]}, "28": {"isCorrect": true, "selected": ["D"]}, "29": {"isCorrect": true, "selected": ["D"]}, "30": {"isCorrect": true, "selected": ["B"]}};
-            if (Object.keys(mergedAnswers).length < Object.keys(seedAnswers).length) {
-                Object.entries(seedAnswers).forEach(([qIdx, ansObj]) => {
-                    if (!mergedAnswers[qIdx]) {
-                        mergedAnswers[qIdx] = ansObj;
-                    }
-                });
+                        // 3. Seed with latest cloud progress & ensure union merge prioritizing whichever side has more completed answers
+            const seedAnswers = {"0": {"isCorrect": true, "selected": ["C", "D"]}, "1": {"isCorrect": true, "selected": ["C", "D"]}, "2": {"isCorrect": true, "selected": ["A"]}, "3": {"isCorrect": true, "selected": ["A"]}, "4": {"isCorrect": true, "selected": ["A"]}, "5": {"isCorrect": false, "selected": ["B"]}, "6": {"isCorrect": true, "selected": ["A"]}, "7": {"isCorrect": true, "selected": ["B"]}, "8": {"isCorrect": true, "selected": ["A"]}, "9": {"isCorrect": true, "selected": ["A"]}, "10": {"isCorrect": true, "selected": ["B"]}, "11": {"isCorrect": true, "selected": ["B"]}, "12": {"isCorrect": true, "selected": ["B"]}, "13": {"isCorrect": true, "selected": ["A"]}, "14": {"isCorrect": false, "selected": ["B"]}, "15": {"isCorrect": true, "selected": ["D"]}, "16": {"isCorrect": true, "selected": ["D"]}, "17": {"isCorrect": true, "selected": ["D"]}, "18": {"isCorrect": true, "selected": ["B"]}, "19": {"isCorrect": true, "selected": ["D"]}, "20": {"isCorrect": true, "selected": ["D"]}, "21": {"isCorrect": true, "selected": ["C"]}, "22": {"isCorrect": true, "selected": ["D"]}, "23": {"isCorrect": true, "selected": ["B"]}, "24": {"isCorrect": true, "selected": ["B"]}, "25": {"isCorrect": true, "selected": ["C"]}, "26": {"isCorrect": true, "selected": ["B"]}, "27": {"isCorrect": true, "selected": ["D"]}, "28": {"isCorrect": true, "selected": ["D"]}, "29": {"isCorrect": true, "selected": ["D"]}, "30": {"isCorrect": true, "selected": ["B"]}, "31": {"isCorrect": false, "selected": ["A"], "timestamp": 1795430304701}};
+            Object.entries(seedAnswers).forEach(([qIdx, ansObj]) => {
+                if (!mergedAnswers[qIdx]) {
+                    mergedAnswers[qIdx] = ansObj;
+                }
+            });
+            if (mergedBookmarks.size === 0) {
+                [10, 14, 16].forEach(b => mergedBookmarks.add(b));
             }
 
             // Immediately persist recovered answers to current canonical key
@@ -2025,7 +1967,7 @@
             updateUserUI(currentUser);
             closeModal('login-modal');
             loadUserData();
-            updateInstantToggleUI();
+            updateAutoExpToggleUI();
             updateAdminUI();
             attachCloudListener();
             renderPalette();
@@ -2040,7 +1982,7 @@
                 localStorage.setItem('rmc301_active_user', JSON.stringify(currentUser));
                 updateUserUI(currentUser);
                 loadUserData();
-            updateInstantToggleUI();
+            updateAutoExpToggleUI();
             updateAdminUI();
                 updateCloudStatus('disconnected');
                 renderPalette();
@@ -2210,37 +2152,28 @@ function toggleCommentsSidebar() {
                 }
                 auditContent.innerHTML = '';
 
-                // 1. Translation Block (Dịch đề bài & các phương án lựa chọn trước)
+                // 1. Translation Block (Ngắn gọn dạng text xuống dòng theo yêu cầu)
                 if (q.ai_audit && q.ai_audit.translation) {
-                    const transBox = document.createElement('div');
-                    transBox.className = 'ai-trans-box';
-                    
-                    let optsHtml = '';
+                    const transDiv = document.createElement('div');
+                    transDiv.style.marginBottom = '12px';
+                    transDiv.style.paddingBottom = '10px';
+                    transDiv.style.borderBottom = '1px dashed #334155';
+                    transDiv.style.fontSize = '0.84rem';
+                    transDiv.style.lineHeight = '1.6';
+
+                    let optsLines = '';
                     if (q.ai_audit.translation.options) {
-                        for (const [k, vnOpt] of Object.entries(q.ai_audit.translation.options)) {
-                            const origOpt = (q.options && q.options[k]) ? escapeHtml(q.options[k]) : '';
-                            optsHtml += `
-                                <div class="ai-trans-opt-item">
-                                    <span class="ai-trans-opt-key">${k}.</span>
-                                    <div class="ai-trans-opt-body">
-                                        <div class="ai-trans-opt-orig">${origOpt}</div>
-                                        <div class="ai-trans-opt-vn">➔ ${escapeHtml(vnOpt)}</div>
-                                    </div>
-                                </div>
-                            `;
-                        }
+                        optsLines = Object.entries(q.ai_audit.translation.options)
+                            .map(([k, v]) => `<strong>${k}.</strong> ${escapeHtml(v)}`)
+                            .join('<br>');
                     }
 
-                    transBox.innerHTML = `
-                        <div class="ai-trans-title">🌐 DỊCH CÂU HỎI & PHƯƠNG ÁN</div>
-                        <div class="ai-trans-q">
-                            <strong>Đề bài (Dịch):</strong> ${escapeHtml(q.ai_audit.translation.question || '')}
-                        </div>
-                        <div class="ai-trans-opts-wrap">
-                            ${optsHtml}
-                        </div>
+                    transDiv.innerHTML = `
+                        <div style="color: #38bdf8; font-weight: 700; margin-bottom: 4px;">🌐 Dịch nghĩa:</div>
+                        <div style="color: #f1f5f9; margin-bottom: 6px;"><strong>Đề bài:</strong> ${escapeHtml(q.ai_audit.translation.question || '')}</div>
+                        <div style="color: #cbd5e1;">${optsLines}</div>
                     `;
-                    auditContent.appendChild(transBox);
+                    auditContent.appendChild(transDiv);
                 }
 
                 // 2. Citation and Proof (Dẫn chứng & Thẩm định giáo trình)
@@ -2610,7 +2543,6 @@ function toggleCommentsSidebar() {
             optsContainer.innerHTML = '';
             
             const answered = userAnswers[index];
-            const isRevealed = answered && (answered.revealed !== false);
             const correctKeys = q.answer.split('');
 
             for (const [key, text] of Object.entries(q.options)) {
@@ -2621,17 +2553,11 @@ function toggleCommentsSidebar() {
                 
                 if (answered) {
                     btn.classList.add('disabled');
-                    if (isRevealed) {
-                        if (correctKeys.includes(key)) {
-                            btn.classList.add('correct');
-                        } else if (answered.selected.includes(key)) {
-                            btn.classList.add('wrong');
-                        }
-                    } else {
-                        // Deferred mode: highlight chosen option without spoiling correct/wrong
-                        if (answered.selected && answered.selected.includes(key)) {
-                            btn.classList.add('submitted-choice');
-                        }
+                    // Hiện đúng/sai ngay lập tức sau khi xác nhận theo yêu cầu người dùng
+                    if (correctKeys.includes(key)) {
+                        btn.classList.add('correct');
+                    } else if (answered.selected && answered.selected.includes(key)) {
+                        btn.classList.add('wrong');
                     }
                 } else {
                     const isMultiQuestion = Boolean(q.is_multi && q.answer && q.answer.length > 1);
@@ -2644,21 +2570,26 @@ function toggleCommentsSidebar() {
             // Auto-scroll smoothly to top of page on question change
             try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e) {}
 
-            // Reveal button and Explanation box handling
-            const unrevealedWrap = document.getElementById('unrevealed-action-wrap');
+            // Explanation box handling (Hiện đúng/sai ngay, còn giải thích được tùy chọn hiện hay ẩn)
+            const expWrap = document.getElementById('exp-toggle-action-wrap');
             const expBox = document.getElementById('explanation-box');
+            const expBtn = document.getElementById('btn-toggle-exp');
 
-            if (answered && !isRevealed) {
-                if (unrevealedWrap) unrevealedWrap.style.display = 'block';
-                if (expBox) expBox.classList.remove('show');
-            } else if (answered && isRevealed) {
-                if (unrevealedWrap) unrevealedWrap.style.display = 'none';
-                if (expBox) {
-                    expBox.classList.add('show');
-                    document.getElementById('explanation-text').textContent = q.explanation || q.answer || '';
+            if (answered && !isExamMode) {
+                if (expWrap) expWrap.style.display = 'block';
+                if (autoShowExplanation) {
+                    if (expBox) {
+                        expBox.classList.add('show');
+                        const expTextEl = document.getElementById('explanation-text');
+                        if (expTextEl) expTextEl.textContent = q.explanation || q.answer || '';
+                    }
+                    if (expBtn) expBtn.innerHTML = '▲ Thu gọn giải thích & phân tích';
+                } else {
+                    if (expBox) expBox.classList.remove('show');
+                    if (expBtn) expBtn.innerHTML = '💡 Xem giải thích chi tiết & phân tích ▾';
                 }
             } else {
-                if (unrevealedWrap) unrevealedWrap.style.display = 'none';
+                if (expWrap) expWrap.style.display = 'none';
                 if (expBox) expBox.classList.remove('show');
             }
 
@@ -2676,48 +2607,54 @@ function toggleCommentsSidebar() {
             loadCurrentQuestionNote();
         }
 
-                function updateInstantToggleUI() {
-            const btn = document.getElementById('btn-instant-toggle');
-            const icon = document.getElementById('instant-toggle-icon');
-            const text = document.getElementById('instant-toggle-text');
+                function updateAutoExpToggleUI() {
+            const btn = document.getElementById('btn-exp-toggle');
+            const icon = document.getElementById('exp-toggle-icon');
+            const text = document.getElementById('exp-toggle-text');
             if (!btn) return;
-            if (instantFeedback) {
+            if (autoShowExplanation) {
                 btn.classList.add('active');
-                if (icon) icon.textContent = '⚡';
-                if (text) text.textContent = 'Hiện đáp án: BẬT';
-                btn.title = 'Đang BẬT: Đáp án và giải thích sẽ hiện ngay sau khi bạn ấn Xác nhận';
+                if (icon) icon.textContent = '💡';
+                if (text) text.textContent = 'Tự hiện giải thích: BẬT';
+                btn.title = 'Đang BẬT: Tự động mở khung giải thích chi tiết ngay sau khi xác nhận';
             } else {
                 btn.classList.remove('active');
-                if (icon) icon.textContent = '⏳';
-                if (text) text.textContent = 'Hiện đáp án: TẮT';
-                btn.title = 'Đang TẮT: Chưa vội hiện đáp án khi ấn Xác nhận (ấn Xem đáp án để mở)';
+                if (icon) icon.textContent = '💡';
+                if (text) text.textContent = 'Tự hiện giải thích: TẮT';
+                btn.title = 'Đang TẮT: Chỉ hiện đúng/sai trên đáp án, ấn "Xem giải thích" khi cần đọc';
             }
         }
 
-        function toggleInstantFeedback() {
-            instantFeedback = !instantFeedback;
+        function toggleAutoExplanation() {
+            autoShowExplanation = !autoShowExplanation;
             try {
-                localStorage.setItem('rmc301_instant_feedback', instantFeedback ? 'true' : 'false');
+                localStorage.setItem('rmc301_auto_explanation', autoShowExplanation ? 'true' : 'false');
             } catch(e) {}
-            updateInstantToggleUI();
-            showToast(instantFeedback 
-                ? '⚡ Đã BẬT: Hiện đáp án & giải thích ngay sau khi ấn Xác nhận!' 
-                : '⏳ Đã TẮT: Chưa vội hiện đáp án (chỉ lưu đáp án bạn chọn, bạn có thể ấn "Xem đáp án" khi muốn).');
+            updateAutoExpToggleUI();
+            showToast(autoShowExplanation 
+                ? '💡 Đã BẬT: Tự động mở giải thích chi tiết sau khi xác nhận!' 
+                : '💡 Đã TẮT: Ẩn giải thích chi tiết (chỉ hiện đúng/sai trên đáp án, ấn "Xem giải thích" để đọc).');
             if (userAnswers[currentIndex]) {
                 renderQuestion(currentIndex);
-                updatePaletteItem(currentIndex);
             }
         }
-        window.toggleInstantFeedback = toggleInstantFeedback;
+        window.toggleAutoExplanation = toggleAutoExplanation;
 
-        function revealCurrentAnswer() {
-            if (!userAnswers[currentIndex]) return;
-            userAnswers[currentIndex].revealed = true;
-            saveProgress();
-            renderQuestion(currentIndex);
-            updatePaletteItem(currentIndex);
+        function toggleExplanationBox() {
+            const expBox = document.getElementById('explanation-box');
+            const expBtn = document.getElementById('btn-toggle-exp');
+            if (!expBox) return;
+            const isShown = expBox.classList.toggle('show');
+            if (isShown) {
+                const q = quizData[currentIndex];
+                const expTextEl = document.getElementById('explanation-text');
+                if (expTextEl) expTextEl.textContent = q.explanation || q.answer || '';
+            }
+            if (expBtn) {
+                expBtn.innerHTML = isShown ? '▲ Thu gọn giải thích & phân tích' : '💡 Xem giải thích chi tiết & phân tích ▾';
+            }
         }
-        window.revealCurrentAnswer = revealCurrentAnswer;
+        window.toggleExplanationBox = toggleExplanationBox;
 
         function onSelectOption(key, isMulti) {
             if (isExamMode) {
@@ -2793,7 +2730,6 @@ function toggleCommentsSidebar() {
             userAnswers[currentIndex] = {
                 selected: selectedKeys,
                 isCorrect: isCorrect,
-                revealed: instantFeedback,
                 timestamp: Date.now()
             };
 
@@ -4031,7 +3967,7 @@ function retryCurrentQuestion() {
 
             // Reload user progress and state for this specific subject
             loadUserData();
-            updateInstantToggleUI();
+            updateAutoExpToggleUI();
             updateAdminUI();
             listenToCommunityComments();
             attachCloudListener();
@@ -4178,7 +4114,7 @@ function retryCurrentQuestion() {
             updateAdminUI();
             closeModal('login-modal');
             loadUserData();
-            updateInstantToggleUI();
+            updateAutoExpToggleUI();
             updateAdminUI();
             attachCloudListener();
             renderPalette();
@@ -4222,7 +4158,7 @@ function retryCurrentQuestion() {
             updateAdminUI();
             closeModal('login-modal');
             loadUserData();
-            updateInstantToggleUI();
+            updateAutoExpToggleUI();
             updateAdminUI();
             renderPalette();
             renderQuestion(currentIndex);
