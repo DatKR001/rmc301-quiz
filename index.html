@@ -531,8 +531,48 @@
         .comment-guest-prompt { text-align: center; padding: 12px 10px; background: #0f172a; border-radius: 8px; border: 1px dashed var(--border); }
         .btn-login-comment { background: #38bdf8; color: #0b1120; font-weight: 700; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; margin-top: 4px; }
         .comment-author-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-        .comment-textarea { width: 100%; background: #0f172a; border: 1px solid var(--border); border-radius: 8px; color: #fff; padding: 8px 10px; font-size: 0.83rem; resize: vertical; min-height: 55px; font-family: inherit; }
-        .comment-textarea:focus { border-color: #38bdf8; outline: none; }
+        .comment-textarea { 
+            width: 100%; 
+            background: #0b1329; 
+            border: 1px solid #334155; 
+            border-radius: 10px; 
+            color: #f8fafc; 
+            padding: 12px 14px; 
+            font-size: 0.88rem; 
+            line-height: 1.55; 
+            resize: vertical; 
+            min-height: 110px; 
+            font-family: inherit; 
+            box-sizing: border-box;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .comment-textarea:focus { 
+            border-color: #38bdf8; 
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); 
+            outline: none; 
+        }
+        .btn-edit-comment {
+            background: transparent;
+            border: 1px solid #475569;
+            color: #94a3b8;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            padding: 3px 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-edit-comment:hover {
+            border-color: #38bdf8;
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.12);
+        }
+        .comment-inline-edit-wrap {
+            margin-top: 6px;
+            padding-top: 6px;
+        }
         .comment-warn-label { display: flex; align-items: center; gap: 6px; font-size: 0.76rem; color: #fca5a5; cursor: pointer; margin: 8px 0; }
         .comment-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
         .btn-send-comment { background: #38bdf8; color: #0b1120; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.15s; }
@@ -1810,6 +1850,8 @@ function toggleCommentsSidebar() {
                 cTextarea.addEventListener('input', function() {
                     const cnt = document.getElementById('comment-char-cnt');
                     if (cnt) cnt.textContent = `${this.value.length} ký tự`;
+                    this.style.height = 'auto';
+                    this.style.height = Math.max(110, Math.min(this.scrollHeight, 280)) + 'px';
                 });
             }
 
@@ -1927,31 +1969,124 @@ function toggleCommentsSidebar() {
                 const likes = c.likes || 0;
                 const likedByMe = currentUser && c.likedBy && c.likedBy[currentUser.email.replace(/[.#$[\]]/g, '_')];
 
+                const canEdit = isMyComment || isAdm;
+                card.dataset.commentId = c.id;
+                card.dataset.content = c.content || '';
+
                 card.innerHTML = `
                     <div class="comment-card-head">
                         <div class="comment-author">
                             <div class="author-avatar">${initial}</div>
                             <div>
                                 <div class="author-name">${escapeHtml(c.author || 'Thành viên')}</div>
-                                <div class="comment-date">${c.formattedDate || ''}</div>
+                                <div class="comment-date">${c.formattedDate || ''} ${c.edited ? '<span style="color: #64748b; font-style: italic; margin-left: 4px;">(đã chỉnh sửa)</span>' : ''}</div>
                             </div>
                         </div>
                     </div>
-                    <div class="comment-body">${escapeHtml(c.content || '')}</div>
-                    <div class="comment-foot">
+                    <div class="comment-body" id="comment-body-${c.id}">${escapeHtml(c.content || '')}</div>
+                    <div class="comment-foot" id="comment-foot-${c.id}">
                         <button class="btn-like-comment ${likedByMe ? 'liked' : ''}" onclick="toggleLikeComment(${qIdx}, '${c.id}')">
                             ${likedByMe ? '❤️' : '🤍'} ${likes > 0 ? likes : 'Thích'}
                         </button>
-                        ${canDelete ? `
-                            <button class="btn-del-comment" onclick="deleteDiscussionComment(${qIdx}, '${c.id}')" title="${isAdm && !isMyComment ? 'Xóa thảo luận với quyền Admin (Võ Trọng Đạt)' : 'Xóa thảo luận của bạn'}">
-                                🗑️ Xóa ${isAdm && !isMyComment ? '(Admin)' : ''}
-                            </button>
-                        ` : ''}
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            ${canEdit ? `
+                                <button class="btn-edit-comment" onclick="startEditDiscussionComment(${qIdx}, '${c.id}')" title="Chỉnh sửa thảo luận">
+                                    ✏️ Sửa
+                                </button>
+                            ` : ''}
+                            ${canDelete ? `
+                                <button class="btn-del-comment" onclick="deleteDiscussionComment(${qIdx}, '${c.id}')" title="${isAdm && !isMyComment ? 'Xóa thảo luận với quyền Admin (Võ Trọng Đạt)' : 'Xóa thảo luận của bạn'}">
+                                    🗑️ Xóa ${isAdm && !isMyComment ? '(Admin)' : ''}
+                                </button>
+                            ` : ''}
+                        </div>
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
+
+        
+        function startEditDiscussionComment(qIdx, commentId) {
+            const card = document.getElementById(`comment-${commentId}`);
+            if (!card) return;
+            const bodyEl = document.getElementById(`comment-body-${commentId}`);
+            const footEl = document.getElementById(`comment-foot-${commentId}`);
+            if (!bodyEl || card.classList.contains('is-editing')) return;
+
+            card.classList.add('is-editing');
+            const currentText = card.dataset.content || bodyEl.textContent || '';
+
+            bodyEl.style.display = 'none';
+            if (footEl) footEl.style.display = 'none';
+
+            const editWrap = document.createElement('div');
+            editWrap.className = 'comment-inline-edit-wrap';
+            editWrap.id = `edit-wrap-${commentId}`;
+            editWrap.innerHTML = `
+                <textarea class="comment-textarea edit-textarea" id="edit-textarea-${commentId}" style="min-height: 95px; margin-top: 4px;">${escapeHtml(currentText)}</textarea>
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;">
+                    <button type="button" onclick="cancelEditDiscussionComment('${commentId}')" style="background: #334155; border: none; color: #cbd5e1; padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; cursor: pointer;">Hủy ✕</button>
+                    <button type="button" onclick="saveEditDiscussionComment(${qIdx}, '${commentId}')" style="background: #0284c7; border: none; color: #fff; padding: 6px 16px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer;">Lưu thay đổi 💾</button>
+                </div>
+            `;
+            card.appendChild(editWrap);
+
+            const editTextarea = document.getElementById(`edit-textarea-${commentId}`);
+            if (editTextarea) {
+                editTextarea.focus();
+                editTextarea.selectionStart = editTextarea.value.length;
+                editTextarea.selectionEnd = editTextarea.value.length;
+                editTextarea.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = Math.max(95, Math.min(this.scrollHeight, 260)) + 'px';
+                });
+            }
+        }
+
+        function cancelEditDiscussionComment(commentId) {
+            const card = document.getElementById(`comment-${commentId}`);
+            if (!card) return;
+            const editWrap = document.getElementById(`edit-wrap-${commentId}`);
+            if (editWrap) editWrap.remove();
+            const bodyEl = document.getElementById(`comment-body-${commentId}`);
+            const footEl = document.getElementById(`comment-foot-${commentId}`);
+            if (bodyEl) bodyEl.style.display = 'block';
+            if (footEl) footEl.style.display = 'flex';
+            card.classList.remove('is-editing');
+        }
+
+        function saveEditDiscussionComment(qIdx, commentId) {
+            const textarea = document.getElementById(`edit-textarea-${commentId}`);
+            if (!textarea) return;
+            const newContent = (textarea.value || '').trim();
+            if (!newContent) {
+                showToast("Nội dung thảo luận không được để trống!");
+                textarea.focus();
+                return;
+            }
+
+            if (!firebaseDb) {
+                showToast("Không thể kết nối đến cơ sở dữ liệu!");
+                return;
+            }
+
+            const subId = currentSubjectId || 'rmc301';
+            firebaseDb.ref(`quiz_comments/${subId}/q_${qIdx}/${commentId}`).update({
+                content: newContent,
+                edited: true,
+                editedAt: Date.now()
+            }).then(() => {
+                showToast("Đã lưu chỉnh sửa thảo luận thành công! 💾");
+                cancelEditDiscussionComment(commentId);
+            }).catch(err => {
+                console.error("Lỗi khi lưu chỉnh sửa:", err);
+                showToast("Lỗi khi cập nhật: " + err.message);
+            });
+        }
+        window.startEditDiscussionComment = startEditDiscussionComment;
+        window.cancelEditDiscussionComment = cancelEditDiscussionComment;
+        window.saveEditDiscussionComment = saveEditDiscussionComment;
 
         function deleteDiscussionComment(qIdx, commentId) {
             const isAdm = isAdmin();
@@ -2031,6 +2166,7 @@ function toggleCommentsSidebar() {
             };
 
             textarea.value = '';
+            textarea.style.height = '110px';
             const charCnt = document.getElementById('comment-char-cnt');
             if (charCnt) charCnt.textContent = '0 ký tự';
 
