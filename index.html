@@ -1468,7 +1468,24 @@
         .tag-ambiguous { background: #38bdf820; color: #38bdf8; border: 1px solid #38bdf840; }
                 .ai-audit-disc-content { padding: 12px 14px; font-size: 0.84rem; line-height: 1.6; color: #cbd5e1; border-top: 1px solid #1e293b; white-space: pre-line; max-height: 420px; overflow-y: auto; word-break: break-word; }
         .ai-disc-cite { color: #94a3b8; font-size: 0.78rem; margin-bottom: 8px; }
-</style>
+
+        /* Admin Presence Monitor Card Styles */
+        .presence-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 13px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        .presence-card:hover {
+            border-color: #475569;
+            transform: translateY(-1px);
+        }
+    </style>
 </head>
 <body>
     <!-- Top Header -->
@@ -1501,9 +1518,10 @@
                         </div>
                     </div>
 
-                    <div class="online-pill" id="online-learners-badge" title="Số người đang cùng truy cập ôn luyện trực tuyến">
+<div class="online-pill" id="online-learners-badge" onclick="openAdminPresenceModal()" title="🛡️ Bấm để xem chi tiết thiết bị & vị trí đang học (Dành cho Quản trị viên)" style="cursor: pointer; user-select: none;">
                         <span class="online-indicator-dot"></span>
                         <span><strong id="online-learners-count">1</strong> người đang học</span>
+                        <span style="font-size: 0.72rem; opacity: 0.85; margin-left: 2px;" title="Chế độ Quản trị viên">🛡️</span>
                     </div>
                 </div>
                 <div id="header-sub-desc" style="font-size: 0.72rem; color: #4ade80;">● Đồng bộ thời gian thực 2 chiều với Firebase</div>
@@ -2166,6 +2184,40 @@
                     <button class="btn-submit-exam" style="padding: 8px 18px; font-size: 0.86rem;" onclick="saveCustomAuditOverride()">
                         💾 Lưu & Cập nhật Thẩm định lên Cloud 🚀
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Admin Presence & Online Learners Modal -->
+    <div class="modal-overlay" id="admin-presence-modal" style="display: none;" onclick="if(event.target===this) closeAdminPresenceModal()">
+        <div class="modal-card modal-large" style="max-width: 760px; max-height: 88vh; display: flex; flex-direction: column;">
+            <div class="modal-title" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1e293b; padding-bottom: 12px; margin-bottom: 14px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(56, 189, 248, 0.15); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                        🛡️
+                    </div>
+                    <div>
+                        <div style="font-size: 1.05rem; font-weight: 700; color: #f8fafc;">Giám Sát Người Học & Thiết Bị Trực Tuyến</div>
+                        <div style="font-size: 0.76rem; color: #94a3b8; display: flex; align-items: center; gap: 6px; margin-top: 2px;">
+                            <span class="online-indicator-dot"></span>
+                            <span id="admin-online-realtime-summary">Đang đồng bộ dữ liệu Cloud...</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-modal-close" onclick="closeAdminPresenceModal()" style="font-size: 1.3rem;">✕</button>
+            </div>
+
+            <!-- Active Sessions List -->
+            <div id="admin-presence-list" style="overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; padding-right: 4px; min-height: 220px;">
+                <!-- Populated dynamically -->
+            </div>
+
+            <div style="border-top: 1px solid #1e293b; padding-top: 12px; margin-top: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <span style="font-size: 0.72rem; color: #64748b;">🔒 Chế độ Bảo mật Quản trị viên (Admin Only) • Tự động làm mới</span>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn-header" onclick="renderAdminPresenceList()" style="padding: 6px 14px; font-size: 0.82rem; border-radius: 8px;">🔄 Làm mới</button>
+                    <button type="button" class="btn-modal-submit" onclick="closeAdminPresenceModal()" style="padding: 6px 16px; font-size: 0.82rem; border-radius: 8px; background: #334155; border: none; color: #f1f5f9; cursor: pointer;">Đóng</button>
                 </div>
             </div>
         </div>
@@ -3338,6 +3390,7 @@ function toggleCommentsSidebar() {
         /* ================= QUESTION RENDERING ================= */
         function renderQuestion(index) {
             currentIndex = index;
+            try { if (typeof updateMyPresence === 'function') updateMyPresence(); } catch(e) {}
             try { localStorage.setItem('rmc301_current_index', index); } catch(e) {}
             const q = quizData[index];
             document.getElementById('stat-current').textContent = index + 1;
@@ -4130,7 +4183,130 @@ function retryCurrentQuestion() {
             }
         }
 
-        /* ================= ONLINE LEARNERS PRESENCE ================= */
+        /* ================= ONLINE LEARNERS PRESENCE & ADMIN MONITOR ================= */
+        const ADMIN_EMAILS = ['votrongdat1606@gmail.com', 'trucvo391@gmail.com'];
+        const ADMIN_PASSCODE = 'rmc301admin';
+        let cachedClientGeo = null;
+
+        function isCurrentUserAdmin() {
+            if (currentUser && currentUser.email && ADMIN_EMAILS.includes(currentUser.email.toLowerCase())) {
+                return true;
+            }
+            if (sessionStorage.getItem('rmc301_admin_unlocked') === 'true') {
+                return true;
+            }
+            return false;
+        }
+
+        function parseClientDeviceInfo() {
+            const ua = navigator.userAgent || '';
+            let os = 'Khác';
+            if (/windows nt 10/i.test(ua)) os = 'Windows 10/11';
+            else if (/windows nt/i.test(ua)) os = 'Windows';
+            else if (/iphone/i.test(ua)) os = 'iOS (iPhone)';
+            else if (/ipad/i.test(ua)) os = 'iOS (iPad)';
+            else if (/macintosh|mac os x/i.test(ua)) os = 'macOS';
+            else if (/android/i.test(ua)) os = 'Android';
+            else if (/linux/i.test(ua)) os = 'Linux';
+
+            let browser = 'Khác';
+            if (/crios|fxios/i.test(ua)) browser = 'Chrome/Firefox iOS';
+            else if (/edg/i.test(ua)) browser = 'Microsoft Edge';
+            else if (/coc_coc_browser/i.test(ua)) browser = 'Cốc Cốc';
+            else if (/opr|opera/i.test(ua)) browser = 'Opera';
+            else if (/chrome/i.test(ua)) browser = 'Google Chrome';
+            else if (/safari/i.test(ua)) browser = 'Safari';
+            else if (/firefox/i.test(ua)) browser = 'Firefox';
+
+            const isMobile = /mobile|iphone|android|ipad/i.test(ua);
+            const type = isMobile ? 'Mobile 📱' : 'Desktop 💻';
+            const screenRes = (window.screen && window.screen.width) ? `${window.screen.width}x${window.screen.height}` : 'N/A';
+
+            return { os, browser, type, isMobile, screenRes };
+        }
+
+        async function fetchClientGeoLocation() {
+            try {
+                const stored = sessionStorage.getItem('rmc301_cached_geo');
+                if (stored) {
+                    cachedClientGeo = JSON.parse(stored);
+                    return cachedClientGeo;
+                }
+            } catch(e) {}
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3500);
+                const res = await fetch('https://ipwho.is/', { signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.success !== false) {
+                        cachedClientGeo = {
+                            city: data.city || '',
+                            region: data.region || '',
+                            country: data.country || 'Việt Nam',
+                            isp: (data.connection && data.connection.isp) ? data.connection.isp : (data.connection?.org || ''),
+                            ipMasked: data.ip ? data.ip.replace(/(\d+)\.(\d+)\.(\d+)\.(\d+)/, '$1.$2.***.***') : ''
+                        };
+                        try { sessionStorage.setItem('rmc301_cached_geo', JSON.stringify(cachedClientGeo)); } catch(e) {}
+                        return cachedClientGeo;
+                    }
+                }
+            } catch(e) {
+                console.log('IP Geo service notice:', e);
+            }
+
+            cachedClientGeo = {
+                city: 'Việt Nam',
+                region: '',
+                country: 'Việt Nam',
+                isp: 'Mạng viễn thông',
+                ipMasked: ''
+            };
+            return cachedClientGeo;
+        }
+
+        function updateMyPresence() {
+            if (!firebaseDb) return;
+            const sId = sessionStorage.getItem('rmc301_session_id');
+            if (!sId) return;
+
+            const dev = parseClientDeviceInfo();
+            const qIdx = currentIndex;
+            const qNum = (quizData && quizData[qIdx]) ? quizData[qIdx].q_num : (qIdx + 1);
+            const sNum = (quizData && quizData[qIdx]) ? quizData[qIdx].slide_num : '';
+            const ansCount = (typeof userAnswers === 'object' && userAnswers) ? Object.keys(userAnswers).length : 0;
+
+            const locStr = cachedClientGeo ? `${cachedClientGeo.city ? cachedClientGeo.city + ', ' : ''}${cachedClientGeo.country}` : 'Việt Nam';
+            const ispStr = cachedClientGeo ? (cachedClientGeo.isp || '') : '';
+            const ipMaskedStr = cachedClientGeo ? (cachedClientGeo.ipMasked || '') : '';
+
+            try {
+                firebaseDb.ref('presence/' + sId).set({
+                    sessionId: sId,
+                    name: currentUser ? currentUser.name : 'Khách học ẩn danh',
+                    email: (currentUser && currentUser.email && currentUser.email !== 'guest') ? currentUser.email : 'guest',
+                    isGoogle: Boolean(currentUser && currentUser.isGoogle),
+                    os: dev.os,
+                    browser: dev.browser,
+                    deviceType: dev.type,
+                    screenRes: dev.screenRes,
+                    location: locStr,
+                    isp: ispStr,
+                    ipMasked: ipMaskedStr,
+                    currentQ: qNum,
+                    currentSlide: sNum,
+                    answeredCount: ansCount,
+                    joinedAt: Number(sessionStorage.getItem('rmc301_joined_at') || Date.now()),
+                    lastSeen: Date.now()
+                });
+            } catch(e) {
+                console.warn('Update presence error:', e);
+            }
+        }
+        window.updateMyPresence = updateMyPresence;
+
         function initPresence() {
             if (!firebaseDb) return;
             try {
@@ -4139,50 +4315,186 @@ function retryCurrentQuestion() {
                 if (!sessionId) {
                     sessionId = 'user_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now();
                     sessionStorage.setItem('rmc301_session_id', sessionId);
+                    sessionStorage.setItem('rmc301_joined_at', Date.now());
                 }
 
                 connectedRef.on('value', (snap) => {
                     if (snap.val() === true) {
                         const myPresenceRef = firebaseDb.ref('presence/' + sessionId);
                         myPresenceRef.onDisconnect().remove();
-                        myPresenceRef.set({
-                            name: currentUser ? currentUser.name : 'Khách',
-                            device: navigator.userAgent.includes('Mobile') ? 'Mobile' : 'PC',
-                            joinedAt: Date.now(),
-                            lastSeen: Date.now()
+
+                        // Fetch location then broadcast
+                        fetchClientGeoLocation().then(() => {
+                            updateMyPresence();
+                        }).catch(() => {
+                            updateMyPresence();
                         });
                     }
                 });
 
-                // Listen to online count
+                // Realtime Online Count Listener
                 firebaseDb.ref('presence').on('value', (snap) => {
                     const data = snap.val() || {};
                     const now = Date.now();
                     let count = 0;
                     for (const [id, val] of Object.entries(data)) {
-                        if (val && (!val.lastSeen || (now - val.lastSeen < 300000))) {
+                        if (val && (!val.lastSeen || (now - val.lastSeen < 180000))) {
                             count++;
                         }
                     }
                     count = Math.max(1, count);
                     const el = document.getElementById('online-learners-count');
                     if (el) el.textContent = count;
+
+                    // If admin modal is open, auto re-render
+                    const modal = document.getElementById('admin-presence-modal');
+                    if (modal && modal.style.display === 'flex') {
+                        renderAdminPresenceListWithData(data);
+                    }
                 });
 
-                // Keepalive heartbeat
+                // Heartbeat every 25 seconds
                 setInterval(() => {
-                    const sId = sessionStorage.getItem('rmc301_session_id');
-                    if (sId && firebaseDb) {
-                        firebaseDb.ref('presence/' + sId + '/lastSeen').set(Date.now());
-                    }
-                }, 45000);
+                    updateMyPresence();
+                }, 25000);
             } catch(e) {
                 console.warn('Presence tracking error:', e);
             }
         }
 
-        
-        
+        /* Admin Presence Modal Controls */
+        function openAdminPresenceModal() {
+            if (!isCurrentUserAdmin()) {
+                const pin = prompt('🛡️ DÀNH CHO QUẢN TRỊ VIÊN (ADMIN ONLY)\n\nVui lòng nhập mã PIN Quản trị viên để truy cập bảng giám sát thiết bị & người học:');
+                if (pin === ADMIN_PASSCODE) {
+                    sessionStorage.setItem('rmc301_admin_unlocked', 'true');
+                    showToast('🔓 Xác thực Quản trị viên thành công!');
+                } else {
+                    if (pin !== null && pin !== '') {
+                        alert('⛔ Mã PIN không chính xác! Quyền truy cập bị từ chối.');
+                    }
+                    return;
+                }
+            }
+
+            const modal = document.getElementById('admin-presence-modal');
+            if (modal) {
+                modal.style.display = 'flex';
+                renderAdminPresenceList();
+            }
+        }
+        window.openAdminPresenceModal = openAdminPresenceModal;
+
+        function closeAdminPresenceModal() {
+            const modal = document.getElementById('admin-presence-modal');
+            if (modal) modal.style.display = 'none';
+        }
+        window.closeAdminPresenceModal = closeAdminPresenceModal;
+
+        function timeAgo(ts) {
+            if (!ts) return 'Vừa xong';
+            const diff = Math.floor((Date.now() - ts) / 1000);
+            if (diff < 15) return 'Vừa xong';
+            if (diff < 60) return `${diff}s trước`;
+            const min = Math.floor(diff / 60);
+            if (min < 60) return `${min}p trước`;
+            const hr = Math.floor(min / 60);
+            return `${hr}h trước`;
+        }
+
+        function renderAdminPresenceList() {
+            if (!firebaseDb) return;
+            const listEl = document.getElementById('admin-presence-list');
+            if (listEl) {
+                listEl.innerHTML = '<div style="padding: 24px; text-align: center; color: #94a3b8; font-size: 0.88rem;">🔄 Đang tải danh sách thiết bị từ Cloud...</div>';
+            }
+            firebaseDb.ref('presence').once('value').then((snap) => {
+                renderAdminPresenceListWithData(snap.val() || {});
+            }).catch(err => {
+                if (listEl) listEl.innerHTML = `<div style="padding: 24px; text-align: center; color: #ef4444;">Lỗi khi tải dữ liệu Cloud: ${escapeHtml(err.message)}</div>`;
+            });
+        }
+        window.renderAdminPresenceList = renderAdminPresenceList;
+
+        function renderAdminPresenceListWithData(data) {
+            const listEl = document.getElementById('admin-presence-list');
+            const summaryEl = document.getElementById('admin-online-realtime-summary');
+            if (!listEl) return;
+
+            const now = Date.now();
+            const activeItems = [];
+            for (const [sId, item] of Object.entries(data)) {
+                if (item && (!item.lastSeen || (now - item.lastSeen < 180000))) {
+                    activeItems.push({ sId, ...item });
+                }
+            }
+
+            activeItems.sort((a, b) => (b.lastSeen || 0) - (a.lastSeen || 0));
+
+            if (summaryEl) {
+                summaryEl.innerHTML = `<strong style="color: #4ade80;">${activeItems.length}</strong> thiết bị đang trực tuyến trong 3 phút qua`;
+            }
+
+            if (activeItems.length === 0) {
+                listEl.innerHTML = `
+                    <div style="padding: 40px; text-align: center; color: #64748b; font-size: 0.9rem;">
+                        <div>📭 Hiện không có thiết bị nào đang kết nối.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            activeItems.forEach((item) => {
+                const isMe = (item.sessionId === sessionStorage.getItem('rmc301_session_id'));
+                const isMobile = item.isMobile || /mobile/i.test(item.deviceType || '');
+                const initial = (item.name ? item.name.charAt(0) : 'K').toUpperCase();
+                const locationStr = item.location || 'Việt Nam';
+                const ispStr = item.isp || 'Mạng viễn thông';
+                const devIcon = isMobile ? '📱' : '💻';
+                const timeSince = timeAgo(item.lastSeen || Date.now());
+
+                html += `
+                    <div class="presence-card" style="border: 1px solid ${isMe ? '#0284c7' : '#334155'};">
+                        ${isMe ? '<div style="position: absolute; top: 12px; right: 14px; background: #0284c7; color: white; font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 10px;">THIẾT BỊ NÀY CỦA BẠN</div>' : ''}
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding-right: ${isMe ? '135px' : '0'};">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 38px; height: 38px; border-radius: 50%; background: ${item.isGoogle ? '#0284c7' : '#475569'}; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; flex-shrink: 0;">
+                                    ${initial}
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; color: #f1f5f9; font-size: 0.95rem; display: flex; align-items: center; gap: 6px;">
+                                        <span>${escapeHtml(item.name || 'Khách')}</span>
+                                        ${item.isGoogle ? '<span style="font-size: 0.68rem; background: rgba(56, 189, 248, 0.2); color: #38bdf8; padding: 1px 6px; border-radius: 4px;">Google Auth</span>' : '<span style="font-size: 0.68rem; background: rgba(148, 163, 184, 0.2); color: #94a3b8; padding: 1px 6px; border-radius: 4px;">Ẩn danh</span>'}
+                                    </div>
+                                    <div style="font-size: 0.76rem; color: #94a3b8;">${escapeHtml(item.email !== 'guest' ? item.email : 'Chưa đăng nhập')}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; font-size: 0.82rem;">
+                            <div style="background: #0f172a; padding: 8px 12px; border-radius: 8px; border: 1px solid #334155;">
+                                <div style="color: #94a3b8; font-size: 0.72rem; margin-bottom: 2px;">${devIcon} THIẾT BỊ & TRÌNH DUYỆT</div>
+                                <div style="color: #38bdf8; font-weight: 600;">${escapeHtml(item.deviceType || 'PC')} • ${escapeHtml(item.os || 'Hệ điều hành')}</div>
+                                <div style="color: #cbd5e1; font-size: 0.75rem;">${escapeHtml(item.browser || 'Trình duyệt')} (${escapeHtml(item.screenRes || 'N/A')})</div>
+                            </div>
+                            <div style="background: #0f172a; padding: 8px 12px; border-radius: 8px; border: 1px solid #334155;">
+                                <div style="color: #94a3b8; font-size: 0.72rem; margin-bottom: 2px;">📍 VỊ TRÍ & NHÀ MẠNG</div>
+                                <div style="color: #fbbf24; font-weight: 600;">${escapeHtml(locationStr)}</div>
+                                <div style="color: #cbd5e1; font-size: 0.75rem;">${escapeHtml(ispStr)} ${item.ipMasked ? '• ' + escapeHtml(item.ipMasked) : ''}</div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: #94a3b8; border-top: 1px dashed #334155; padding-top: 8px; flex-wrap: wrap; gap: 6px;">
+                            <div>🎯 Đang mở: <strong style="color: #c084fc;">Câu ${item.currentQ || 1}</strong> (Slide ${item.currentSlide || 'N/A'}) • Đã làm: <strong style="color: #38bdf8;">${item.answeredCount || 0}</strong> câu</div>
+                            <div>⏱️ Tương tác: <strong style="color: #f1f5f9;">${timeSince}</strong></div>
+                        </div>
+                    </div>
+                `;
+            });
+            listEl.innerHTML = html;
+        }
 
         /* ================= PALETTE & SEARCH ================= */
         function onSearchQuestions(val) {
