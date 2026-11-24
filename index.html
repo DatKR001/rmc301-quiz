@@ -2304,7 +2304,8 @@
                             answers: userAnswers,
                             bookmarks: Array.from(bookmarks),
                             examHistory: examHistory,
-                            lastUpdated: new Date(now).toISOString(),
+                            lastUpdated: now,
+                            updatedAt: new Date(now).toISOString(),
                             localTimestamp: now
                         };
                         localStorage.setItem(localKey, JSON.stringify(dataToSave));
@@ -2340,8 +2341,25 @@
                 if (cntAll) cntAll.textContent = quizData.length;
             } catch(e) { console.warn(e); }
 
+            let resumeIdx = 0;
+            try {
+                const savedIdx = localStorage.getItem('rmc301_current_index');
+                if (savedIdx !== null && !isNaN(parseInt(savedIdx, 10))) {
+                    resumeIdx = parseInt(savedIdx, 10);
+                } else {
+                    for (let i = 0; i < quizData.length; i++) {
+                        if (!userAnswers[i]) {
+                            resumeIdx = i;
+                            break;
+                        }
+                    }
+                }
+                if (resumeIdx < 0 || resumeIdx >= quizData.length) resumeIdx = 0;
+            } catch(e) {
+                resumeIdx = 0;
+            }
             try { renderPalette(); } catch(e) { console.warn('renderPalette error:', e); }
-            try { renderQuestion(0); } catch(e) { console.warn('renderQuestion error:', e); }
+            try { renderQuestion(resumeIdx); } catch(e) { console.warn('renderQuestion error:', e); }
 
             try { initCloudSync(); } catch(e) { console.warn('initCloudSync error:', e); }
             try { fetchLatestMainProgress(); } catch(e) { console.warn(e); }
@@ -2483,12 +2501,14 @@
                 answers: userAnswers,
                 bookmarks: Array.from(bookmarks),
                 examHistory: examHistory,
-                lastUpdated: new Date(now).toISOString(),
+                lastUpdated: now,
+                updatedAt: new Date(now).toISOString(),
                 localTimestamp: now
             };
             try {
                 localStorage.setItem(dataKey, JSON.stringify(dataToSave));
                 localStorage.setItem('rmc301_permanent_backup', JSON.stringify(dataToSave));
+                localStorage.setItem('rmc301_current_index', currentIndex);
             } catch(e) {}
             updateStats();
             syncToCloud();
@@ -2541,6 +2561,16 @@
             }
         }
 
+        
+        function parseValidTimestamp(val) {
+            if (typeof val === 'number' && !isNaN(val)) return val;
+            if (typeof val === 'string') {
+                const parsed = Date.parse(val);
+                if (!isNaN(parsed)) return parsed;
+            }
+            return Date.now();
+        }
+
         function attachCloudListener() {
             if (!firebaseDb) {
                 updateCloudStatus('disconnected');
@@ -2563,49 +2593,55 @@
                 const rawLocal = localStorage.getItem(localKey);
                 let localLastUpdated = 0;
                 if (rawLocal) {
-                    try { localLastUpdated = JSON.parse(rawLocal).localTimestamp || 0; } catch(e) {}
+                    try { localLastUpdated = parseValidTimestamp(JSON.parse(rawLocal).localTimestamp || JSON.parse(rawLocal).lastUpdated); } catch(e) {}
                 }
 
-                const cloudLastUpdated = cloudVal.lastUpdated || 0;
+                const cloudLastUpdated = parseValidTimestamp(cloudVal.lastUpdated);
 
-                isSyncingFromCloud = true;
-                // Merge cloud answers with local answers so neither overwrites the other
-                if (cloudVal.answers) {
-                    if (Array.isArray(cloudVal.answers)) {
-                        cloudVal.answers.forEach((ansObj, idx) => {
-                            if (ansObj && typeof ansObj === 'object') {
-                                userAnswers[idx] = ansObj;
-                            }
-                        });
-                    } else if (typeof cloudVal.answers === 'object') {
-                        Object.entries(cloudVal.answers).forEach(([idx, ansObj]) => {
-                            if (ansObj && typeof ansObj === 'object') {
-                                userAnswers[idx] = ansObj;
-                            }
-                        });
+                try {
+                    isSyncingFromCloud = true;
+                    // Merge cloud answers with local answers so neither overwrites the other
+                    if (cloudVal.answers) {
+                        if (Array.isArray(cloudVal.answers)) {
+                            cloudVal.answers.forEach((ansObj, idx) => {
+                                if (ansObj && typeof ansObj === 'object') {
+                                    userAnswers[idx] = ansObj;
+                                }
+                            });
+                        } else if (typeof cloudVal.answers === 'object') {
+                            Object.entries(cloudVal.answers).forEach(([idx, ansObj]) => {
+                                if (ansObj && typeof ansObj === 'object') {
+                                    userAnswers[idx] = ansObj;
+                                }
+                            });
+                        }
                     }
-                }
-                if (Array.isArray(cloudVal.bookmarks)) {
-                    cloudVal.bookmarks.forEach(b => bookmarks.add(b));
-                }
-                if (Array.isArray(cloudVal.examHistory) && cloudVal.examHistory.length > examHistory.length) {
-                    examHistory = cloudVal.examHistory;
-                }
+                    if (Array.isArray(cloudVal.bookmarks)) {
+                        cloudVal.bookmarks.forEach(b => bookmarks.add(b));
+                    }
+                    if (Array.isArray(cloudVal.examHistory) && cloudVal.examHistory.length > examHistory.length) {
+                        examHistory = cloudVal.examHistory;
+                    }
 
-                const now = Math.max(cloudLastUpdated, localLastUpdated, Date.now());
-                const dataToSave = {
-                    answers: userAnswers,
-                    bookmarks: Array.from(bookmarks),
-                    examHistory: examHistory,
-                    lastUpdated: new Date(now).toISOString(),
-                    localTimestamp: now
-                };
-                localStorage.setItem(localKey, JSON.stringify(dataToSave));
+                    const now = Math.max(cloudLastUpdated, localLastUpdated, Date.now());
+                    const dataToSave = {
+                        answers: userAnswers,
+                        bookmarks: Array.from(bookmarks),
+                        examHistory: examHistory,
+                        lastUpdated: now,
+                        updatedAt: new Date(now).toISOString(),
+                        localTimestamp: now
+                    };
+                    localStorage.setItem(localKey, JSON.stringify(dataToSave));
 
-                updateStats();
-                renderPalette();
-                if (!isExamMode) renderQuestion(currentIndex);
-                isSyncingFromCloud = false;
+                    updateStats();
+                    renderPalette();
+                    if (!isExamMode) renderQuestion(currentIndex);
+                } catch(err) {
+                    console.error("Cloud listener error:", err);
+                } finally {
+                    isSyncingFromCloud = false;
+                }
             });
         }
 
@@ -3265,6 +3301,7 @@ function toggleCommentsSidebar() {
         /* ================= QUESTION RENDERING ================= */
         function renderQuestion(index) {
             currentIndex = index;
+            try { localStorage.setItem('rmc301_current_index', index); } catch(e) {}
             const q = quizData[index];
             document.getElementById('stat-current').textContent = index + 1;
             document.getElementById('q-badge').textContent = `Câu ${index + 1} / ${quizData.length} (Slide ${q.slide_num})`;
@@ -3946,9 +3983,13 @@ o  Lập luận loại trừ & Mẹo nhớ nhanh:
             const submitBtn = document.getElementById('btn-submit-multi');
             if (submitBtn) submitBtn.style.display = 'none';
 
-            saveProgress();
+            // Cập nhật UI ngay lập tức: stats, palette, câu hỏi
+            updateStats();
+            renderPalette();
             renderQuestion(currentIndex);
-            updatePaletteItem(currentIndex);
+
+            // Lưu tiến độ vào LocalStorage và đồng bộ Cloud
+            saveProgress();
         }
 
         function selectOptionByKey(key) {
