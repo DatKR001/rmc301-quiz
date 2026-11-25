@@ -2373,11 +2373,10 @@
                 
         async function pushProgressViaRest(cleanKey, payload) {
             try {
-                const targetKey = cleanKey || (
-                    (currentUser && currentUser.email && currentUser.email !== 'guest')
-                        ? currentUser.email.replace(/[.#$[\]]/g, '_')
-                        : 'votrongdat1606@gmail_com'
-                );
+                if (!cleanKey && (!currentUser || !currentUser.email || currentUser.email === 'guest')) {
+                    return;
+                }
+                const targetKey = cleanKey || currentUser.email.replace(/[.#$[\]]/g, '_');
                 const body = payload || {
                     answers: userAnswers,
                     resetTimestamps: resetTimestamps,
@@ -2401,10 +2400,8 @@
 
         async function fetchLatestMainProgress() {
             try {
-                const targetEmail = (currentUser && currentUser.email && currentUser.email !== 'guest')
-                    ? currentUser.email
-                    : 'votrongdat1606@gmail.com';
-                const cleanKey = targetEmail.replace(/[.#$[\]]/g, '_');
+                if (!currentUser || !currentUser.email || currentUser.email === 'guest') return;
+                const cleanKey = currentUser.email.replace(/[.#$[\]]/g, '_');
                 const res = await fetch(`https://rmc301-quiz-default-rtdb.asia-southeast1.firebasedatabase.app/quiz_progress/${cleanKey}.json`);
                 if (!res.ok) return;
                 const cloudVal = await res.json();
@@ -2554,6 +2551,16 @@
             return `quiz_data_${emailKey}_${currentSubjectId}`;
         }
 
+        function getUserBackupKey() {
+            const emailKey = (!currentUser || currentUser.email === 'guest') ? 'guest' : currentUser.email;
+            return `rmc301_backup_${emailKey}_${currentSubjectId}`;
+        }
+
+        function getUserResetKey() {
+            const emailKey = (!currentUser || currentUser.email === 'guest') ? 'guest' : currentUser.email;
+            return `rmc301_reset_timestamps_${emailKey}_${currentSubjectId}`;
+        }
+
                 function loadUserData() {
             // 1. Restore active user if saved in localStorage
             if (!currentUser) {
@@ -2569,15 +2576,17 @@
             }
 
             const currentKey = getUserKey();
-            
-            // 2. Scan localStorage keys to recover resetTimestamps first, then valid answers
+            const backupKey = getUserBackupKey();
+            const resetKey = getUserResetKey();
+
+            // 2. Strictly load ONLY this account's own localStorage keys (no cross-account scanning!)
             let mergedAnswers = {};
             let mergedResetTimestamps = {};
             let mergedBookmarks = new Set();
             let mergedExamHistory = [];
 
             try {
-                const rawResets = localStorage.getItem('rmc301_reset_timestamps');
+                const rawResets = localStorage.getItem(resetKey);
                 if (rawResets) {
                     const parsedResets = JSON.parse(rawResets);
                     if (parsedResets && typeof parsedResets === 'object') {
@@ -2589,22 +2598,22 @@
             } catch(e) {}
 
             try {
+                const accountKeys = [currentKey, backupKey];
                 const parsedDocs = [];
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (!key) continue;
-                    const raw = localStorage.getItem(key);
-                    if (!raw || !raw.startsWith('{') || !raw.includes('"answers"')) continue;
+                accountKeys.forEach((k) => {
+                    const raw = localStorage.getItem(k);
+                    if (!raw || !raw.startsWith('{')) return;
                     try {
                         const p = JSON.parse(raw);
                         parsedDocs.push(p);
                         if (p.resetTimestamps && typeof p.resetTimestamps === 'object') {
-                            Object.entries(p.resetTimestamps).forEach(([k, ts]) => {
-                                mergedResetTimestamps[k] = Math.max(mergedResetTimestamps[k] || 0, Number(ts) || 0);
+                            Object.entries(p.resetTimestamps).forEach(([rk, ts]) => {
+                                mergedResetTimestamps[rk] = Math.max(mergedResetTimestamps[rk] || 0, Number(ts) || 0);
                             });
                         }
                     } catch(e) {}
-                }
+                });
+
                 parsedDocs.forEach((p) => {
                     if (p.answers && typeof p.answers === 'object') {
                         Object.entries(p.answers).forEach(([qIdx, ansObj]) => {
@@ -2623,7 +2632,7 @@
                     }
                 });
             } catch(e) {
-                console.warn('Error recovering past user answers:', e);
+                console.warn('Error loading account user data:', e);
             }
 
             userAnswers = mergedAnswers;
@@ -2632,33 +2641,21 @@
             examHistory = mergedExamHistory;
             userNotes = {};
 
-                        // 3. Seed with latest cloud progress & ensure union merge prioritizing whichever side has more completed answers
-            const seedAnswers = {"0": {"isCorrect": false, "selected": ["D"]}, "1": {"isCorrect": true, "selected": ["C", "D"]}, "2": {"isCorrect": false, "selected": ["B"]}, "3": {"isCorrect": true, "selected": ["A"]}, "4": {"isCorrect": true, "selected": ["A"]}, "5": {"isCorrect": false, "selected": ["B"]}, "6": {"isCorrect": true, "selected": ["A"]}, "7": {"isCorrect": true, "selected": ["B"]}, "8": {"isCorrect": true, "selected": ["A"]}, "9": {"isCorrect": true, "selected": ["A"]}, "10": {"isCorrect": true, "selected": ["B"]}, "11": {"isCorrect": true, "selected": ["B"]}, "12": {"isCorrect": true, "selected": ["B"]}, "13": {"isCorrect": true, "selected": ["A"]}, "14": {"isCorrect": true, "selected": ["A"]}, "15": {"isCorrect": true, "selected": ["D"]}, "16": {"isCorrect": true, "selected": ["D"]}, "17": {"isCorrect": true, "selected": ["D"]}, "18": {"isCorrect": true, "selected": ["B"]}, "19": {"isCorrect": true, "selected": ["D"]}, "20": {"isCorrect": true, "selected": ["D"]}, "21": {"isCorrect": true, "selected": ["C"]}, "22": {"isCorrect": true, "selected": ["D"]}, "23": {"isCorrect": true, "selected": ["B"]}, "24": {"isCorrect": true, "selected": ["B"]}, "25": {"isCorrect": true, "selected": ["C"]}, "26": {"isCorrect": true, "selected": ["B"]}, "27": {"isCorrect": true, "selected": ["D"]}, "28": {"isCorrect": true, "selected": ["D"]}, "29": {"isCorrect": false, "selected": ["C"]}, "30": {"isCorrect": true, "selected": ["B"]}, "31": {"isCorrect": false, "revealed": true, "selected": ["A"], "timestamp": 1795430304701}, "32": {"isCorrect": false, "selected": ["C"]}, "38": {"isCorrect": true, "selected": ["D"]}, "51": {"isCorrect": false, "selected": ["C"]}, "63": {"isCorrect": false, "selected": ["D"]}, "162": {"isCorrect": false, "selected": ["C"]}, "163": {"isCorrect": false, "selected": ["D"]}, "303": {"isCorrect": false, "selected": ["D"]}, "331": {"isCorrect": true, "selected": ["D"]}};
-            Object.entries(seedAnswers).forEach(([qIdx, ansObj]) => {
-                if (!mergedAnswers[qIdx] && shouldAcceptAnswer(qIdx, ansObj, mergedResetTimestamps)) {
-                    mergedAnswers[qIdx] = ansObj;
-                }
-            });
-            if (mergedBookmarks.size === 0) {
-                [10, 14, 16].forEach(b => mergedBookmarks.add(b));
-            }
             reconcileScoresWithCurrentKeys();
 
-            // Immediately persist recovered answers to current canonical key and permanent backup
             try {
                 const now = Date.now();
                 const dataToSave = {
                     answers: userAnswers,
+                    resetTimestamps: resetTimestamps,
                     bookmarks: Array.from(bookmarks),
                     examHistory: examHistory,
                     lastUpdated: new Date(now).toISOString(),
                     localTimestamp: now
                 };
                 localStorage.setItem(currentKey, JSON.stringify(dataToSave));
-                localStorage.setItem('rmc301_permanent_backup', JSON.stringify(dataToSave));
-                if (Object.keys(userAnswers).length > 32) {
-                    pushProgressViaRest(null, dataToSave);
-                }
+                localStorage.setItem(backupKey, JSON.stringify(dataToSave));
+                localStorage.setItem(resetKey, JSON.stringify(resetTimestamps));
             } catch(e) {}
 
             updateStats();
@@ -2678,8 +2675,8 @@
             };
             try {
                 localStorage.setItem(dataKey, JSON.stringify(dataToSave));
-                localStorage.setItem('rmc301_permanent_backup', JSON.stringify(dataToSave));
-                localStorage.setItem('rmc301_reset_timestamps', JSON.stringify(resetTimestamps));
+                localStorage.setItem(getUserBackupKey(), JSON.stringify(dataToSave));
+                localStorage.setItem(getUserResetKey(), JSON.stringify(resetTimestamps));
                 localStorage.setItem('rmc301_current_index', currentIndex);
             } catch(e) {}
             updateStats();
@@ -2750,11 +2747,11 @@
             }
             if (cloudListenerRef) cloudListenerRef.off();
 
-            // Always sync with primary user votrongdat1606@gmail.com so all preview links & sessions stay 100% in sync with main web!
-            const targetEmail = (currentUser && currentUser.email && currentUser.email !== 'guest')
-                ? currentUser.email
-                : 'votrongdat1606@gmail.com';
-            const cleanKey = targetEmail.replace(/[.#$[\]]/g, '_');
+            if (!currentUser || !currentUser.email || currentUser.email === 'guest') {
+                updateCloudStatus('disconnected');
+                return;
+            }
+            const cleanKey = currentUser.email.replace(/[.#$[\]]/g, '_');
             cloudListenerRef = firebaseDb.ref('quiz_progress/' + cleanKey);
 
             cloudListenerRef.on('value', (snapshot) => {
@@ -2828,10 +2825,8 @@
 
         function syncToCloud() {
             if (!firebaseDb || isSyncingFromCloud) return;
-            const targetEmail = (currentUser && currentUser.email && currentUser.email !== 'guest')
-                ? currentUser.email
-                : 'votrongdat1606@gmail.com';
-            const cleanKey = targetEmail.replace(/[.#$[\]]/g, '_');
+            if (!currentUser || !currentUser.email || currentUser.email === 'guest') return;
+            const cleanKey = currentUser.email.replace(/[.#$[\]]/g, '_');
             updateCloudStatus('syncing');
 
             const now = Date.now();
