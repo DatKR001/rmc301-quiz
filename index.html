@@ -2258,6 +2258,56 @@
             });
             return changed;
         }
+
+        function reconcileScoresWithCurrentKeys() {
+            if (!Array.isArray(quizData) || quizData.length === 0) return false;
+            let changed = false;
+
+            // 1. Reconcile Practice Mode userAnswers
+            if (userAnswers && typeof userAnswers === 'object') {
+                Object.entries(userAnswers).forEach(([idx, ansObj]) => {
+                    const q = quizData[idx];
+                    if (q && ansObj && Array.isArray(ansObj.selected)) {
+                        const userStr = [...ansObj.selected].sort().join('');
+                        const correctStr = (q.answer || '').split('').sort().join('');
+                        const actualCorrect = Boolean(userStr && userStr === correctStr);
+                        if (ansObj.isCorrect !== actualCorrect) {
+                            ansObj.isCorrect = actualCorrect;
+                            changed = true;
+                        }
+                    }
+                });
+            }
+
+            // 2. Reconcile Exam Mode examHistory
+            if (Array.isArray(examHistory)) {
+                examHistory.forEach((exam) => {
+                    if (exam && Array.isArray(exam.questions) && exam.questions.length > 0 && exam.answers) {
+                        let newCorrect = 0;
+                        const total = exam.questions.length;
+                        for (let i = 0; i < total; i++) {
+                            const qIdx = exam.questions[i];
+                            const q = quizData[qIdx];
+                            if (!q) continue;
+                            const ansArr = exam.answers[i] || exam.answers[String(i)] || [];
+                            const userKeys = Array.isArray(ansArr) ? [...ansArr].sort().join('') : '';
+                            const correctKeys = (q.answer || '').split('').sort().join('');
+                            if (userKeys && userKeys === correctKeys) {
+                                newCorrect++;
+                            }
+                        }
+                        const newScore = ((newCorrect / total) * 10).toFixed(1);
+                        if (exam.correctCount !== newCorrect || exam.score !== newScore) {
+                            exam.correctCount = newCorrect;
+                            exam.wrongCount = total - newCorrect;
+                            exam.score = newScore;
+                            changed = true;
+                        }
+                    }
+                });
+            }
+            return changed;
+        }
         let bookmarks = new Set();     // Set of q_idx
         let userNotes = {};           // { [q_idx]: "text..." }
 
@@ -2592,6 +2642,7 @@
             if (mergedBookmarks.size === 0) {
                 [10, 14, 16].forEach(b => mergedBookmarks.add(b));
             }
+            reconcileScoresWithCurrentKeys();
 
             // Immediately persist recovered answers to current canonical key and permanent backup
             try {
@@ -2751,6 +2802,7 @@
                     if (Array.isArray(cloudVal.examHistory) && cloudVal.examHistory.length > examHistory.length) {
                         examHistory = cloudVal.examHistory;
                     }
+                    reconcileScoresWithCurrentKeys();
 
                     const now = Math.max(cloudLastUpdated, localLastUpdated, Date.now());
                     const dataToSave = {
@@ -5242,6 +5294,9 @@ function retryCurrentQuestion() {
         }
 
         function renderExamHistoryList() {
+            if (reconcileScoresWithCurrentKeys()) {
+                try { saveProgress(); } catch(e) {}
+            }
             const list = document.getElementById('exam-history-list');
             list.innerHTML = '';
 
@@ -5384,6 +5439,7 @@ function retryCurrentQuestion() {
         }
 
         function reviewPastExam(examIndex, filterMode) {
+            reconcileScoresWithCurrentKeys();
             const exam = examHistory[examIndex];
             if (!exam || !exam.questions || exam.questions.length === 0) {
                 showToast('Bài thi này không lưu chi tiết câu hỏi');
