@@ -2233,6 +2233,31 @@
         /* State Variables */
         let currentIndex = 0;
         let userAnswers = {};         // { [q_idx]: { selected: [...], isCorrect: bool } }
+        let resetTimestamps = {};     // { [q_idx]: timestamp_ms } - Tombstones for reset questions
+
+        function shouldAcceptAnswer(qIdx, ansObj, activeResets) {
+            if (!ansObj || typeof ansObj !== 'object') return false;
+            const resetTs = (activeResets && activeResets[qIdx]) ? Number(activeResets[qIdx]) : 0;
+            const ansTs = ansObj.timestamp ? Number(ansObj.timestamp) : 0;
+            if (resetTs > 0 && ansTs <= resetTs) return false;
+            return true;
+        }
+
+        function mergeResetTimestamps(target, incoming) {
+            if (!incoming || typeof incoming !== 'object') return false;
+            let changed = false;
+            Object.entries(incoming).forEach(([k, ts]) => {
+                const numTs = Number(ts) || 0;
+                if (numTs > (target[k] || 0)) {
+                    target[k] = numTs;
+                    changed = true;
+                    if (userAnswers[k] && (Number(userAnswers[k].timestamp) || 0) <= numTs) {
+                        delete userAnswers[k];
+                    }
+                }
+            });
+            return changed;
+        }
         let bookmarks = new Set();     // Set of q_idx
         let userNotes = {};           // { [q_idx]: "text..." }
 
@@ -2305,6 +2330,7 @@
                 );
                 const body = payload || {
                     answers: userAnswers,
+                    resetTimestamps: resetTimestamps,
                     bookmarks: Array.from(bookmarks),
                     examHistory: examHistory,
                     lastUpdated: Date.now(),
@@ -2325,30 +2351,39 @@
 
         async function fetchLatestMainProgress() {
             try {
-                const res = await fetch('https://rmc301-quiz-default-rtdb.asia-southeast1.firebasedatabase.app/quiz_progress/votrongdat1606@gmail_com.json');
+                const targetEmail = (currentUser && currentUser.email && currentUser.email !== 'guest')
+                    ? currentUser.email
+                    : 'votrongdat1606@gmail.com';
+                const cleanKey = targetEmail.replace(/[.#$[\]]/g, '_');
+                const res = await fetch(`https://rmc301-quiz-default-rtdb.asia-southeast1.firebasedatabase.app/quiz_progress/${cleanKey}.json`);
                 if (!res.ok) return;
                 const cloudVal = await res.json();
-                if (!cloudVal || !cloudVal.answers) return;
+                if (!cloudVal) return;
 
                 let hasNew = false;
-                if (Array.isArray(cloudVal.answers)) {
-                    cloudVal.answers.forEach((ansObj, idx) => {
-                        if (ansObj && typeof ansObj === 'object') {
-                            if (!userAnswers[idx] || (ansObj.timestamp && ansObj.timestamp > (userAnswers[idx].timestamp || 0))) {
-                                userAnswers[idx] = ansObj;
-                                hasNew = true;
+                if (cloudVal.resetTimestamps && mergeResetTimestamps(resetTimestamps, cloudVal.resetTimestamps)) {
+                    hasNew = true;
+                }
+                if (cloudVal.answers) {
+                    if (Array.isArray(cloudVal.answers)) {
+                        cloudVal.answers.forEach((ansObj, idx) => {
+                            if (shouldAcceptAnswer(idx, ansObj, resetTimestamps)) {
+                                if (!userAnswers[idx] || (ansObj.timestamp && ansObj.timestamp > (userAnswers[idx].timestamp || 0))) {
+                                    userAnswers[idx] = ansObj;
+                                    hasNew = true;
+                                }
                             }
-                        }
-                    });
-                } else if (typeof cloudVal.answers === 'object') {
-                    Object.entries(cloudVal.answers).forEach(([idx, ansObj]) => {
-                        if (ansObj && typeof ansObj === 'object') {
-                            if (!userAnswers[idx] || (ansObj.timestamp && ansObj.timestamp > (userAnswers[idx].timestamp || 0))) {
-                                userAnswers[idx] = ansObj;
-                                hasNew = true;
+                        });
+                    } else if (typeof cloudVal.answers === 'object') {
+                        Object.entries(cloudVal.answers).forEach(([idx, ansObj]) => {
+                            if (shouldAcceptAnswer(idx, ansObj, resetTimestamps)) {
+                                if (!userAnswers[idx] || (ansObj.timestamp && ansObj.timestamp > (userAnswers[idx].timestamp || 0))) {
+                                    userAnswers[idx] = ansObj;
+                                    hasNew = true;
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
                 if (Array.isArray(cloudVal.bookmarks)) {
                     cloudVal.bookmarks.forEach(b => bookmarks.add(b));
@@ -2362,6 +2397,7 @@
                         const now = Date.now();
                         const dataToSave = {
                             answers: userAnswers,
+                            resetTimestamps: resetTimestamps,
                             bookmarks: Array.from(bookmarks),
                             examHistory: examHistory,
                             lastUpdated: now,
@@ -2484,12 +2520,26 @@
 
             const currentKey = getUserKey();
             
-            // 2. Scan ALL localStorage keys to recover and merge any past answers for this subject
+            // 2. Scan localStorage keys to recover resetTimestamps first, then valid answers
             let mergedAnswers = {};
+            let mergedResetTimestamps = {};
             let mergedBookmarks = new Set();
             let mergedExamHistory = [];
 
             try {
+                const rawResets = localStorage.getItem('rmc301_reset_timestamps');
+                if (rawResets) {
+                    const parsedResets = JSON.parse(rawResets);
+                    if (parsedResets && typeof parsedResets === 'object') {
+                        Object.entries(parsedResets).forEach(([k, ts]) => {
+                            mergedResetTimestamps[k] = Math.max(mergedResetTimestamps[k] || 0, Number(ts) || 0);
+                        });
+                    }
+                }
+            } catch(e) {}
+
+            try {
+                const parsedDocs = [];
                 for (let i = 0; i < localStorage.length; i++) {
                     const key = localStorage.key(i);
                     if (!key) continue;
@@ -2497,28 +2547,37 @@
                     if (!raw || !raw.startsWith('{') || !raw.includes('"answers"')) continue;
                     try {
                         const p = JSON.parse(raw);
-                        if (p.answers && typeof p.answers === 'object') {
-                            Object.entries(p.answers).forEach(([qIdx, ansObj]) => {
-                                if (ansObj && typeof ansObj === 'object') {
-                                    if (!mergedAnswers[qIdx] || (ansObj.timestamp && ansObj.timestamp > (mergedAnswers[qIdx].timestamp || 0))) {
-                                        mergedAnswers[qIdx] = ansObj;
-                                    }
-                                }
+                        parsedDocs.push(p);
+                        if (p.resetTimestamps && typeof p.resetTimestamps === 'object') {
+                            Object.entries(p.resetTimestamps).forEach(([k, ts]) => {
+                                mergedResetTimestamps[k] = Math.max(mergedResetTimestamps[k] || 0, Number(ts) || 0);
                             });
-                        }
-                        if (Array.isArray(p.bookmarks)) {
-                            p.bookmarks.forEach(b => mergedBookmarks.add(b));
-                        }
-                        if (Array.isArray(p.examHistory) && p.examHistory.length > mergedExamHistory.length) {
-                            mergedExamHistory = p.examHistory;
                         }
                     } catch(e) {}
                 }
+                parsedDocs.forEach((p) => {
+                    if (p.answers && typeof p.answers === 'object') {
+                        Object.entries(p.answers).forEach(([qIdx, ansObj]) => {
+                            if (shouldAcceptAnswer(qIdx, ansObj, mergedResetTimestamps)) {
+                                if (!mergedAnswers[qIdx] || (ansObj.timestamp && ansObj.timestamp > (mergedAnswers[qIdx].timestamp || 0))) {
+                                    mergedAnswers[qIdx] = ansObj;
+                                }
+                            }
+                        });
+                    }
+                    if (Array.isArray(p.bookmarks)) {
+                        p.bookmarks.forEach(b => mergedBookmarks.add(b));
+                    }
+                    if (Array.isArray(p.examHistory) && p.examHistory.length > mergedExamHistory.length) {
+                        mergedExamHistory = p.examHistory;
+                    }
+                });
             } catch(e) {
                 console.warn('Error recovering past user answers:', e);
             }
 
             userAnswers = mergedAnswers;
+            resetTimestamps = mergedResetTimestamps;
             bookmarks = mergedBookmarks;
             examHistory = mergedExamHistory;
             userNotes = {};
@@ -2526,7 +2585,7 @@
                         // 3. Seed with latest cloud progress & ensure union merge prioritizing whichever side has more completed answers
             const seedAnswers = {"0": {"isCorrect": false, "selected": ["D"]}, "1": {"isCorrect": true, "selected": ["C", "D"]}, "2": {"isCorrect": false, "selected": ["B"]}, "3": {"isCorrect": true, "selected": ["A"]}, "4": {"isCorrect": true, "selected": ["A"]}, "5": {"isCorrect": false, "selected": ["B"]}, "6": {"isCorrect": true, "selected": ["A"]}, "7": {"isCorrect": true, "selected": ["B"]}, "8": {"isCorrect": true, "selected": ["A"]}, "9": {"isCorrect": true, "selected": ["A"]}, "10": {"isCorrect": true, "selected": ["B"]}, "11": {"isCorrect": true, "selected": ["B"]}, "12": {"isCorrect": true, "selected": ["B"]}, "13": {"isCorrect": true, "selected": ["A"]}, "14": {"isCorrect": true, "selected": ["A"]}, "15": {"isCorrect": true, "selected": ["D"]}, "16": {"isCorrect": true, "selected": ["D"]}, "17": {"isCorrect": true, "selected": ["D"]}, "18": {"isCorrect": true, "selected": ["B"]}, "19": {"isCorrect": true, "selected": ["D"]}, "20": {"isCorrect": true, "selected": ["D"]}, "21": {"isCorrect": true, "selected": ["C"]}, "22": {"isCorrect": true, "selected": ["D"]}, "23": {"isCorrect": true, "selected": ["B"]}, "24": {"isCorrect": true, "selected": ["B"]}, "25": {"isCorrect": true, "selected": ["C"]}, "26": {"isCorrect": true, "selected": ["B"]}, "27": {"isCorrect": true, "selected": ["D"]}, "28": {"isCorrect": true, "selected": ["D"]}, "29": {"isCorrect": false, "selected": ["C"]}, "30": {"isCorrect": true, "selected": ["B"]}, "31": {"isCorrect": false, "revealed": true, "selected": ["A"], "timestamp": 1795430304701}, "32": {"isCorrect": false, "selected": ["C"]}, "38": {"isCorrect": true, "selected": ["D"]}, "51": {"isCorrect": false, "selected": ["C"]}, "63": {"isCorrect": false, "selected": ["D"]}, "162": {"isCorrect": false, "selected": ["C"]}, "163": {"isCorrect": false, "selected": ["D"]}, "303": {"isCorrect": false, "selected": ["D"]}, "331": {"isCorrect": true, "selected": ["D"]}};
             Object.entries(seedAnswers).forEach(([qIdx, ansObj]) => {
-                if (!mergedAnswers[qIdx]) {
+                if (!mergedAnswers[qIdx] && shouldAcceptAnswer(qIdx, ansObj, mergedResetTimestamps)) {
                     mergedAnswers[qIdx] = ansObj;
                 }
             });
@@ -2559,6 +2618,7 @@
             const now = Date.now();
             const dataToSave = {
                 answers: userAnswers,
+                resetTimestamps: resetTimestamps,
                 bookmarks: Array.from(bookmarks),
                 examHistory: examHistory,
                 lastUpdated: now,
@@ -2568,6 +2628,7 @@
             try {
                 localStorage.setItem(dataKey, JSON.stringify(dataToSave));
                 localStorage.setItem('rmc301_permanent_backup', JSON.stringify(dataToSave));
+                localStorage.setItem('rmc301_reset_timestamps', JSON.stringify(resetTimestamps));
                 localStorage.setItem('rmc301_current_index', currentIndex);
             } catch(e) {}
             updateStats();
@@ -2660,18 +2721,26 @@
 
                 try {
                     isSyncingFromCloud = true;
-                    // Merge cloud answers with local answers so neither overwrites the other
+                    // Merge reset tombstones first so reset questions stay reset
+                    if (cloudVal.resetTimestamps) {
+                        mergeResetTimestamps(resetTimestamps, cloudVal.resetTimestamps);
+                    }
+                    // Merge cloud answers with local answers respecting resetTimestamps
                     if (cloudVal.answers) {
                         if (Array.isArray(cloudVal.answers)) {
                             cloudVal.answers.forEach((ansObj, idx) => {
-                                if (ansObj && typeof ansObj === 'object') {
-                                    userAnswers[idx] = ansObj;
+                                if (shouldAcceptAnswer(idx, ansObj, resetTimestamps)) {
+                                    if (!userAnswers[idx] || (ansObj.timestamp && ansObj.timestamp > (userAnswers[idx].timestamp || 0))) {
+                                        userAnswers[idx] = ansObj;
+                                    }
                                 }
                             });
                         } else if (typeof cloudVal.answers === 'object') {
                             Object.entries(cloudVal.answers).forEach(([idx, ansObj]) => {
-                                if (ansObj && typeof ansObj === 'object') {
-                                    userAnswers[idx] = ansObj;
+                                if (shouldAcceptAnswer(idx, ansObj, resetTimestamps)) {
+                                    if (!userAnswers[idx] || (ansObj.timestamp && ansObj.timestamp > (userAnswers[idx].timestamp || 0))) {
+                                        userAnswers[idx] = ansObj;
+                                    }
                                 }
                             });
                         }
@@ -2716,6 +2785,7 @@
             const now = Date.now();
             firebaseDb.ref('quiz_progress/' + cleanKey).set({
                 answers: userAnswers,
+                resetTimestamps: resetTimestamps,
                 bookmarks: Array.from(bookmarks),
                 notes: userNotes,
                 examHistory: examHistory,
@@ -4158,6 +4228,7 @@ function retryCurrentQuestion() {
             const qIdx = currentIndex;
             if (userAnswers[qIdx]) {
                 delete userAnswers[qIdx];
+                resetTimestamps[qIdx] = Date.now();
                 saveProgress();
                 renderQuestion(qIdx);
                 updatePaletteItem(qIdx);
@@ -4166,10 +4237,12 @@ function retryCurrentQuestion() {
         }
 
         function resetAllWrongAnswers() {
+            const now = Date.now();
             let count = 0;
             for (const [key, val] of Object.entries(userAnswers)) {
                 if (val && !val.isCorrect) {
                     delete userAnswers[key];
+                    resetTimestamps[key] = now;
                     count++;
                 }
             }
@@ -5456,6 +5529,10 @@ function retryCurrentQuestion() {
 
         function resetAllProgress() {
             if (confirm("CẢNH BÁO: Thao tác này sẽ xóa toàn bộ lịch sử làm bài, số câu đúng/sai, câu đã đánh dấu ⭐ và thảo luận cá nhân của tài khoản này để làm lại từ đầu. Bạn có chắc chắn không?")) {
+                const now = Date.now();
+                for (let i = 0; i < quizData.length; i++) {
+                    resetTimestamps[i] = now;
+                }
                 userAnswers = {};
                 bookmarks = new Set();
                 userNotes = {};
