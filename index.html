@@ -1081,7 +1081,7 @@
 
         .comments-warning-banner { background: #7f1d1d35; border: 1px solid #ef4444; border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; }
 
-        .comments-list { overflow-y: auto; flex: 1; min-height: 180px; max-height: 380px; padding-right: 4px; margin-bottom: 12px; }
+        .comments-list { overflow-y: auto; flex: 1 0 auto; min-height: 110px; max-height: 300px; padding-right: 4px; margin-bottom: 12px; }
         .comments-empty { text-align: center; padding: 30px 12px; color: var(--text-muted); font-size: 0.82rem; }
 
         .comment-card { background: #0f172a; border: 1px solid var(--border); border-radius: 10px; padding: 11px 13px; margin-bottom: 9px; transition: all 0.2s; position: relative; }
@@ -1457,7 +1457,7 @@
         .p-item.has-conflict::after { content: '⚡'; position: absolute; top: 1px; right: 2px; font-size: 8.5px; color: #fbbf24; pointer-events: none; }
         
         /* AI Audit Discussion Panel */
-        .ai-audit-disc-panel { background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; margin-bottom: 14px; overflow: hidden; transition: all 0.2s ease; }
+        .ai-audit-disc-panel { background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; margin-bottom: 14px; overflow: hidden; transition: all 0.2s ease; flex-shrink: 0; }
         .ai-audit-disc-panel.is-conflict { border: 1.5px solid #f59e0b; background: #1a1625; box-shadow: 0 0 12px rgba(245, 158, 11, 0.15); }
         .ai-audit-disc-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: #1e293b80; cursor: pointer; user-select: none; }
         .ai-audit-disc-header:hover { background: #1e293b; }
@@ -1466,7 +1466,7 @@
         .tag-match { background: #22c55e20; color: #4ade80; border: 1px solid #22c55e40; }
         .tag-conflict { background: #f59e0b25; color: #fbbf24; border: 1px solid #f59e0b60; }
         .tag-ambiguous { background: #38bdf820; color: #38bdf8; border: 1px solid #38bdf840; }
-                .ai-audit-disc-content { padding: 12px 14px; font-size: 0.84rem; line-height: 1.6; color: #cbd5e1; border-top: 1px solid #1e293b; white-space: pre-line; max-height: 420px; overflow-y: auto; word-break: break-word; }
+                .ai-audit-disc-content { padding: 12px 14px; font-size: 0.84rem; line-height: 1.6; color: #cbd5e1; border-top: 1px solid #1e293b; white-space: pre-line; max-height: 380px; overflow-y: auto; word-break: break-word; }
         .ai-disc-cite { color: #94a3b8; font-size: 0.78rem; margin-bottom: 8px; }
 
         /* Admin Presence Monitor Card Styles */
