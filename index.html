@@ -5040,7 +5040,7 @@ function retryCurrentQuestion() {
                 expBox.classList.add('show');
                 document.getElementById('explanation-text').textContent = q.explanation || q.answer || '';
             } else {
-                if (unrevealedWrap) unrevealedWrap.style.display = 'none';
+                const expWrap = document.getElementById('exp-toggle-action-wrap'); if (expWrap) expWrap.style.display = 'none';
                 if (expBox) expBox.classList.remove('show');
             }
 
