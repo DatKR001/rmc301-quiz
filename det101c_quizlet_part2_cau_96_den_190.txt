@@ -1,0 +1,962 @@
+You want to leam even more about your interview subjects. Which of the following are examples of projective tools and approaches that you might use?
+A. Sales forecasts based on year-to-date results
+B. Project plan, people plan and research plan
+C. Customer segmentation and competitive data
+D. Journals, collages and pinwheels###D
+
+Bạn muốn tìm hiểu sâu hơn về những người được phỏng vấn. Đâu là ví dụ về các công cụ và phương pháp Projective có thể sử dụng?
+
+D. Nhật ký, ảnh ghép và Pinwheels. – Journals, collages and pinwheels.
+
+Các công cụ Projective giúp người tham gia thể hiện suy nghĩ, cảm xúc và nhu cầu khó diễn đạt trực tiếp.$$$Your team has just completed a gallery walk. The team has organized the many sticky notes into clusters. What is the team's next best task?
+A. Highlight project facts and research observations.
+B. Draw an insight out of each cluster.
+C. Limit your team to one pass at the process, to focus creativity.
+D. Discard any "outliers."###B
+
+Sau khi hoàn thành Gallery Walk và đã nhóm các Sticky Notes thành các cụm, bước tiếp theo tốt nhất là gì?
+
+B. Rút ra một Insight từ mỗi cụm. – Draw an insight out of each cluster.
+
+Mỗi cụm dữ liệu cần được chuyển thành một Insight có ý nghĩa để làm cơ sở thiết kế.$$$In the context of Design Thinking, what is most crucial when presenting assessment results to stakeholders?
+A. Ensuring all data points are shared
+B. Communicating Insights clearly and effectively
+C. Using industry Jargon to demonstrate expertise
+D. Providing exhaustive technical reports###B
+
+Trong Design Thinking, điều quan trọng nhất khi trình bày kết quả đánh giá với các bên liên quan là gì?
+
+B. Truyền đạt các Insight một cách rõ ràng và hiệu quả. – Communicating insights clearly and effectively.
+
+Điều quan trọng là giúp người nghe hiểu được ý nghĩa của các phát hiện thay vì chỉ trình bày dữ liệu.$$$What is the significance of the 'pain curve' in the design process?
+A. Understanding the intensity of user challenges
+B. Optimizing resource allocation
+C. Enhancing team collaboration
+D. Streamlining the project timeline###A
+
+Ý nghĩa của Pain Curve trong quá trình thiết kế là gì?
+
+A. Hiểu mức độ nghiêm trọng của những khó khăn mà người dùng gặp phải. – Understanding the intensity of user challenges.
+
+Pain Curve giúp xác định thời điểm và mức độ khó khăn trong trải nghiệm của người dùng.$$$What is the primary goal of synthesizing data during the assessment phase of design thinking?
+A. To identify pattems and insights from user data.
+B. To generate multiple prototypes based on feedback.
+C. To eliminate unsuccessful Ideas quickly.
+D. To validate existing assumptions about user needs.###A
+
+Mục tiêu chính của việc tổng hợp dữ liệu trong giai đoạn Assessment là gì?
+
+A. Xác định các mẫu và Insight từ dữ liệu người dùng. – To identify patterns and insights from user data.
+
+Việc tổng hợp dữ liệu giúp chuyển thông tin thành Insight phục vụ thiết kế.$$$What role does combining personas with journey mapping play in design thinking?
+A. It enhances understanding of user experiences
+B. It simplifies the design process
+C. It generates quick solutions to design problems
+D. It aligns design strategies With brand values###A
+
+Việc kết hợp Personas với Journey Mapping có vai trò gì?
+
+A. Nâng cao sự hiểu biết về trải nghiệm của người dùng. – It enhances understanding of user experiences.
+
+Personas kết hợp Journey Mapping giúp hiểu cả người dùng và hành trình trải nghiệm của họ.$$$When engaging in the feedback process, why is it important to separate ego from work?
+A. It allows for objective assessment and improvement.
+B. It ensures the feedback is always positive.
+C. It prevents the feedback process from being overly technical.
+D. It makes feedback easier to ignore..###A
+
+Tại sao cần tách cái tôi (Ego) khỏi công việc khi nhận phản hồi?
+
+A. Giúp đánh giá khách quan và cải thiện công việc. – It allows for objective assessment and improvement.
+
+Khi không đồng nhất bản thân với sản phẩm, nhóm sẽ tiếp nhận phản hồi hiệu quả hơn.$$$How can mindset shifts contribute to setting measurable goals?
+A. By encouraging adaptability and openness to new approaches
+B. By maintaining rigid thinking patterns
+C. By ignoring the need for change
+D. By focusing solely on past achievements###A
+Sự thay đổi tư duy có thể đóng góp như thế nào vào việc thiết lập các mục tiêu có thể đo lường?
+
+A. Bằng cách khuyến khích khả năng thích nghi và sự cởi mở với những cách tiếp cận mới. – By encouraging adaptability and openness to new approaches.
+
+Tư duy linh hoạt giúp nhóm điều chỉnh mục tiêu phù hợp với thông tin và điều kiện thực tế$$$What is the significance of having a broad repertoire in enabling innovation?
+A. It provides diverse tools and approaches to solve problems.
+B. It simplifies decision-making processes.
+C. It ensures consistency in innovation strategies.
+D. It limits the scope of exploration.###A
+
+Việc có một vốn phương pháp đa dạng có ý nghĩa gì đối với khả năng đổi mới?
+
+A. Cung cấp nhiều công cụ và cách tiếp cận đa dạng để giải quyết vấn đề. – It provides diverse tools and approaches to solve problems.
+
+Một vốn phương pháp rộng giúp nhóm linh hoạt lựa chọn cách giải quyết phù hợp với từng tình huống$$$How does design thinking encourage innovation?
+A. By promoting collaboration and experimentation
+B. By focusing only on analytical methods
+C. By emphasizing strict adherence to original ideas
+D. By eliminating risk through detailed planning###A
+
+Design Thinking khuyến khích đổi mới như thế nào?
+
+A. Bằng cách thúc đẩy sự hợp tác và thử nghiệm. – By promoting collaboration and experimentation.
+
+Sự hợp tác và thử nghiệm giúp kết hợp nhiều góc nhìn và phát triển những giải pháp mới.$$$What role does feedback play in the testing phase of design thinking?
+A. It guides improvements and refinements
+B. It confirms the final product's success
+C. It eliminates need for further testing
+D. It focuses on aesthetic appeal###A
+
+Feedback đóng vai trò gì trong giai đoạn Testing của Design Thinking?
+
+A. Định hướng việc cải tiến và hoàn thiện giải pháp. – It guides improvements and refinements.
+
+Phản hồi từ người dùng giúp nhóm xác định những điểm cần điều chỉnh trước khi hoàn thiện giải pháp.$$$What process should an organization undertake to effectively evaluate its bargaining power within a value chan?
+A. Analyzing supplier and buyer relationships
+B. Reviewing internal financial performance
+C. Examining employee satisfaction levels
+D. Conducting a competitor's SWOT analysis###A
+
+Một tổ chức nên thực hiện quy trình nào để đánh giá hiệu quả sức mạnh thương lượng của mình trong chuỗi giá trị?
+
+A. Phân tích mối quan hệ giữa nhà cung cấp và người mua. – Analyzing supplier and buyer relationships.
+
+Sức mạnh thương lượng phụ thuộc vào mức độ phụ thuộc, số lượng lựa chọn và vị thế của nhà cung cấp cũng như khách hàng.$$$Why is it important to gather human-centered data in design thinking?
+A. To ensure solutions are tailored to user needs
+B. To calculate project costs accurately
+C. To expedite the design process
+D. To satisfy regulatory requirements###A
+
+Tại sao việc thu thập dữ liệu lấy con người làm trung tâm lại quan trọng trong Design Thinking?
+
+A. Đảm bảo các giải pháp được điều chỉnh phù hợp với nhu cầu của người dùng. – To ensure solutions are tailored to user needs.
+
+Dữ liệu thực tế về người dùng giúp nhóm phát triển giải pháp phù hợp với nhu cầu, hành vi và trải nghiệm của họ.$$$Which technique can help translate research findings into compelling stories?
+A. Identifying key themes and narratives
+B. Focusing solely on quantitative data
+C. Using technical jargon to impress audiences
+D. Emphasizing the research methodology details###A
+
+Kỹ thuật nào có thể giúp chuyển các phát hiện nghiên cứu thành những câu chuyện hấp dẫn?
+
+A. Xác định các chủ đề và mạch câu chuyện chính. (Identifying key themes and narratives.)
+
+Việc tìm ra các theme và narrative chính giúp tổ chức những phát hiện nghiên cứu thành một câu chuyện mạch lạc, dễ hiểu và có sức thuyết phục.$$$What challenges are involved in processing and organizing qualitative data for sense-making?
+A. Ensuring accuracy and relevance while interpreting complex data
+B. Quantifying emotional responses effectively.
+C. Simplifying data to fit preconceived models
+D. Eliminating biases from statistical analysis.###A
+
+Thách thức nào liên quan đến việc xử lý và tổ chức dữ liệu định tính để tạo ra sự hiểu biết (sense-making)?
+
+A. Đảm bảo tính chính xác và liên quan trong khi diễn giải dữ liệu phức tạp. (Ensuring accuracy and relevance while interpreting complex data.)
+
+Dữ liệu định tính thường phong phú, không có cấu trúc và chứa nhiều ý nghĩa khác nhau, nên việc diễn giải chính xác và xác định thông tin thực sự liên quan là một thách thức lớn.$$$How did Pfizer approach solving the problem of smoking cessation using design thinking principles?
+A. By understanding smoker's motivations and creating supportive environments.
+B. By focusing solely on the medical aspects of smoking cessation.
+C. By implementing rigid smoking regulations.
+D. By developing technology-based cessation tools.###A
+
+Pfizer đã tiếp cận việc giải quyết vấn đề cai thuốc lá bằng các nguyên tắc Design Thinking như thế nào?
+
+A. Bằng cách tìm hiểu động lực của người hút thuốc và tạo ra môi trường hỗ trợ. (By understanding smoker's motivations and creating supportive environments.)
+
+Cách tiếp cận Design Thinking đặt người dùng làm trung tâm, vì vậy việc hiểu động lực, hành vi và hoàn cảnh của người hút thuốc giúp xây dựng giải pháp hỗ trợ cai thuốc phù hợp hơn.$$$What is the benefit of adopting a beginner's mind in design thinking?
+A. It allows for openness to new ideas and perspectives.
+B. It ensures adherence to traditional methods.
+C. It helps to maintain strict control over projects.
+D. It enhances technical skills in design.###A
+
+Lợi ích của việc áp dụng beginner's mind (tư duy của người mới bắt đầu) trong Design Thinking là gì?
+
+A. Nó giúp chúng ta cởi mở với những ý tưởng và góc nhìn mới. (It allows for openness to new ideas and perspectives.)
+
+Beginner's mind khuyến khích việc tạm gác những định kiến và giả định có sẵn để quan sát vấn đề với sự tò mò và cởi mở.$$$Which of the following is a crucial aspect of evaluating the impact of a solution during the Assessment stage of Design Thinking?
+A. Measuring user satisfaction through surveys
+B. Analyzing financial profits exclusively
+C. Focusing solely on technical performance
+D. Relying on anecdotal evidence from team members###A
+
+Điều nào sau đây là một khía cạnh quan trọng khi đánh giá tác động của một giải pháp trong giai đoạn Assessment của Design Thinking?
+
+A. Đo lường mức độ hài lòng của người dùng thông qua khảo sát. (Measuring user satisfaction through surveys.)
+
+Đánh giá sự hài lòng của người dùng giúp xác định liệu giải pháp có thực sự đáp ứng nhu cầu và tạo ra giá trị cho đối tượng mục tiêu hay không.$$$In the context of design thinking, what does the 'Define' phase primarily focus on?
+A. Clearly articulating the problem to be solved
+B. Generating ideas for solutions
+C. Building prototypes of the solution
+D. Testing solutions with users###A
+
+Trong Design Thinking, giai đoạn Define chủ yếu tập trung vào điều gì?
+
+A. Xác định và diễn đạt rõ ràng vấn đề cần giải quyết. (Clearly articulating the problem to be solved.)
+
+Sau khi thu thập thông tin ở giai đoạn Empathize, Define giúp tổng hợp các insight và hình thành một problem statement rõ ràng để định hướng việc tìm kiếm giải pháp.$$$What is a key component of creating a Personal Development Plan (PDP) that includes mindset shifts?
+A. Identifying specific mindset barriers and strategies to overcome them
+B. Listing daily tasks to stay busy
+C. Avoiding challenging situations to maintain comfort
+D. Focusing solely on short-term achievements###A
+Một thành phần quan trọng khi xây dựng Kế hoạch Phát triển Cá nhân (PDP) có bao gồm sự thay đổi tư duy là gì?
+
+A. Xác định những rào cản tư duy cụ thể và các chiến lược để vượt qua chúng. (Identifying specific mindset barriers and strategies to overcome them.)
+
+Muốn thay đổi mindset, trước tiên cần nhận diện những cách suy nghĩ đang cản trở sự phát triển, sau đó xây dựng những hành động cụ thể để thay đổi chúng.$$$Which element is essential for building a supportive infrastructure that deepens employees' experience of the design thinking journey?
+A. Providing continuous learning opportunities.
+B. Enforcing rigid operational guidelines.
+C. Restricting access to design thinking resources.
+D. Focusing solely on individual achievements.###A
+
+Yếu tố nào cần thiết để xây dựng một cơ sở hỗ trợ giúp nhân viên có trải nghiệm sâu sắc hơn trong hành trình Design Thinking?
+
+A. Cung cấp các cơ hội học tập liên tục. (Providing continuous learning opportunities.)
+
+Continuous learning giúp nhân viên liên tục thực hành, phát triển kỹ năng và áp dụng Design Thinking vào những tình huống thực tế.$$$How does Design Thinking contribute to building trust and enhancing collaboration?
+A. By fostering open dialogue and active listening
+B. By reducing team interactions
+C. By enforcing strict hierarchical structures
+D. By focusing solely on individual contributions###A
+
+
+
+Design Thinking góp phần xây dựng lòng tin và tăng cường sự hợp tác như thế nào?
+
+A. Bằng cách thúc đẩy đối thoại cởi mở và lắng nghe chủ động. (By fostering open dialogue and active listening.)
+
+Open dialogue và active listening giúp các thành viên hiểu quan điểm của nhau, xây dựng sự tin tưởng và hợp tác hiệu quả hơn.$$$What is the primary purpose of a napkin pitch in design thinking?
+A. To succinctly communicate key assumptions and concepts
+B. To provide a detailed analysis of the business model
+C. To outline the steps for product development
+D. To speculate on potential market trends###A
+
+Mục đích chính của napkin pitch trong Design Thinking là gì?
+
+A. Truyền đạt ngắn gọn các giả định và khái niệm chính. (To succinctly communicate key assumptions and concepts.)
+
+Napkin pitch giúp trình bày bản chất của một ý tưởng một cách nhanh chóng, đơn giản và dễ hiểu mà không cần một bản kế hoạch dài và phức tạp.$$$How can design criteria influence the direction of a project?
+A. By setting clear, measurable goals that guide decision-making.
+B. By ensuring all designs are aesthetically pleasing.
+C. By providing detailed financial projections.
+D. By determining the project's timeline exclusively###A
+
+
+Các tiêu chí thiết kế có thể ảnh hưởng đến hướng đi của một dự án như thế nào?
+
+A. Bằng cách đặt ra các mục tiêu rõ ràng, có thể đo lường để định hướng việc ra quyết định. (By setting clear, measurable goals that guide decision-making.)
+
+Các tiêu chí rõ ràng tạo ra cơ sở chung để đánh giá ý tưởng và giúp nhóm đưa ra quyết định phù hợp với mục tiêu của dự án.$$$Which process is essential for effective stakeholder mapping in design thinking?
+A. Brainstorming categorizing and understanding stakeholder motivations
+B. Developing a strategic marketing plan
+C. Conducting a financial analysis
+D. Implementing technology solutions###A
+
+Quy trình nào cần thiết để thực hiện stakeholder mapping hiệu quả trong Design Thinking?
+
+A. Brainstorming, phân loại và tìm hiểu động lực của các bên liên quan. (Brainstorming, categorizing, and understanding stakeholder motivations.)
+
+Stakeholder mapping không chỉ xác định ai là stakeholder mà còn phân loại họ và tìm hiểu nhu cầu, lợi ích, ảnh hưởng cũng như động lực của từng nhóm.$$$Which strategy is most effective in identifying opportunities during the grow'th project framing?
+A. Engaging with diverse stakeholders to gain multiple perspectives
+B. Focusing solely on current market trends.
+C. Seeking only expert opinions in the field.
+D. Concentrating on internal team brainstorming sessions.###A
+
+Chiến lược nào hiệu quả nhất để xác định các cơ hội trong quá trình định hình một dự án tăng trưởng?
+
+A. Tương tác với nhiều bên liên quan khác nhau để thu thập nhiều góc nhìn. (Engaging with diverse stakeholders to gain multiple perspectives.)
+
+Các stakeholder khác nhau cung cấp những quan điểm và nhu cầu khác nhau, giúp nhóm nhận diện những cơ hội mà chỉ một nhóm hoặc một chuyên gia có thể bỏ sót.$$$Which of the following describes the process of assumption testing in the 'What Wows' stage of design thinking?
+A. Evaluating hypotheses to determine desirability
+B. Developing prototypes based on feasibility
+C. Conducting market analysis for potential demand
+D. Identifying stakeholder requirements for product development###A
+
+Điều nào mô tả quá trình kiểm tra giả định trong giai đoạn “What Wows” của Design Thinking?
+
+A. Đánh giá các giả thuyết để xác định tính hấp dẫn đối với người dùng. (Evaluating hypotheses to determine desirability.)
+
+Trong What Wows, nhóm kiểm tra các giả định quan trọng để xác định liệu ý tưởng có thực sự tạo ra giá trị và được người dùng mong muốn hay không.$$$Which method in design thinking ensures that solutions are aligned with user needs?
+A. User testing and feedback integration.
+B. Ignoring user opinions and focusing on expert views.
+C. Adopting strategies from unrelated industries.
+D. Relying on historical data rather than current user input.###A
+
+Phương pháp nào trong Design Thinking giúp đảm bảo các giải pháp phù hợp với nhu cầu của người dùng?
+
+A. Kiểm thử với người dùng và tích hợp phản hồi. (User testing and feedback integration.)
+
+Việc cho người dùng trực tiếp trải nghiệm giải pháp và sử dụng phản hồi của họ để cải tiến giúp đảm bảo sản phẩm cuối cùng thực sự giải quyết nhu cầu của người dùng.$$$What role does rapid prototyping play in the assumption testing process?
+A. It allows quick validation and iteration of ideas.
+B. It provides a detailed analysis of market trends.
+C. It guarantees final design approval by stakeholders.
+D. It limits creativity to ensure accurate designs.###A
+
+Rapid prototyping (tạo mẫu nhanh) đóng vai trò gì trong quá trình kiểm tra các giả định?
+
+A. Nó cho phép nhanh chóng xác thực và lặp lại, cải tiến các ý tưởng. (It allows quick validation and iteration of ideas.)
+
+Rapid prototyping giúp nhóm nhanh chóng biến ý tưởng thành phiên bản có thể thử nghiệm, kiểm tra các giả định và sử dụng phản hồi để iterate và cải tiến giải pháp mà không tốn quá nhiều thời gian hoặc nguồn lực.$$$What are the challenges associated with prototyping a complex product like the Eaton next generation
+A. Balancing detail with flexibility to accommodate changes.
+B. Ensuring immediate market success without iterations.
+C. using only high-fidelity models from the start
+D. Ignoring user feedback to focus on technical specifications.###A
+
+Những thách thức nào liên quan đến việc tạo prototype cho một sản phẩm phức tạp như đồng hồ đo thế hệ mới của Eaton?
+
+A. Cân bằng giữa mức độ chi tiết và tính linh hoạt để có thể thích ứng với những thay đổi. (Balancing detail with flexibility to accommodate changes.)
+
+Với một sản phẩm phức tạp, prototype cần đủ chi tiết để kiểm thử các chức năng quan trọng nhưng vẫn phải đủ linh hoạt để nhóm có thể nhanh chóng sửa đổi dựa trên phản hồi và những phát hiện mới.$$$Which method can be used to enhance creativity during the ideation phase of design thinking?
+A. Mind mapping to generate and organize ideas visually.
+B. Strict adherence to conventional frameworks.
+C. Immediate selection of a single idea to develop.
+D. Focusing on technical feasibility from the start###A
+
+Phương pháp nào có thể được sử dụng để tăng cường sự sáng tạo trong giai đoạn Ideation của Design Thinking?
+
+A. Sử dụng mind mapping để tạo và tổ chức các ý tưởng một cách trực quan. (Mind mapping to generate and organize ideas visually.)
+
+Mind mapping giúp thể hiện trực quan mối liên hệ giữa các ý tưởng, kích thích việc tạo ra các liên tưởng mới và mở rộng phạm vi giải pháp trong giai đoạn Ideate.$$$What is the importance of recommended reading materials in enhancing design thinking skills?
+A. They provide diverse perspectives and deepen understanding.
+B. They offer templates for immediate application.
+C. They simplify complex concepts for quicker learning
+D. They test leamers' current knowledge.###A
+
+Tài liệu đọc được đề xuất có tầm quan trọng như thế nào trong việc nâng cao kỹ năng Design Thinking?
+
+A. Chúng cung cấp những góc nhìn đa dạng và giúp hiểu vấn đề sâu sắc hơn. (They provide diverse perspectives and deepen understanding.)
+
+Các tài liệu tham khảo giúp người học tiếp cận nhiều quan điểm, phương pháp và trường hợp thực tế khác nhau, qua đó mở rộng và đào sâu hiểu biết về Design Thinking.$$$In the context of design thinking, why is detailed planning essential for project success?
+A. It helps anticipate potential challenges and allocate resources effectively.
+B. It eliminates the need for stakeholder engagement.
+C. It guarantees the project will be completed on time
+D. It ensures all design ideas are implemented###A
+
+Trong Design Thinking, tại sao lập kế hoạch chi tiết lại cần thiết cho sự thành công của dự án?
+
+A. Nó giúp dự đoán những thách thức tiềm ẩn và phân bổ nguồn lực hiệu quả. (It helps anticipate potential challenges and allocate resources effectively.)
+
+Lập kế hoạch giúp nhóm chuẩn bị trước cho các rủi ro, xác định nguồn lực cần thiết và tổ chức các hoạt động hiệu quả hơn.$$$As you do your research, you are taking careful notes. Which of the following is also a recommended practice during research?
+A. Keep your findings to yourself so no one can steal your ideas.
+B. Consider how you will share what you are learning.
+C. Adapt the new information to support your hypothesis.
+D. Create a list of potential solutions now to save time later###B
+
+Khi nghiên cứu và ghi chép cẩn thận, thực hành nào khác cũng được khuyến nghị?
+
+B. Cân nhắc cách bạn sẽ chia sẻ những điều đang học được. – Consider how you will share what you are learning.
+
+Việc chuẩn bị cách truyền đạt kết quả giúp các Insight được hiểu rõ và sử dụng hiệu quả trong nhóm.$$$Which of these best describes a "natural law ' governing the physics of growth and innovation as discussed in our course?
+A. Certainty and predictability are essential to success.
+B. Priorities for any win include big budgets and predictable outcomes.
+C. The overarching goal must be to eliminate variation and waste.
+D. The only certainty is uncertainty.###D
+
+Điều nào mô tả đúng nhất một “quy luật tự nhiên” chi phối sự tăng trưởng và đổi mới được thảo luận trong khóa học?
+
+D. Điều chắc chắn duy nhất là sự không chắc chắn. – The only certainty is uncertainty.
+
+Đổi mới luôn liên quan đến những yếu tố chưa biết và kết quả không thể dự đoán hoàn toàn.$$$How can ordinary managers contribute to achieving extraordinary growth through innovation?
+A. By leveraging their broad repertoire and fostering a culture of innovation
+B. By maintaining strict control over their teams
+C. By focusing only on financial metrics
+D. By adhering strictly to traditional methods###A
+
+Các nhà quản lý thông thường có thể góp phần tạo ra tăng trưởng vượt trội thông qua đổi mới như thế nào?
+
+A. Bằng cách tận dụng vốn phương pháp đa dạng và xây dựng văn hóa đổi mới. – By leveraging their broad repertoire and fostering a culture of innovation.
+
+Nhà quản lý có thể thúc đẩy đổi mới bằng cách sử dụng nhiều công cụ và tạo môi trường khuyến khích sáng tạo.$$$In the context of healthcare innovation, what is one of the primary benefits of using social networking as analyzed in a real-life case study?
+A. Enhancing patient engagement and community support
+B. Reducing operational costs significantly
+C. Improving clinical trial recruitment efficiency
+D. Increasing profitability of healthcare services###A
+
+Trong đổi mới y tế, một trong những lợi ích chính của việc sử dụng mạng xã hội được phân tích trong nghiên cứu thực tế là gì?
+
+A. Tăng cường sự tham gia của bệnh nhân và hỗ trợ cộng đồng. – Enhancing patient engagement and community support.
+
+Mạng xã hội giúp bệnh nhân kết nối, chia sẻ trải nghiệm và nhận được sự hỗ trợ từ cộng đồng.$$$What is the main purpose of the 'Jobs-to-be-Done' framework in design thinking?
+A. To uncover user motivations and desired outcomes.
+B. To map out technological advancements in healthcare
+C. To analyze healthcare policy impacts
+D. To simplify healthcare processes###A
+
+Mục đích chính của khung Jobs-to-be-Done trong Design Thinking là gì?
+
+A. Khám phá động cơ và kết quả mong muốn của người dùng. – To uncover user motivations and desired outcomes.
+
+Jobs-to-be-Done tập trung vào lý do thực sự khiến người dùng lựa chọn một sản phẩm hoặc dịch vụ.$$$What is the goal of a learning launch?
+A. To test critical assumptions and learn from real-world feedback
+B. To secure funding for future development
+C. To achieve maximum market penetration
+D. To establish partnerships with key stakeholders###A
+
+Mục tiêu của Learning Launch là gì?
+
+A. Kiểm tra các giả định quan trọng và học hỏi từ phản hồi thực tế. – To test critical assumptions and learn from real-world feedback.
+
+Learning Launch giúp xác thực giả thuyết trước khi đầu tư phát triển lớn hơn.$$$Define the importance of identifying and prioritizing customer needs in the hypothesis-driven approach to innovatiom
+A. Ensures the solution aligns with actual market demands.
+B. Simplifies the design process significantly
+C. Eliminates the need for testing assumptions.
+D. Guarantees financial success of the concept.###A
+
+Tại sao cần xác định và ưu tiên nhu cầu khách hàng trong phương pháp đổi mới dựa trên giả thuyết?
+
+A. Đảm bảo giải pháp phù hợp với nhu cầu thực tế của thị trường. – Ensures the solution aligns with actual market demands.
+
+Việc ưu tiên đúng nhu cầu giúp kiểm chứng các giả định quan trọng và tạo giá trị thực sự.$$$Your team has asked you to define "design criteria." Which of the following is your best response?
+A. A concise expression of the ideal end-state of our project
+B. A comprehensive description and prototype of our likely solution
+C. A quick-reference checklist itemizing all of our possible solutions
+D. Step-by-step instructions detailing what to make and how to make it###A$$$Which of the following processes is crucial for maintaining focus on user-centered design thinking?
+A. Continuous feedback and iteration based on user input
+B. Development of a detailed business plan before starting design.
+C. Seeking approval from stakeholders for each design iteration.
+D. Completing all stages of design thinking in rapid succession.###A
+
+Quy trình nào sau đây là quan trọng nhất để duy trì tư duy thiết kế lấy người dùng làm trung tâm?
+
+A. Liên tục nhận phản hồi và cải tiến dựa trên ý kiến người dùng. – Continuous feedback and iteration based on user input.
+
+Thiết kế lấy người dùng làm trung tâm luôn dựa trên phản hồi và cải tiến liên tục.$$$In what way does design thinking help embrace unfinished work in the business world?
+A. It encourages experimentation and iterative development.
+B. It seeks to finalize and optimize projects quickly.
+C. It focuses only on completed projects to analyze results.
+D. It discourages ongoing adjustments and changes###A
+
+Design Thinking giúp chấp nhận những công việc chưa hoàn thiện trong môi trường kinh doanh như thế nào?
+
+A. Khuyến khích thử nghiệm và phát triển theo vòng lặp. – It encourages experimentation and iterative development.
+
+Design Thinking coi việc thử nghiệm, điều chỉnh và học hỏi liên tục là một phần của quá trình đổi mới.$$$What are the crucial elements of a design brief that clarify the scope and intent of a project?
+A. Project objectives, target audience, and success metrics
+B. Budget constraints, team roles, and deadlines
+C. Design aesthetics, technology stack, and user interface
+D. Market trends, competitive analysis, and branding strategy###A
+
+Những yếu tố quan trọng nào của Design Brief giúp làm rõ phạm vi và mục đích của dự án?
+
+A. Mục tiêu dự án, đối tượng mục tiêu và các tiêu chí thành công. – Project objectives, target audience, and success metrics.
+
+Các yếu tố này giúp nhóm hiểu dự án hướng đến điều gì, phục vụ ai và thành công được đánh giá như thế nào.$$$Which of the following processes is crucial for maintaining focus on user-centered design thinking?
+A. Continuous feedback and iteration based on user input
+B. Development of a detailed business plan before starting design.
+C. Seeking approval from stakeholders for each design iteration.
+D. Completing all stages of design thinking in rapid successiom###A
+
+Quy trình nào sau đây quan trọng để duy trì sự tập trung vào Design Thinking lấy người dùng làm trung tâm?
+
+A. Liên tục thu thập phản hồi và cải tiến dựa trên ý kiến của người dùng. – Continuous feedback and iteration based on user input.
+
+Phản hồi liên tục giúp giải pháp luôn phù hợp với nhu cầu và trải nghiệm thực tế của người dùng$$$What is the significance of the Ideate stage in the design thinking process?
+A. The Ideate stage generates a wide range of ideas to explore potential solutions.
+B. The Ideate stage is where final decisions on solutions are made.
+C. The Ideate stage involves analyzing user data only.
+D. The Ideate stage is solely focused on cost-benefit analysis of solutions.###A
+
+Ý nghĩa của giai đoạn Ideate trong quy trình Design Thinking là gì?
+
+A. Giai đoạn Ideate tạo ra nhiều ý tưởng để khám phá các giải pháp tiềm năng. – The Ideate stage generates a wide range of ideas to explore potential solutions.
+
+Mục tiêu của Ideate là mở rộng phạm vi giải pháp trước khi lựa chọn và thử nghiệm.$$$Which of the following is a key benefit of obtaining early customer involvement in the design process?
+A. It reduces risks and improves the speed of successful innovation
+B. It guarantees immediate commercial success.
+C. It simplifies the complexity of the design process
+D. It ensures stakeholder satisfaction at every stage###A
+
+Lợi ích chính của việc cho khách hàng tham gia sớm vào quá trình thiết kế là gì?
+
+A. Giảm rủi ro và tăng tốc độ đổi mới thành công. – It reduces risks and improves the speed of successful innovation.
+
+Sự tham gia sớm của khách hàng giúp phát hiện vấn đề và điều chỉnh giải pháp trước khi đầu tư lớn.$$$What is a key benefit of dynamic conversations with customers during ethnographic interviews?
+A. Obtaining rich customer insights
+B. Increasing interview efficiency.
+C. Reducing the need for follow up research.
+D. Ensuring compliance with interview protocols###A
+
+Lợi ích chính của các cuộc trò chuyện linh hoạt với khách hàng trong phỏng vấn dân tộc học là gì?
+
+A. Thu được những Insight phong phú về khách hàng. – Obtaining rich customer insights.
+
+Cuộc trò chuyện linh hoạt giúp khám phá sâu hơn những cảm xúc, động cơ và nhu cầu chưa được thể hiện rõ.$$$What benefit does taking on a design thinking project offer?
+A. Encourages innovative problem-solving through iterative processes.
+B. Ensures faster completion of projects.
+C. Reduces the number of ideas generated during brainstorming sessions.
+D. Guarantees meeting organizational goals With certainty###A
+
+Việc thực hiện một dự án Design Thinking mang lại lợi ích gì?
+
+A. Khuyến khích giải quyết vấn đề sáng tạo thông qua các quy trình lặp. – Encourages innovative problem-solving through iterative processes.
+
+Design Thinking giúp nhóm liên tục thử nghiệm, học hỏi và cải tiến giải pháp.$$$Describe the process of measuring the success of design thinking projects
+A. Evaluate the impact against established criteria and metrics.
+B. Measure success through immediate financial gans
+C. Success is measured by participant satisfaction alone.
+D. Success is primarily measured by the number of ideas generated.###A
+
+Hãy mô tả quá trình đo lường thành công của các dự án Design Thinking.
+
+A. Đánh giá tác động dựa trên các tiêu chí và chỉ số đã được thiết lập. – Evaluate the impact against established criteria and metrics.
+
+Thành công cần được đánh giá bằng cách so sánh kết quả thực tế với các tiêu chí đã xác định từ trước.$$$What is the main purpose of using simple posters during co-creation sessions?
+A. To serve as a stimulus for creative collaboration.
+B. To finalize design concepts before prototyping
+C. To demonstrate technical specifications.
+D. To train stakeholders in design thinking methodologies.###A
+
+Mục đích chính của việc sử dụng các Poster đơn giản trong các buổi đồng sáng tạo là gì?
+
+A. Làm công cụ kích thích sự hợp tác sáng tạo. – To serve as a stimulus for creative collaboration.
+
+Poster đơn giản giúp các bên liên quan dễ dàng trao đổi, bổ sung và phát triển ý tưởng cùng nhau.$$$What key aspect should be considered when scoping a problem in design thinking?
+A. Understanding the breadth and depth of the problem domain
+B. Limiting exploration to predefined solutions.
+C. Focusing predominantly on technical constraints.
+D. Prioritizing immediate business goals over user needs.###A
+
+Khía cạnh quan trọng nào cần được xem xét khi xác định phạm vi vấn đề trong Design Thinking?
+
+A. Hiểu được chiều rộng và chiều sâu của phạm vi vấn đề. – Understanding the breadth and depth of the problem domain.
+
+Việc hiểu toàn diện vấn đề giúp nhóm xác định phạm vi phù hợp mà không giới hạn giải pháp quá sớm$$$In the assessment phase of design thinking, which technique is most effective for identifying potential barriers to adoption of a new product or service?
+A. Conducting scenario analysis
+B. Performing competitive analysis
+C. Creating detailed user journey maps
+D. Utilizing brainstorming sessions###A$$$What is the primary goal of recognizing the impact of incorporating design thinking into organizations helping individuals with autism and Asperger's?
+A. To foster better, more innovative solutions
+B. To increase financial performance
+C. To improve branding and marketing
+D. To streamline operations###A$$$Identify the characteristics of a good napkin pitch in design thinking.
+A. Concise and clearly communicates the concept's value
+B. Includes detailed data and projections.
+C. Uses complex terminology to impress stakeholders.
+D. Guarantees stakeholder agreement with the concept.###A$$$Which of the following best describes the purpose of user personas in the design thinking assessment phase?
+A. To represent different user types to guide design decisions
+B. To determine the budget for a project
+C. To benchmark against industry standards
+D. To finalize design aesthetics###A
+
+Điều nào mô tả đúng nhất mục đích của user personas trong giai đoạn đánh giá của Design Thinking?
+
+A. To represent different user types to guide design decisions.
+→ Đại diện cho các nhóm người dùng khác nhau nhằm định hướng các quyết định thiết kế.
+
+Persona giúp nhóm thiết kế hiểu đặc điểm, nhu cầu và mục tiêu của những nhóm người dùng điển hình.$$$Which of the following best describes a 'persona' in design thinking?
+A. A detailed technical specification of a product
+B. Testing
+C. A semi-fictional representation of target users
+D. Affinity diagrams###C
+
+Điều nào mô tả đúng nhất một persona trong Design Thinking?
+
+C. A semi-fictional representation of target users.
+→ Một hình mẫu bán hư cấu đại diện cho người dùng mục tiêu.
+
+Persona thường được xây dựng dựa trên nghiên cứu người dùng để đại diện cho một nhóm người dùng có đặc điểm, nhu cầu và hành vi tương tự.$$$How does collaborative brainstorming enhance innovation in the design thinking process?
+A. By leveraging diverse perspectives for creative solutions
+B. By narrowing down Ideas to a Single solution quickly
+C. By eliminating unrealistic ideas early in the process
+D. By ensuring all team members agree on the final idea###A
+
+Collaborative brainstorming giúp tăng cường đổi mới trong Design Thinking như thế nào?
+
+A. By leveraging diverse perspectives for creative solutions.
+→ Bằng cách tận dụng những góc nhìn đa dạng để tạo ra các giải pháp sáng tạo.
+
+Nhiều thành viên với kinh nghiệm và quan điểm khác nhau có thể đóng góp nhiều ý tưởng và cách tiếp cận hơn.$$$In design thinking, what is the primary objective when defining the problem?
+A. To clearly articulate the user's needs and challenges.
+B. To brainstorm potential solutions to user needs.
+C. To prototype and test Ideas to find user preferences.
+D. To implement solutions that have been tested.###A
+
+Trong Design Thinking, mục tiêu chính khi xác định vấn đề (defining the problem) là gì?
+
+A. To clearly articulate the user's needs and challenges.
+→ Xác định và diễn đạt rõ ràng nhu cầu cũng như những thách thức của người dùng.
+
+Giai đoạn Define tổng hợp những hiểu biết về người dùng để hình thành một vấn đề rõ ràng và lấy người dùng làm trung tâm.$$$What is a key benefit of viewing insights through the lens of the user?
+A. It fosters empathy and leads to user-centered solutions.
+B. It allows for quicker project completion
+C. It guarantees higher sales figures
+D. It eliminates the need for additional market research.###A
+
+Lợi ích chính của việc xem xét các insight từ góc nhìn của người dùng là gì?
+
+A. It fosters empathy and leads to user-centered solutions.
+→ Nó thúc đẩy sự đồng cảm và dẫn đến các giải pháp lấy người dùng làm trung tâm.
+
+Hiểu vấn đề từ góc nhìn người dùng giúp nhóm thiết kế tạo ra giải pháp phù hợp hơn với nhu cầu thực tế.$$$Which factor is crucial in assessing the status of relationships with stakeholders during a project?
+A. Understanding their expectations and level of influence.
+B. Determining their financial contribution to the project.
+C. Evaluating their previous experience with similar projects.
+D. Identifying their geographical location.###A
+
+Yếu tố nào rất quan trọng khi đánh giá tình trạng mối quan hệ với các stakeholder trong một dự án?
+
+A. Understanding their expectations and level of influence.
+→ Hiểu kỳ vọng và mức độ ảnh hưởng của họ.
+
+Việc hiểu stakeholder muốn gì và có mức độ ảnh hưởng như thế nào giúp nhóm dự án lựa chọn cách tương tác và quản lý phù hợp.$$$Identify attributes of an ideal solution based on insights generated from design thinking
+A. Alignment with user needs and feasibility.
+B. Focus solely on aesthetic appeal
+C. Prioritization of novelty over practicality.
+D. Dependence on extensive resources for implementation.###A
+
+Đặc điểm nào của một giải pháp lý tưởng dựa trên những insight được tạo ra từ Design Thinking?
+
+A. Alignment with user needs and feasibility.
+→ Phù hợp với nhu cầu của người dùng và có tính khả thi.
+
+Một giải pháp tốt không chỉ đáp ứng đúng nhu cầu người dùng mà còn phải có khả năng triển khai trong thực tế.$$$What is a key benefit of stakeholder mapping in the innovation process?
+A. Facilitates understanding of diverse stakeholder motivations and needs
+B. Ensures compliance with industry regulations
+C. Guarantees project success
+D. Simplifies project management tasks###A
+
+Lợi ích chính của stakeholder mapping trong quá trình đổi mới là gì?
+
+A. Facilitates understanding of diverse stakeholder motivations and needs.
+→ Giúp hiểu các động cơ và nhu cầu đa dạng của các bên liên quan.
+
+Stakeholder mapping giúp xác định các nhóm liên quan và hiểu lợi ích, nhu cầu cũng như mức độ ảnh hưởng của họ.$$$What is a crucial activity performed during the Assessment phase of Design Thinking?
+A. Analyzing user feedback to improve solutions
+B. Ideating new solutions to existing problems
+C. Understanding user needs through interviews
+D. Developing prototypes to test functionality###A
+
+Hoạt động quan trọng nào được thực hiện trong giai đoạn Assessment của Design Thinking?
+
+A. Analyzing user feedback to improve solutions
+→ Phân tích phản hồi của người dùng để cải thiện các giải pháp.
+
+Giai đoạn Assessment tập trung đánh giá giải pháp dựa trên kết quả và phản hồi thu được để xác định những điểm cần cải tiến.$$$What is the primary goal of the 'Empathize' phase in design thinking in relation to innovation?
+A. To generate multiple ideas
+B. To implement the final solution
+C. To understand user needs and perspectives
+D. To refine existing prototypes###C
+
+Mục tiêu chính của giai đoạn Empathize trong Design Thinking liên quan đến đổi mới là gì?
+
+C. To understand user needs and perspectives
+→ Hiểu nhu cầu và góc nhìn của người dùng.
+
+Empathize tập trung tìm hiểu người dùng một cách sâu sắc trước khi xác định vấn đề và phát triển giải pháp.$$$What role does preparing a concise design brief play in a design thinking project?
+A. It specifies the scope, intent, and target group of stakeholders.
+B. It provides detailed solutions to design challenges.
+C. It outlines the marketing strategy for the final product
+D. It ensures project completion within the timeline.###A
+
+Việc chuẩn bị một design brief ngắn gọn đóng vai trò gì trong một dự án Design Thinking?
+
+A. It specifies the scope, intent, and target group of stakeholders.
+→ Nó xác định phạm vi, mục đích và nhóm đối tượng/bên liên quan mục tiêu.
+
+Design brief giúp định hướng dự án bằng cách làm rõ vấn đề, phạm vi, mục tiêu và những đối tượng mà thiết kế hướng đến.$$$Which of the following best describes the purpose of prototyping in the Assessment phase of Design Thinking?
+A. To finalize the product design for market release
+B. To validate the design's aesthetic appeal
+C. To test and refine ideas based on user feedback
+D. To gather competitive market analysis###C
+
+Mục đích của việc tạo nguyên mẫu (prototyping) trong giai đoạn Assessment của Design Thinking được mô tả đúng nhất là gì?
+
+C. To test and refine ideas based on user feedback
+→ Kiểm thử và tinh chỉnh các ý tưởng dựa trên phản hồi của người dùng.
+
+Prototype giúp kiểm chứng ý tưởng với người dùng thực tế và cải tiến giải pháp trước khi hoàn thiện.$$$In design thinking, why is the 'Define' phase critical to successful product development?
+A. It clarifies the problem to be addressed
+B. It generates initial concepts for solutions
+C. It tests prototypes with users
+D. It implements solutions in real-world scenarios###A
+
+Trong Design Thinking, tại sao giai đoạn Define lại quan trọng đối với việc phát triển sản phẩm thành công?
+
+A. It clarifies the problem to be addressed.
+→ Nó làm rõ vấn đề cần được giải quyết.
+
+Define giúp tổng hợp những hiểu biết về người dùng thành một vấn đề rõ ràng, tạo cơ sở cho việc phát triển giải pháp phù hợp.$$$What is the role of asking the right questions when challenging norms in the problem space?
+A. It encourages deeper understanding and innovative thinking.
+B. It reinforces existing solutions and practices
+C. It narrows the focus and limits creative exploratiom
+D. It maintains traditional approaches and avoids risks.###A
+
+Việc đặt đúng câu hỏi có vai trò gì khi thách thức các chuẩn mực hiện có trong không gian vấn đề?
+
+A. It encourages deeper understanding and innovative thinking.
+→ Nó khuyến khích sự hiểu biết sâu sắc hơn và tư duy đổi mới.
+
+Đặt đúng câu hỏi giúp xem xét lại các giả định hiện có, khám phá vấn đề sâu hơn và mở ra những hướng giải quyết mới.$$$How can disciplined and repeatable brainstorming techniques enhance team collaboration?
+A. They provide structure and focus, fostering effective teamwork
+B. They emphasize individual contribution over team efforts
+C. They limit creativity by enforcing strict rules
+D. They solely focus on generating Ideas quickly###A
+
+Các kỹ thuật brainstorming có kỷ luật và có thể lặp lại giúp tăng cường sự hợp tác nhóm như thế nào?
+
+A. They provide structure and focus, fostering effective teamwork.
+→ Chúng cung cấp cấu trúc và sự tập trung, từ đó thúc đẩy làm việc nhóm hiệu quả.
+
+Một quy trình brainstorming có cấu trúc giúp các thành viên phối hợp tốt hơn mà vẫn tạo điều kiện cho nhiều ý tưởng xuất hiện.$$$Why is embracing uncertainty important in innovative environments?
+A. It allows for adaptation and learning from new experiences
+B. It ensures predictable outcomes and consistent performance
+C. It eliminates the need for structured planning and processes
+D. It guarantees immediate success in all projects###A
+
+Tại sao việc chấp nhận sự không chắc chắn lại quan trọng trong môi trường đổi mới?
+
+A. It allows for adaptation and learning from new experiences.
+→ Nó cho phép thích nghi và học hỏi từ những trải nghiệm mới.
+
+Đổi mới luôn có yếu tố chưa biết trước; chấp nhận điều này giúp nhóm thử nghiệm, học hỏi và điều chỉnh giải pháp.$$$What is the significance of the 'pain curve' in the design process?
+A. Understanding the intensity of user challenges
+B. Optimizing resource allocation
+C. Enhancing team collaboration
+D. Streamlining the project timeline###A
+
+“Pain curve” có ý nghĩa gì trong quá trình thiết kế?
+
+A. Understanding the intensity of user challenges
+→ Hiểu được mức độ nghiêm trọng/cường độ của những khó khăn mà người dùng gặp phải.
+
+Pain curve giúp xác định những thời điểm hoặc điểm tiếp xúc mà người dùng gặp khó khăn lớn nhất để ưu tiên giải quyết.$$$What challenges might designers face when imagining and prototyping in design thinking?
+A. Balancing creativity with feasibility in design solutions.
+B. Ensuring all team members have equal input in decisions.
+C. Maintaining consistency in branding and communication.
+D. Finding cost-effective materials for prototypes.###A
+
+Nhà thiết kế có thể gặp thách thức nào khi tưởng tượng và tạo prototype trong Design Thinking?
+
+A. Balancing creativity with feasibility in design solutions.
+→ Cân bằng giữa tính sáng tạo và tính khả thi của các giải pháp thiết kế.
+
+Một ý tưởng không chỉ cần sáng tạo mà còn phải có khả năng triển khai trong thực tế.$$$What is the key benefit of using diverse teams in the design thinking process?
+A. It brings multiple perspectives to problem-solving
+B. It ensures faster decision-making
+C. It simplifies communication within the team
+D. It reduces the complexity of solutions###A
+Lợi ích chính của việc sử dụng các nhóm đa dạng trong quá trình Design Thinking là gì?
+
+A. It brings multiple perspectives to problem-solving.
+→ Nó mang lại nhiều góc nhìn khác nhau cho quá trình giải quyết vấn đề.
+
+Sự đa dạng giúp nhóm nhìn vấn đề từ nhiều quan điểm và tạo ra nhiều hướng giải quyết hơn.$$$Why is it important to gather human-centered data in design thinking?
+A. To ensure solutions are tailored to user needs
+B. To calculate project costs accurately
+C. To expedite the design process
+D. To satisfy regulatory requirements###A
+
+Tại sao việc thu thập dữ liệu lấy con người làm trung tâm (human-centered data) lại quan trọng trong Design Thinking?
+
+A. To ensure solutions are tailored to user needs
+→ Để đảm bảo các giải pháp được điều chỉnh phù hợp với nhu cầu của người dùng.
+
+Design Thinking lấy người dùng làm trung tâm, vì vậy dữ liệu về nhu cầu, hành vi và trải nghiệm thực tế là cơ sở để xây dựng giải pháp.$$$What psychological barriers must be overcome to leam in action during innovation projects?
+A. Unlearning old beliefs to adapt to new methodologies.
+B. Embracing all old beliefs improves adaptability
+C. Maintaining ego enhances learning in actiom
+D. Avoiding experimentation encourages leaming_###A
+
+Những rào cản tâm lý nào cần được vượt qua để có thể “học thông qua hành động” trong các dự án đổi mới?
+
+A. Unlearning old beliefs to adapt to new methodologies.
+→ Loại bỏ những niềm tin/quan niệm cũ để thích nghi với các phương pháp mới.
+
+Đổi mới đòi hỏi sẵn sàng từ bỏ những giả định cũ, thử nghiệm cách tiếp cận mới và học hỏi từ kết quả thực tế.$$$How can scope a design thinking project contribute to its success?
+A. It helps in defining the project's boundaries and focus.
+B. It ensures the project is completed within budget.
+C. It establishes the team's roles and responsibilities.
+D. It guarantees stakeholder approval of the design###A
+
+Việc xác định phạm vi (scope) của một dự án Design Thinking có thể đóng góp vào thành công của dự án như thế nào?
+
+A. It helps in defining the project's boundaries and focus.
+→ Nó giúp xác định ranh giới và trọng tâm của dự án.
+
+Scope rõ ràng giúp nhóm biết vấn đề nào cần tập trung giải quyết và những nội dung nào nằm ngoài phạm vi.$$$What is a key interaction during ethnographic research that aids in discovering consumer insights?
+A. Observing consumer behaviors in natural settings
+B. Analyzing consumer purchase receipts
+C. Conducting online surveys
+D. Attending trade shows###A
+
+Tương tác nào quan trọng trong nghiên cứu dân tộc học (ethnographic research) để khám phá insight của người tiêu dùng?
+
+A. Observing consumer behaviors in natural settings
+→ Quan sát hành vi của người tiêu dùng trong môi trường tự nhiên của họ.
+
+Ethnographic research tập trung quan sát người dùng trong bối cảnh thực tế để hiểu hành vi, nhu cầu và động cơ của họ.$$$Which of the following best illustrates the application of Ideation in design thinking?
+A. Generating a wide range of creative solutions without judgment.
+B. Selecting the best idea from a given set of options.
+C. Testing prototypes with potential users for feedback.
+D. Understanding user experiences through interviews.###\
+A
+
+
+Phương án nào minh họa rõ nhất việc áp dụng Ideation trong Design Thinking?
+
+A. Generating a wide range of creative solutions without judgment.
+→ Tạo ra nhiều giải pháp sáng tạo khác nhau mà không phán xét.
+
+Ideation ưu tiên tạo ra nhiều khả năng trước khi đánh giá và thu hẹp các phương án.$$$What is the primary purpose of creating a stakeholder map in design thinking?
+A. To understand the perspectives of various stakeholders involved in a project
+B. To visualize the organizational hierarchy
+C. To assess the financial impact of a project
+D. To allocate resources effectively###A
+
+Mục đích chính của việc tạo stakeholder map trong Design Thinking là gì?
+
+A. To understand the perspectives of various stakeholders involved in a project
+→ Để hiểu quan điểm của các bên liên quan khác nhau trong dự án.
+
+Stakeholder mapping giúp xác định những người liên quan và hiểu nhu cầu, lợi ích cũng như quan điểm của họ.$$$What is the importance of involving others in brainstorming sessions within the design thinking process?
+A. Enhance diverse perspectives and idea generation
+B. Ensure all ideas are implemented without change
+C. Guarantees faster decision-making
+D. Reduces the need for team collaboration###A
+
+Tại sao việc có nhiều người tham gia vào các buổi brainstorming lại quan trọng trong Design Thinking?
+
+A. Enhance diverse perspectives and idea generation
+→ Tăng cường sự đa dạng về góc nhìn và khả năng tạo ra ý tưởng.
+
+Nhiều người với kinh nghiệm và quan điểm khác nhau giúp tạo ra phạm vi giải pháp rộng và sáng tạo hơn.$$$What is a key component of a research plan in design thinking?
+A. Defining the target user and their needs
+B. Outlining the project budget
+C. Establishing markeüng strategies
+D. Setting up a timeline for product launch###A
+
+Thành phần quan trọng của một research plan trong Design Thinking là gì?
+
+A. Defining the target user and their needs
+→ Xác định người dùng mục tiêu và nhu cầu của họ.
+
+Research plan cần làm rõ đối tượng cần nghiên cứu và những gì cần tìm hiểu về nhu cầu, hành vi và trải nghiệm của họ.$$$What is the primary purpose of framing the problem space in the design process?
+A. To guide the evolution of design solutions
+B. To limit exploration to predefined solutions
+C. To ensure strict adherence to project timelines
+D. To prioritize cost reduction strategies###A
+
+Mục đích chính của việc framing the problem space trong quá trình thiết kế là gì?
+
+A. To guide the evolution of design solutions
+→ Để định hướng quá trình phát triển và hoàn thiện các giải pháp thiết kế.
+
+Việc framing giúp xác định cách nhìn nhận vấn đề, từ đó định hướng việc khám phá và phát triển các giải pháp phù hợp.$$$What distinguishes the 'Test' phase from other phases in design thinking?
+A. The Test' phase involves validating prototypes with real users
+B. The Test' phase is mainly for ideation and brainstorming
+C. The 'Test' phase is about empathizing With users
+D. The 'Test' phase defines the key problem to solve###A
+
+Điều gì phân biệt giai đoạn Test với các giai đoạn khác trong Design Thinking?
+
+A. The 'Test' phase involves validating prototypes with real users
+→ Giai đoạn Test bao gồm việc kiểm chứng các nguyên mẫu với người dùng thực tế.
+
+Test tập trung thu thập phản hồi thực tế từ người dùng để xác định giải pháp hoạt động tốt ở đâu và cần cải thiện ở đâu.$$$How can emotional journeys impact purchasing decisions?
+A. Emotional journeys influence customers' emotional connection with a brand
+B. Emotional journeys determine the physical location of a purchase.
+C. Emotional joumeys dictate the price point of products
+D. Emotional joumeys have no Impact on purchasing decisions.###A
+
+Emotional journeys có thể ảnh hưởng đến quyết định mua hàng như thế nào?
+
+A. Emotional journeys influence customers' emotional connection with a brand.
+→ Hành trình cảm xúc ảnh hưởng đến sự kết nối về mặt cảm xúc của khách hàng với thương hiệu.
+
+Những cảm xúc hình thành qua các touchpoint có thể ảnh hưởng đến cách khách hàng đánh giá thương hiệu và quyết định mua hàng.$$$Explain the iterative nature of the hypothesis-driven approach and how it impacts the testing process.
+A. Encourages continuous refinement of hypotheses through testing.
+B. Enables immediate Implementation of the initial hypothesis
+C. Focuses on validating a single hypothesis without changes.
+D. Reduces the need for skepticism in the process.###A
+
+Tính lặp (iterative) của phương pháp hypothesis-driven ảnh hưởng đến quá trình kiểm thử như thế nào?
+
+A. Encourages continuous refinement of hypotheses through testing.
+→ Khuyến khích liên tục tinh chỉnh các giả thuyết thông qua kiểm thử.
+
+Giả thuyết được kiểm tra, kết quả được phân tích, sau đó giả thuyết được điều chỉnh và tiếp tục kiểm thử trong các vòng tiếp theo.$$$What is the primary importance of creating a customer-centric culture for design thinking?
+A. It ensures solutions are aligned with user needs and desires
+B. It limits the scope of innovation to existing products.
+C. It focuses on maintaining established market positions.
+D. It prioritizes operational efficiency over user satisfaction.###A
+
+Tầm quan trọng chính của việc xây dựng văn hóa lấy khách hàng làm trung tâm (customer-centric culture) đối với Design Thinking là gì?
+
+A. It ensures solutions are aligned with user needs and desires.
+→ Nó đảm bảo các giải pháp phù hợp với nhu cầu và mong muốn của người dùng.
+
+Customer-centric culture giúp tổ chức duy trì nhu cầu của người dùng ở vị trí trung tâm trong quá trình phát triển giải pháp.$$$Explain how stakeholder mapping plays a role in understanding different perspectives in human-centered design.
+A. It reveals diverse perspectives and fosters empathy.
+B. It solely focuses on creating solutions for stakeholders.
+C. Stakeholder mapping simplifies communication between project members.
+D. It limits the viewpoints considered in design processes.###A
+
+Stakeholder mapping đóng vai trò như thế nào trong việc hiểu các góc nhìn khác nhau trong Human-Centered Design?
+
+A. It reveals diverse perspectives and fosters empathy.
+→ Nó làm rõ các góc nhìn đa dạng và thúc đẩy sự đồng cảm.
+
+Stakeholder mapping giúp nhóm hiểu những nhu cầu, lợi ích và quan điểm khác nhau của các bên liên quan.$$$Which of the following best describes essentials of our problem-solving approach?
+A. Portfolio-centered, profit-driven, market-focused, and segmented
+B. Product-centered, budget-driven, demographically focused, and formalized
+C. Human-centered, possibility-driven, option-focused, and iterative
+D. Corporate-centered, trend-driven, statistically focused, and annualized###C
+
+Điều nào mô tả đúng nhất những yếu tố thiết yếu trong cách tiếp cận giải quyết vấn đề của khóa học?
+
+C. Lấy con người làm trung tâm, định hướng khả năng, tập trung vào các phương án và có tính lặp. – Human-centered, possibility-driven, option-focused, and iterative.
+
+Đây là những đặc điểm cốt lõi giúp Design Thinking tạo ra các giải pháp sáng tạo và phù hợp với người dùng.$$$Which aspect of the design thinking process is crucial for ensuring solutions are user-centered?
+A. Iterative feedback from users during prototyping and testing
+B. Initial brainstorming sessions during the 'Ideate' phase
+C. Detailed documentation of user requirements in the 'Define' phase
+D. Finalizing designs before user testing begins###A
+
+Yếu tố nào của Design Thinking giúp đảm bảo giải pháp luôn lấy người dùng làm trung tâm?
+
+A. Phản hồi lặp đi lặp lại từ người dùng trong quá trình tạo mẫu và kiểm thử. – Iterative feedback from users during prototyping and testing.
+
+Việc liên tục nhận phản hồi giúp giải pháp phù hợp hơn với nhu cầu thực tế.$$$Why is stakeholder mapping crucial in addressing wicked problems in design thinking?
+A. It helps identify and incorporate diverse stakeholder perspectives for holistic solutions.
+B. It provides a linear approach to problem-solving.
+C. It focuses solely on technical solutions.
+D. It limits the number of stakeholders to simplify decision-making.###A
+
+Tại sao Stakeholder Mapping lại quan trọng khi giải quyết Wicked Problems trong Design Thinking?
+
+A. Giúp xác định và kết hợp các góc nhìn đa dạng của các bên liên quan để tạo ra giải pháp toàn diện. – It helps identify and incorporate diverse stakeholder perspectives for holistic solutions.
+
+Wicked Problems liên quan đến nhiều nhóm có nhu cầu và lợi ích khác nhau nên cần xem xét nhiều góc nhìn.$$$How can staying in the possibility space lead to breakthrough ideas and shared creativity?
+A. By encouraging open-mindedness and exploration without limitations
+B. By focusing on existing norms and solutions
+C. By avoiding collaboration and working independently
+D. By emphasizing immediate results over long term possibilities###A
+
+Việc duy trì trong Possibility Space có thể tạo ra những ý tưởng đột phá và sự sáng tạo chung như thế nào?
+
+A. Bằng cách khuyến khích tư duy cởi mở và khám phá không bị giới hạn. – By encouraging open-mindedness and exploration without limitations.
+
+Không vội giới hạn các khả năng giúp nhóm kết hợp nhiều ý tưởng và khám phá các giải pháp mới.$$$How can disciplined and repeatable brainstorming techniques enhance team collaboration?
+A. They provide structure and focus, fostering effective teamwork
+B. They emphasize individual contribution over team efforts
+C. They limit creativity by enforcing strict rules
+D. They solely focus on generating ideas quickly###A
+
+Các kỹ thuật Brainstorming có kỷ luật và có thể lặp lại giúp tăng cường sự hợp tác trong nhóm như thế nào?
+
+A. Cung cấp cấu trúc và trọng tâm, từ đó thúc đẩy làm việc nhóm hiệu quả. – They provide structure and focus, fostering effective teamwork.
+
+Một quy trình rõ ràng giúp mọi thành viên đóng góp ý tưởng và phối hợp hiệu quả hơn.$$$How did IBM's Smarter Planet positioning impact the creation of experiences in design thinking?
+A. It encouraged the integration of technology for enhanced user experiences
+B. It focused solely on reducing operational costs
+C. It prioritized environmental sustainability over user experience
+D. It aimed to standardize design processes across industries###A
+
+IBM Smarter Planet đã tác động như thế nào đến việc tạo ra trải nghiệm trong Design Thinking?
+
+A. Khuyến khích tích hợp công nghệ để nâng cao trải nghiệm người dùng. – It encouraged the integration of technology for enhanced user experiences.
+
+IBM Smarter Planet nhấn mạnh việc kết hợp công nghệ với nhu cầu con người để tạo trải nghiệm tốt hơn.$$$Understand the historical background and benefits of stakeholder mapping in design thinking.
+A. Stakeholder mapping originated to address complex, mufti-stakeholder problems.
+B. Stakeholder mapping began as a tool for organizational profit maximization.
+C. Its main historical benefit is streamlining stakeholder exclusion.
+D. Stakeholder mapping was initially used to reduce project costs.###A
+
+Nguồn gốc và lợi ích lịch sử của Stakeholder Mapping là gì?
+
+A. Stakeholder Mapping được tạo ra để giải quyết các vấn đề phức tạp có nhiều bên liên quan. – Stakeholder mapping originated to address complex, multi-stakeholder problems.
+
+Công cụ này giúp xác định và cân bằng quan điểm của nhiều bên trong các vấn đề phức tạp
